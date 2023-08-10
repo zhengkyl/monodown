@@ -1,18 +1,35 @@
 import { Title } from "solid-start";
-import Counter from "~/components/Counter";
+import { Button } from "~/components/ui/Button";
 
 export default function Home() {
   return (
     <main>
       <Title>Hello World</Title>
       <h1>Hello world!</h1>
-      <Counter />
+      <Button>Test</Button>
+      <Button size="lg">Test</Button>
+      <Button size="lg" variant="outline">
+        Test
+      </Button>
+      <Button size="icon">
+        <div class="i-uil:volume"></div>
+      </Button>
+      <Button size="icon-lg">
+        <div class="i-uil:volume"></div>
+      </Button>
+      <Button size="icon-lg" class="rounded-full">
+        <div class="i-uil:volume"></div>
+      </Button>
+      <Button size="icon-lg" class="rounded-full">
+        2
+      </Button>
+      <Button size="icon" class="rounded-full">
+        2
+      </Button>
+
+      <Button variant="outline">Test</Button>
       <p>
-        Visit{" "}
-        <a href="https://start.solidjs.com" target="_blank">
-          start.solidjs.com
-        </a>{" "}
-        to learn how to build SolidStart apps.
+        Unicons by <a href="https://iconscout.com/">IconScout</a>
       </p>
     </main>
   );

@@ -12,6 +12,9 @@ import {
   Scripts,
   Title,
 } from "solid-start";
+
+import "@unocss/reset/tailwind.css";
+import "virtual:uno.css";
 import "./root.css";
 
 export default function Root() {
