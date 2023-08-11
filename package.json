@@ -1,5 +1,5 @@
 {
-  "name": "downhand",
+  "name": "monodown",
   "scripts": {
     "dev": "solid-start dev",
     "build": "solid-start build",
