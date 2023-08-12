@@ -1,11 +1,10 @@
-import { Title } from "solid-start";
-import { MC } from "~/components/multiple-choice";
-import { Button } from "~/components/ui/Button";
+import { clientOnly } from "solid-start/islands";
+
+const MC = clientOnly(() => import("~/components/multiple-choice"));
 
 export default function Home() {
   return (
     <main>
-      <Title>Monodown</Title>
       <MC />
     </main>
   );

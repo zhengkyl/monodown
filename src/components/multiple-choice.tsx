@@ -1,8 +1,10 @@
 import { For, createSignal } from "solid-js";
 import { Button } from "./ui/Button";
 import { randomNChoices } from "~/util/arrays";
+import { Dynamic } from "solid-js/web";
 
 type TextWidget = {
+  id: string;
   text: string;
   audio: string;
 };
@@ -10,65 +12,110 @@ type TextWidget = {
 type MCProps = {
   question: (TextWidget | string)[];
   choices: TextWidget[];
-  selected: TextWidget | null;
+  answer: string;
+  selected: string | null;
   setSelected: (data) => void;
+  status: STATUS;
 };
 
-type MCQuestion = {
-  question: (TextWidget | string)[];
-  answer: TextWidget;
-  wrongs: TextWidget[];
-};
+enum STATUS {
+  UNANSWERED,
+  RIGHT,
+  WRONG,
+}
 
-const STATUS = {
-  UNANSWERED: "UNANSWERED",
-  RIGHT: "RIGHT",
-  WRONG: "WRONG",
-};
-
-export function MC(props) {
-  const question = ["What does ", { text: "ok", audio: "" }, " mean?"];
-  const answer = { text: "ok", audio: "" };
+export default function MC(props) {
+  const question = [
+    "What does ",
+    { text: "ok", audio: "", id: "ok" },
+    " mean?",
+  ];
+  const answer = { text: "ok", audio: "", id: "ok" };
   const wrongs = [
     {
       text: "red",
       audio: "",
+      id: "red",
     },
     {
       text: "blue",
       audio: "",
+      id: "blue",
     },
     {
       text: "green",
       audio: "",
+      id: "green",
     },
     {
       text: "yellow",
       audio: "",
+      id: "yellow",
     },
   ];
-  const choices = randomNChoices(answer, wrongs, 4);
+
+  // TODO get question/choices from endpoint preshuffled, otherwise SSR + browser random different
+  const [choices, setChoices] = createSignal(randomNChoices(answer, wrongs, 4));
 
   const [selected, setSelected] = createSignal(null);
 
   const [status, setStatus] = createSignal(STATUS.UNANSWERED);
 
+  function handleAnswer() {
+    console.log(selected());
+    if (selected() === answer.id) {
+      setStatus(STATUS.RIGHT);
+    } else {
+      setStatus(STATUS.WRONG);
+    }
+  }
+
+  const buttons = {
+    [STATUS.UNANSWERED]: () => (
+      <Button
+        size="sm"
+        class="btn-fill-green float-right w-full"
+        disabled={selected() == null}
+        onClick={handleAnswer}
+      >
+        Check
+      </Button>
+    ),
+    [STATUS.RIGHT]: () => (
+      <Button
+        size="sm"
+        class="btn-fill-green float-right w-full"
+        disabled={selected() == null}
+      >
+        Continue
+      </Button>
+    ),
+    [STATUS.WRONG]: () => (
+      <Button
+        size="sm"
+        class="btn-fill-red float-right w-full"
+        disabled={selected() == null}
+      >
+        Got it
+      </Button>
+    ),
+  };
+
   return (
     <div class="max-w-screen-sm m-auto p-4">
       <MCGrid
+        status={status()}
         question={question}
-        choices={choices}
+        answer={answer.id}
+        choices={choices()}
         selected={selected()}
-        setSelected={setSelected}
+        setSelected={(d) => {
+          console.log("set", d);
+          setSelected(d);
+        }}
       />
       <div class="mt-16">
-        <Button
-          size="sm"
-          class="btn-fill-green float-right w-full"
-          disabled={selected() == null}
-        >
-          Check
-        </Button>
+        <Dynamic component={buttons[status()]} />
       </div>
     </div>
   );
@@ -92,12 +139,18 @@ function MCGrid(props: MCProps) {
         <For each={props.choices}>
           {(choice, i) => (
             <Button
-              onClick={[props.setSelected, choice]}
+              onClick={[props.setSelected, choice.id]}
               size="lg"
               class="btn-line-indigo"
               classList={{
                 "btn-line-indigo-active":
-                  props.selected && choice.text === props.selected.text,
+                  props.status === STATUS.UNANSWERED &&
+                  choice.id === props.selected,
+                "btn-line-red-active":
+                  props.status === STATUS.WRONG && choice.id === props.selected,
+                "btn-line-green-active":
+                  props.status !== STATUS.UNANSWERED &&
+                  choice.id === props.answer,
               }}
             >
               {choice.text}
