@@ -24,6 +24,16 @@ export default function Root() {
         <Title>SolidStart - Bare</Title>
         <Meta charset="utf-8" />
         <Meta name="viewport" content="width=device-width, initial-scale=1" />
+        <link
+          rel="icon"
+          href={
+            process.env.NODE_ENV === "production"
+              ? "/icon.svg"
+              : "/icon-dev.svg"
+          }
+          type="image/svg+xml"
+        />
+        <link rel="apple-touch-icon" href="/apple-touch-icon.png" />
       </Head>
       <Body>
         <Suspense>

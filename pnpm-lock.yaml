@@ -37,6 +37,9 @@ devDependencies:
   '@types/node':
     specifier: ^18.16.19
     version: 18.16.19
+  '@unocss/transformer-variant-group':
+    specifier: ^0.55.0
+    version: 0.55.0
   esbuild:
     specifier: ^0.14.54
     version: 0.14.54
