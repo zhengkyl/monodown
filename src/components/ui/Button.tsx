@@ -1,5 +1,4 @@
 import { Button as KButton } from "@kobalte/core";
-import { VariantProps, cva } from "class-variance-authority";
 import { JSX, splitProps } from "solid-js";
 import { twMerge } from "tailwind-merge";
 
@@ -37,7 +36,7 @@ const size = {
 
 export interface ButtonProps
   extends JSX.ButtonHTMLAttributes<HTMLButtonElement> {
-  size: "sm" | "md" | "lg";
+  size?: "sm" | "md" | "lg";
 }
 
 export function Button(props: ButtonProps) {
@@ -45,7 +44,7 @@ export function Button(props: ButtonProps) {
   return (
     <KButton.Root
       {...rest}
-      class={twMerge(props.class, size[props.size])}
+      class={twMerge(props.class, size[props.size ?? "md"])}
     ></KButton.Root>
   );
 }
