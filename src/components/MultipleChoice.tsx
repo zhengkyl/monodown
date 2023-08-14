@@ -103,10 +103,10 @@ export default function MC(props) {
   );
 }
 
-const GridButtonColors = {
-  [STATUS.UNANSWERED]: "btn-line-indigo-active",
-  [STATUS.RIGHT]: "btn-line-green-active btn-line-green",
-  [STATUS.WRONG]: "btn-line-red-active btn-line-red",
+const SelectedClass = {
+  [STATUS.UNANSWERED]: "btn-line-indigo btn-line-indigo-active",
+  [STATUS.RIGHT]: "btn-line-green btn-line-green-active",
+  [STATUS.WRONG]: "btn-line-red btn-line-red-active",
 };
 
 function MCGrid(props: MCProps) {
@@ -130,10 +130,8 @@ function MCGrid(props: MCProps) {
               onClick={[props.setSelected, choice.id]}
               size="lg"
               classList={{
-                "btn-line-indigo":
-                  props.status === STATUS.UNANSWERED ||
-                  choice.id !== props.selected,
-                [GridButtonColors[props.status]]: choice.id === props.selected,
+                "btn-line-indigo": choice.id !== props.selected,
+                [SelectedClass[props.status]]: choice.id === props.selected,
               }}
             >
               {choice.text}
