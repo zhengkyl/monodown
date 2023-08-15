@@ -3,7 +3,12 @@ import { createServerData$ } from "solid-start/server";
 import { authOpts } from "~/routes/api/auth/[...solidauth]";
 
 export function Navbar() {
-  return <header></header>;
+  const session = useSession();
+  return (
+    <header>
+      <nav></nav>
+    </header>
+  );
 }
 
 export const useSession = () => {
