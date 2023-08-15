@@ -4,6 +4,11 @@ import UnoCSS from "unocss/vite";
 import { defineConfig } from "vite";
 
 export default defineConfig({
-  plugins: [solid({ adapter: vercel({}) }), UnoCSS()],
+  plugins: [
+    solid({
+      adapter: vercel({}),
+    }),
+    UnoCSS(),
+  ],
   ssr: { external: ["@prisma/client"] },
 });
