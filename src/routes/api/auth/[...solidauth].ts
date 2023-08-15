@@ -1,9 +1,7 @@
 import { SolidAuth, type SolidAuthConfig } from "@auth/solid-start";
 import GitHub from "@auth/core/providers/github";
 import { PrismaAdapter } from "@auth/prisma-adapter";
-import { PrismaClient } from "@prisma/client";
-
-const prisma = new PrismaClient();
+import prisma from "~/prisma";
 
 export const authOpts: SolidAuthConfig = {
   adapter: PrismaAdapter(prisma),
