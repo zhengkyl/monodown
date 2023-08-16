@@ -1,0 +1,13 @@
+html {
+  /* Prevents reload/zoom on mobile */
+  touch-action: none;
+}
+
+input,
+textarea,
+button,
+select,
+a {
+  /* Ugly highlight box on CERTAIN browsers */
+  -webkit-tap-highlight-color: transparent;
+}

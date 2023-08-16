@@ -67,6 +67,7 @@ export default function MC(props) {
         choices={choices()}
         selected={selected()}
         setSelected={(id) => {
+          // alert("pointer set selc");
           if (id === selected()) return;
           if (status() === STATUS.RIGHT) return;
 
@@ -127,7 +128,7 @@ function MCGrid(props: MCProps) {
         <For each={props.choices}>
           {(choice) => (
             <Button
-              onClick={[props.setSelected, choice.id]}
+              onPointerDown={[props.setSelected, choice.id]}
               size="lg"
               classList={{
                 "btn-line-indigo": choice.id !== props.selected,

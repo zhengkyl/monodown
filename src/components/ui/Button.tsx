@@ -1,4 +1,5 @@
 import { Button as KButton } from "@kobalte/core";
+import { ButtonRootProps } from "@kobalte/core/dist/types/button";
 import { JSX, splitProps } from "solid-js";
 import { twMerge } from "tailwind-merge";
 
@@ -34,8 +35,7 @@ const size = {
   "icon-lg": "h-16 w-18 text-3xl font-bold",
 };
 
-export interface ButtonProps
-  extends JSX.ButtonHTMLAttributes<HTMLButtonElement> {
+export interface ButtonProps extends ButtonRootProps {
   size?: "sm" | "md" | "lg";
 }
 
