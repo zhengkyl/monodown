@@ -1,94 +1,84 @@
 import { For, Show, createSignal } from "solid-js";
 import { Button } from "./ui/Button";
-import { randomNChoices } from "~/util/arrays";
+import { Button as KButton } from "@kobalte/core";
 
 type TextWidget = {
   id: string;
   text: string;
-  audio: string;
+  audio?: string;
+  image?: string;
 };
 
-type MCProps = {
-  question: (TextWidget | string)[];
+type Layout = "grid" | "row" | "col";
+type Status = "UNANSWERED" | "RIGHT" | "WRONG";
+
+type Props = {
+  layout: Layout;
+  question: (string | TextWidget)[];
   choices: TextWidget[];
-  selected: string | null;
-  setSelected: (id: string) => void;
-  status: STATUS;
+  answerId: string;
 };
 
-enum STATUS {
-  UNANSWERED,
-  RIGHT,
-  WRONG,
-}
-
-export default function MC(props) {
-  const question = [
-    "What does ",
-    { text: "ok", audio: "", id: "ok" },
-    " mean?",
-  ];
-  const answer = { text: "ok", audio: "", id: "ok" };
-  const wrongs = [
-    {
-      text: "red",
-      audio: "",
-      id: "red",
-    },
-    {
-      text: "blue",
-      audio: "",
-      id: "blue",
-    },
-    {
-      text: "green",
-      audio: "",
-      id: "green",
-    },
-    {
-      text: "yellow",
-      audio: "",
-      id: "yellow",
-    },
-  ];
-
-  // TODO get question/choices from endpoint preshuffled, otherwise SSR + browser random different
-  const [choices, setChoices] = createSignal(randomNChoices(answer, wrongs, 4));
-
+export default function MultipleChoice(props: Props) {
   const [selected, setSelected] = createSignal(null);
 
-  const [status, setStatus] = createSignal(STATUS.UNANSWERED);
+  const [status, setStatus] = createSignal<Status>("UNANSWERED");
+
+  const setSel = (id) => {
+    // alert("pointer set selc");
+    if (id === selected()) return;
+    if (status() === "RIGHT") return;
+
+    if (status() === "WRONG") {
+      setStatus("UNANSWERED");
+    }
+    setSelected(id);
+  };
 
   return (
     <div class="max-w-screen-sm m-auto p-4">
-      <MCGrid
-        status={status()}
-        question={question}
-        choices={choices()}
-        selected={selected()}
-        setSelected={(id) => {
-          // alert("pointer set selc");
-          if (id === selected()) return;
-          if (status() === STATUS.RIGHT) return;
-
-          if (status() === STATUS.WRONG) {
-            setStatus(STATUS.UNANSWERED);
+      <div class="text-2xl font-semibold m-y-16">
+        <For each={props.question}>
+          {(section) =>
+            typeof section === "string" ? (
+              section
+            ) : (
+              <span class="underline">{section.text}</span>
+            )
           }
-          setSelected(id);
-        }}
-      />
+        </For>
+      </div>
+      <div class={`gap-4 ${LayoutClass[props.layout]}`}>
+        <For each={props.choices}>
+          {(choice) => (
+            <KButton.Root
+              onPointerDown={[setSel, choice.id]}
+              class="px-5 py-5"
+              classList={{
+                "btn-line-indigo": choice.id !== selected(),
+                [SelectedClass[status()]]: choice.id === selected(),
+              }}
+            >
+              <Show when={props.layout !== "col"} fallback={choice.text}>
+                <div class="flex flex-col gap-3 h-full justify-end">
+                  <img src={choice.image} class="max-h-24 object-cover" />
+                  <p>{choice.text}</p>
+                </div>
+              </Show>
+            </KButton.Root>
+          )}
+        </For>
+      </div>
       <div class="mt-16">
         <Show
-          when={status() === STATUS.RIGHT}
+          when={status() === "RIGHT"}
           fallback={
             <Button
               size="sm"
               class="btn-fill-indigo float-right w-full"
-              disabled={selected() == null || status() === STATUS.WRONG}
+              disabled={selected() == null || status() === "WRONG"}
               onClick={() =>
-                setStatus(
-                  selected() === answer.id ? STATUS.RIGHT : STATUS.WRONG
-                )
+                setStatus(selected() === props.answerId ? "RIGHT" : "WRONG")
               }
             >
               Check
@@ -104,42 +94,14 @@ export default function MC(props) {
   );
 }
 
-const SelectedClass = {
-  [STATUS.UNANSWERED]: "btn-line-indigo btn-line-indigo-active",
-  [STATUS.RIGHT]: "btn-line-green btn-line-green-active",
-  [STATUS.WRONG]: "btn-line-red btn-line-red-active",
+const SelectedClass: { [key in Status]: string } = {
+  UNANSWERED: "btn-line-indigo btn-line-indigo-active",
+  RIGHT: "btn-line-green btn-line-green-active",
+  WRONG: "btn-line-red btn-line-red-active",
 };
 
-function MCGrid(props: MCProps) {
-  return (
-    <>
-      <div class="text-2xl font-semibold m-y-16">
-        <For each={props.question}>
-          {(section) =>
-            typeof section === "string" ? (
-              section
-            ) : (
-              <span class="underline">{section.text}</span>
-            )
-          }
-        </For>
-      </div>
-      <div class="grid grid-cols-2 gap-4">
-        <For each={props.choices}>
-          {(choice) => (
-            <Button
-              onPointerDown={[props.setSelected, choice.id]}
-              size="lg"
-              classList={{
-                "btn-line-indigo": choice.id !== props.selected,
-                [SelectedClass[props.status]]: choice.id === props.selected,
-              }}
-            >
-              {choice.text}
-            </Button>
-          )}
-        </For>
-      </div>
-    </>
-  );
-}
+const LayoutClass: { [key in Layout]: string } = {
+  grid: "grid grid-cols-2",
+  row: "flex [&>*]:flex-1",
+  col: "flex flex-col",
+};

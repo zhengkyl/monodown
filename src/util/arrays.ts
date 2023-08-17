@@ -7,7 +7,6 @@ export function shuffleArray(array) {
 }
 
 export function randomNChoices(answer, wrongs, n) {
-  console.log("randomN running");
   shuffleArray(wrongs);
   const choices = wrongs.slice(0, n - 1);
   choices.splice(Math.floor(Math.random() * n), 0, answer);
