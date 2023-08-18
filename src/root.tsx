@@ -16,6 +16,8 @@ import {
 import "@unocss/reset/tailwind.css";
 import "virtual:uno.css";
 import "./root.css";
+import { signIn, signOut } from "@auth/solid-start/client";
+import { Button } from "./components/ui/Button";
 
 export default function Root() {
   return (
@@ -35,10 +37,18 @@ export default function Root() {
         />
         <link rel="apple-touch-icon" href="/apple-touch-icon.png" />
       </Head>
-      <Body>
+      <Body class="flex flex-col">
         <Suspense>
           <ErrorBoundary>
             <A href="/">Index</A>
+            <div>
+              <Button class="btn-fill-cyan" onClick={[signIn, "github"]}>
+                Sign In
+              </Button>
+              <Button class="btn-fill-purple" onClick={signOut}>
+                Sign Out
+              </Button>
+            </div>
             <Routes>
               <FileRoutes />
             </Routes>

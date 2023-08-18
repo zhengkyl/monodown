@@ -1,6 +1,7 @@
 import { For, Show, createSignal } from "solid-js";
 import { Button } from "./ui/Button";
 import { Button as KButton } from "@kobalte/core";
+import { SharedProps } from "./Quiz";
 
 type TextWidget = {
   id: string;
@@ -9,17 +10,24 @@ type TextWidget = {
   image?: string;
 };
 
+type Text = {
+  text: string;
+  annotation: string;
+};
+
 type Layout = "grid" | "row" | "col";
 type Status = "UNANSWERED" | "RIGHT" | "WRONG";
 
-type Props = {
+export type MultipleChoiceProps = {
   layout: Layout;
   question: (string | TextWidget)[];
   choices: TextWidget[];
   answerId: string;
 };
 
-export default function MultipleChoice(props: Props) {
+export default function MultipleChoice(
+  props: MultipleChoiceProps & SharedProps
+) {
   const [selected, setSelected] = createSignal(null);
 
   const [status, setStatus] = createSignal<Status>("UNANSWERED");
@@ -36,8 +44,8 @@ export default function MultipleChoice(props: Props) {
   };
 
   return (
-    <div class="max-w-screen-sm m-auto p-4">
-      <div class="text-2xl font-semibold m-y-16">
+    <div class="max-w-screen-sm m-auto p-4 h-full flex flex-col justify-between">
+      <div class="text-2xl font-semibold m-y-8">
         <For each={props.question}>
           {(section) =>
             typeof section === "string" ? (
@@ -48,7 +56,7 @@ export default function MultipleChoice(props: Props) {
           }
         </For>
       </div>
-      <div class={`gap-4 ${LayoutClass[props.layout]}`}>
+      <div class={`gap-4 mb-8 ${LayoutClass[props.layout]}`}>
         <For each={props.choices}>
           {(choice) => (
             <KButton.Root
@@ -69,7 +77,7 @@ export default function MultipleChoice(props: Props) {
           )}
         </For>
       </div>
-      <div class="mt-16">
+      <div class="m-y-8">
         <Show
           when={status() === "RIGHT"}
           fallback={
@@ -85,7 +93,11 @@ export default function MultipleChoice(props: Props) {
             </Button>
           }
         >
-          <Button size="sm" class="btn-fill-green float-right w-full">
+          <Button
+            size="sm"
+            class="btn-fill-green float-right w-full"
+            onClick={props.onContinue}
+          >
             Continue
           </Button>
         </Show>
