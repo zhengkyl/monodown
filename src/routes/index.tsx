@@ -1,10 +1,17 @@
 import { Show } from "solid-js";
 import { useRouteData } from "solid-start";
 import { createServerData$ } from "solid-start/server";
+import { TextPrompt } from "~/components/MultipleChoice/format";
 import { Question, Quiz } from "~/components/Quiz";
 import { randomNChoices } from "~/util/arrays";
 
-const question = ["What does ", { text: "ok", audio: "", id: "ok" }, " mean?"];
+const prompt = {
+  type: "text",
+  text: "What does ok mean?",
+  // audio: "",
+  // image: "",
+} satisfies TextPrompt;
+
 const answer = { text: "ok", audio: "", id: "ok", image: "person.jpg" };
 const wrongs = [
   {
@@ -40,28 +47,28 @@ export function routeData(params) {
         {
           type: "MultipleChoice",
           props: {
-            question,
+            prompt: prompt,
             answerId: answer.id,
             choices: randomNChoices(answer, wrongs, 4),
-            layout: "grid",
+            format: "grid",
           },
         },
         {
           type: "MultipleChoice",
           props: {
-            question,
+            prompt: prompt,
             answerId: answer.id,
             choices: randomNChoices(answer, wrongs, 4),
-            layout: "col",
+            format: "col",
           },
         },
         {
           type: "MultipleChoice",
           props: {
-            question,
+            prompt: prompt,
             answerId: answer.id,
             choices: randomNChoices(answer, wrongs, 3),
-            layout: "row",
+            format: "row",
           },
         },
       ] satisfies Question[],

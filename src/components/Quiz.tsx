@@ -1,5 +1,7 @@
-import { Component, For, Show, createSignal } from "solid-js";
-import MultipleChoice, { MultipleChoiceProps } from "./MultipleChoice";
+import { Component, Show, createSignal } from "solid-js";
+import MultipleChoice, {
+  MultipleChoiceProps,
+} from "./MultipleChoice/MultipleChoice";
 import { Dynamic } from "solid-js/web";
 
 export type SharedProps = {
