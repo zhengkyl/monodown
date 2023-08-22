@@ -1,7 +1,7 @@
 import { Show } from "solid-js";
 import { useRouteData } from "solid-start";
 import { createServerData$ } from "solid-start/server";
-import { TextPrompt } from "~/components/MultipleChoice/format";
+import { Prompt } from "~/components/MultipleChoice/format";
 import { Question, Quiz } from "~/components/Quiz";
 import { randomNChoices } from "~/util/arrays";
 
@@ -10,7 +10,7 @@ const prompt = {
   text: "What does ok mean?",
   // audio: "",
   // image: "",
-} satisfies TextPrompt;
+} satisfies Prompt;
 
 const answer = { text: "ok", audio: "", id: "ok", image: "person.jpg" };
 const wrongs = [

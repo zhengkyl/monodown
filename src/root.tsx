@@ -42,10 +42,14 @@ export default function Root() {
           <ErrorBoundary>
             <A href="/">Index</A>
             <div>
-              <Button class="btn-fill-cyan" onClick={[signIn, "github"]}>
+              <Button
+                size="md"
+                class="btn-fill-cyan"
+                onClick={[signIn, "github"]}
+              >
                 Sign In
               </Button>
-              <Button class="btn-fill-purple" onClick={signOut}>
+              <Button size="md" class="btn-fill-purple" onClick={signOut}>
                 Sign Out
               </Button>
             </div>

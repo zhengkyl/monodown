@@ -1,6 +1,6 @@
 import { Button as KButton } from "@kobalte/core";
 import { ButtonRootProps } from "@kobalte/core/dist/types/button";
-import { JSX, splitProps } from "solid-js";
+import { JSX, createSignal, splitProps } from "solid-js";
 import { twMerge } from "tailwind-merge";
 
 // const buttonVariants = cva(
@@ -35,16 +35,26 @@ const size = {
   "icon-lg": "h-16 w-18 text-3xl font-bold",
 };
 
+const buttonActive = `active:(shadow-none translate-y-[4px])`;
 export interface ButtonProps extends ButtonRootProps {
   size?: "sm" | "md" | "lg";
 }
 
 export function Button(props: ButtonProps) {
-  const [, rest] = splitProps(props, ["size", "class"]);
+  const [, rest] = splitProps(props, ["size", "class", "classList"]);
+  const [active, setActive] = createSignal(false);
   return (
     <KButton.Root
+      onTouchStart={[setActive, true]}
+      onMouseDown={[setActive, true]}
+      onTouchEnd={[setActive, false]}
+      onMouseUp={[setActive, false]}
+      class={twMerge(props.class, props.size && size[props.size])}
+      classList={{
+        [buttonActive]: active(),
+        ...props.classList,
+      }}
       {...rest}
-      class={twMerge(props.class, size[props.size ?? "md"])}
     ></KButton.Root>
   );
 }

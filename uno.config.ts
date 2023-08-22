@@ -8,9 +8,10 @@ import {
 const buttonDepth = "4px";
 
 const buttonBase =
-  `inline-flex justify-center items-center vertical-middle rounded-lg font-semibold shadow-[0_${buttonDepth}_0_var(--un-shadow-color)] mb-[${buttonDepth}] transition-all duration-75  ease-out select-none` +
-  ` active:(shadow-none translate-y-[${buttonDepth}])` +
+  `inline-flex justify-center items-center vertical-middle rounded-lg font-semibold shadow-[0_${buttonDepth}_0_var(--un-shadow-color)] mb-[${buttonDepth}] transition-all duration-0 ease-out select-none` +
   ` disabled:(shadow-none translate-y-[${buttonDepth}] pointer-events-none)`;
+
+export const buttonActive = `active:(shadow-none translate-y-[${buttonDepth}])`;
 
 export default defineConfig({
   presets: [presetWind(), presetIcons()],

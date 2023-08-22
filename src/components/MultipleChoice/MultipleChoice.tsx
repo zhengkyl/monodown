@@ -1,37 +1,18 @@
-import { For, Match, Show, createSignal } from "solid-js";
+import { For, Show, createSignal } from "solid-js";
 import { Button } from "../ui/Button";
-import { Button as KButton } from "@kobalte/core";
+// import { Button as KButton } from "@kobalte/core";
 import { SharedProps } from "../Quiz";
-import {
-  AudioPrompt,
-  ImageChoice,
-  ImagePrompt,
-  TextChoice,
-  TextPrompt,
-} from "./format";
+import { Choice, Prompt } from "./format";
 
 type Format = "grid" | "row" | "col";
 type Status = "UNANSWERED" | "RIGHT" | "WRONG";
 
-export type MultipleChoiceProps =
-  | {
-      format: "grid";
-      prompt: TextPrompt;
-      choices: (TextChoice | ImageChoice)[];
-      answerId: string;
-    }
-  | {
-      format: "row";
-      prompt: TextPrompt | AudioPrompt | ImagePrompt;
-      choices: (TextChoice | ImageChoice)[];
-      answerId: string;
-    }
-  | {
-      format: "col";
-      prompt: TextPrompt;
-      choices: TextChoice[];
-      answerId: string;
-    };
+export type MultipleChoiceProps = {
+  format: Format;
+  prompt: Prompt;
+  choices: Choice[];
+  answerId: string;
+};
 
 export default function MultipleChoice(
   props: MultipleChoiceProps & SharedProps
@@ -59,7 +40,7 @@ export default function MultipleChoice(
       <div class={`gap-4 mb-8 ${LayoutClass[props.format]}`}>
         <For each={props.choices}>
           {(choice) => (
-            <KButton.Root
+            <Button
               onPointerDown={[setSel, choice.id]}
               class="px-5 py-5"
               classList={{
@@ -69,7 +50,7 @@ export default function MultipleChoice(
             >
               {/* TODO */}
               {choice.text}
-            </KButton.Root>
+            </Button>
           )}
         </For>
       </div>
