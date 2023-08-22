@@ -1,6 +1,5 @@
 import { For, Show, createSignal } from "solid-js";
 import { Button } from "../ui/Button";
-// import { Button as KButton } from "@kobalte/core";
 import { SharedProps } from "../Quiz";
 import { Choice, Prompt } from "./format";
 
@@ -41,7 +40,7 @@ export default function MultipleChoice(
         <For each={props.choices}>
           {(choice) => (
             <Button
-              onPointerDown={[setSel, choice.id]}
+              onPointerDown={() => setSel(choice.id)}
               class="px-5 py-5"
               classList={{
                 "btn-line-indigo": choice.id !== selected(),
