@@ -2,9 +2,10 @@
 
 export const buttonBase =
   `inline-flex justify-center items-center vertical-middle rounded-lg font-semibold shadow-[0_4px_0_var(--un-shadow-color)] mb-[4px] transition-all duration-0 ease-out select-none` +
+  ` active:(shadow-none translate-y-[4px])` +
   ` disabled:(shadow-none translate-y-[4px] pointer-events-none)`;
 
-export const buttonActive = `shadow-none translate-y-[4px]`;
+export const _force_buttonActive = `shadow-none translate-y-[4px]`;
 
 export const btnFill = ([, color]) =>
   buttonBase +

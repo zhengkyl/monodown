@@ -2,7 +2,7 @@ import { Button as KButton } from "@kobalte/core";
 import { ButtonRootProps } from "@kobalte/core/dist/types/button";
 import { JSX, createSignal, splitProps } from "solid-js";
 import { twMerge } from "tailwind-merge";
-import { buttonActive } from "~/styles/button";
+import { _force_buttonActive } from "~/styles/button";
 
 const size = {
   sm: "h-10 px-4 py-2",
@@ -14,8 +14,8 @@ const size = {
 
 export interface ButtonProps extends ButtonRootProps {
   size?: "sm" | "md" | "lg";
-  onPointerDown?: JSX.EventHandler<HTMLButtonElement, PointerEvent>;
-  onPointerUp?: JSX.EventHandler<HTMLButtonElement, PointerEvent>;
+  onTouchStart?: JSX.EventHandler<HTMLButtonElement, TouchEvent>;
+  onTouchEnd?: JSX.EventHandler<HTMLButtonElement, TouchEvent>;
 }
 
 export function Button(props: ButtonProps) {
@@ -23,28 +23,28 @@ export function Button(props: ButtonProps) {
     "size",
     "class",
     "classList",
-    "onPointerDown",
-    "onPointerUp",
+    "onTouchStart",
+    "onTouchEnd",
   ]);
   /**
-   * active state works differently across browsers
+   * active state works differently across browsers and for click/touch
    * eg. a slide tap will not trigger :active on chrome android 8/22/23
-   * thus, we need custom active variable
+   * thus, we need to manually trigger an active style for touch
    */
-  const [active, setActive] = createSignal(false);
+  const [touchActive, setTouchActive] = createSignal(false);
   return (
     <KButton.Root
-      onPointerDown={(e) => {
-        setActive(true);
-        props.onPointerDown?.(e);
+      onTouchStart={(e) => {
+        setTouchActive(true);
+        props.onTouchStart?.(e);
       }}
-      onPointerUp={(e) => {
-        setActive(false);
-        props.onPointerUp?.(e);
+      onTouchEnd={(e) => {
+        setTouchActive(false);
+        props.onTouchEnd?.(e);
       }}
       class={twMerge(props.class, props.size && size[props.size])}
       classList={{
-        [buttonActive]: active(),
+        [_force_buttonActive]: touchActive(),
         ...props.classList,
       }}
       {...rest}
