@@ -2,7 +2,6 @@ import { Button as KButton } from "@kobalte/core";
 import { ButtonRootProps } from "@kobalte/core/dist/types/button";
 import { JSX, createSignal, splitProps } from "solid-js";
 import { twMerge } from "tailwind-merge";
-import { _force_buttonActive } from "~/styles/button";
 
 const size = {
   sm: "h-10 px-4 py-2",
@@ -44,7 +43,7 @@ export function Button(props: ButtonProps) {
       }}
       class={twMerge(props.class, props.size && size[props.size])}
       classList={{
-        [_force_buttonActive]: touchActive(),
+        "m-active": touchActive(),
         ...props.classList,
       }}
       {...rest}

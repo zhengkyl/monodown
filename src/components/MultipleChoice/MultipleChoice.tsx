@@ -40,7 +40,7 @@ export default function MultipleChoice(
         <For each={props.choices}>
           {(choice) => (
             <Button
-              onPointerDown={() => setSel(choice.id)}
+              onClick={() => setSel(choice.id)}
               class="px-5 py-5"
               classList={{
                 "btn-line-indigo": choice.id !== selected(),
