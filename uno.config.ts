@@ -7,25 +7,25 @@ import {
 
 import { variantMatcher } from "@unocss/preset-mini/utils";
 
-export const getButtonBase = (depth) =>
+const getButtonBase = (depth) =>
   `inline-flex justify-center items-center vertical-middle rounded-lg font-semibold shadow-[0_${depth}_0_var(--un-shadow-color)] mb-[${depth}] select-none` +
   ` d-active:(shadow-none translate-y-[${depth}])` +
   ` m-active:(shadow-none translate-y-[${depth}])` +
   ` disabled:(shadow-none translate-y-[${depth}] pointer-events-none)`;
 
-export const btnFill = ([, color]) =>
+const btnFill = ([, color]) =>
   getButtonBase("4px") +
   ` bg-${color}-500 shadow-${color}-600 text-white` +
   ` @hover:(bg-opacity-90 shadow-opacity-90)` +
   ` disabled:(bg-stone-200 text-stone-400)`;
 
-export const btnLine = ([, color]) =>
+const btnLine = ([, color]) =>
   getButtonBase("2px") +
   ` border-2 shadow-stone-200 border-stone-200 text-dark dark:text-white` +
   ` @hover:(bg-opacity-0 shadow-opacity-90 border-opacity-90 text-opacity-90)` +
   ` disabled:(bg-stone-100 text-stone-400)`;
 
-export const btnLineActive = ([, color]) =>
+const btnLineActive = ([, color]) =>
   `bg-${color}-50 shadow-${color}-500 border-${color}-500 text-${color}-600`;
 
 export default defineConfig({
@@ -57,10 +57,4 @@ export default defineConfig({
       };
     },
   ],
-  // content: {
-  //   pipeline: {
-  //     include: [/\.tsx($|\?)/, "src/**/*.ts"],
-  //     // exclude: []
-  //   },
-  // },
 });
