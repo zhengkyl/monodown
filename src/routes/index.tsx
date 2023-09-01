@@ -3,6 +3,7 @@ import { useRouteData } from "solid-start";
 import { createServerData$ } from "solid-start/server";
 import { Prompt } from "~/components/MultipleChoice/format";
 import { Question, Quiz } from "~/components/Quiz";
+import { Button } from "~/components/ui/Button";
 import { randomNChoices } from "~/util/arrays";
 
 const prompt = {
@@ -81,6 +82,14 @@ export default function Home() {
 
   return (
     <main class="flex-1">
+      <Button variant="fill" hue="indigo">
+        Test
+      </Button>
+      <Button variant="fill">Test</Button>
+      <Button variant="line">Test</Button>
+      <Button>Test</Button>
+      <Button>Test</Button>
+      <Button>Test</Button>
       <Show when={questions() != null}>
         <Quiz questions={questions()} />
       </Show>

@@ -16,7 +16,6 @@ import {
 import "@unocss/reset/tailwind.css";
 import "virtual:uno.css";
 import "./root.css";
-import { signIn, signOut } from "@auth/solid-start/client";
 import { Button } from "./components/ui/Button";
 
 export default function Root() {
@@ -41,18 +40,6 @@ export default function Root() {
         <Suspense>
           <ErrorBoundary>
             <A href="/">Index</A>
-            <div>
-              <Button
-                size="md"
-                class="btn-fill-cyan"
-                onClick={[signIn, "github"]}
-              >
-                Sign In
-              </Button>
-              <Button size="md" class="btn-fill-purple" onClick={signOut}>
-                Sign Out
-              </Button>
-            </div>
             <Routes>
               <FileRoutes />
             </Routes>

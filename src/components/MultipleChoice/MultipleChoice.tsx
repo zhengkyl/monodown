@@ -42,10 +42,8 @@ export default function MultipleChoice(
             <Button
               onClick={() => setSel(choice.id)}
               class="px-5 py-5"
-              classList={{
-                "btn-line-indigo": choice.id !== selected(),
-                [SelectedClass[status()]]: choice.id === selected(),
-              }}
+              hue={choice.id === selected() ? SelectedHue[status()] : "default"}
+              // classList={{ "text-dark": choice.id !== selected() }}
             >
               {/* TODO */}
               {choice.text}
@@ -59,7 +57,9 @@ export default function MultipleChoice(
           fallback={
             <Button
               size="sm"
-              class="btn-fill-indigo float-right w-full"
+              variant="fill"
+              hue="indigo"
+              class="float-right w-full"
               disabled={selected() == null || status() === "WRONG"}
               onClick={() =>
                 setStatus(selected() === props.answerId ? "RIGHT" : "WRONG")
@@ -71,7 +71,9 @@ export default function MultipleChoice(
         >
           <Button
             size="sm"
-            class="btn-fill-green float-right w-full"
+            variant="fill"
+            hue="green"
+            class="float-right w-full"
             onClick={props.onContinue}
           >
             Continue
@@ -82,10 +84,10 @@ export default function MultipleChoice(
   );
 }
 
-const SelectedClass: { [key in Status]: string } = {
-  UNANSWERED: "btn-line-indigo btn-line-indigo-active",
-  RIGHT: "btn-line-green btn-line-green-active",
-  WRONG: "btn-line-red btn-line-red-active",
+const SelectedHue: { [key in Status]: "indigo" | "green" | "red" } = {
+  UNANSWERED: "indigo",
+  RIGHT: "green",
+  WRONG: "red",
 };
 
 const LayoutClass: { [key in Format]: string } = {

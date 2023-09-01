@@ -51,10 +51,7 @@ export default function Kana() {
           <div>
             <Button
               size="md"
-              class="btn-line-indigo"
-              classList={{
-                "btn-line-indigo-active": mode() === "hira",
-              }}
+              hue={mode() === "hira" ? "indigo" : "default"}
               onClick={[setMode, "hira"]}
             >
               Hiragana
@@ -62,18 +59,12 @@ export default function Kana() {
             <Button
               size="md"
               class="btn-line-indigo"
-              classList={{
-                "btn-line-indigo-active": mode() === "kata",
-              }}
+              hue={mode() === "kata" ? "indigo" : "default"}
               onClick={[setMode, "kata"]}
             >
               Katakana
             </Button>
-            <Button
-              onClick={[setStarted, true]}
-              size="md"
-              class="btn-fill-indigo"
-            >
+            <Button onClick={[setStarted, true]} size="md">
               Start
             </Button>
             <div class="flex items-start gap-4">
@@ -158,10 +149,8 @@ function ToggleButtons(props: ToggleButtonsProps) {
     <>
       <Button
         size="md"
-        class="btn-line-indigo col-span-2"
-        classList={{
-          "btn-line-indigo-active": props.active.every((value) => value),
-        }}
+        class="col-span-2"
+        hue={props.active.every((value) => value) ? "indigo" : "default"}
         onClick={() => {
           const toggled = props.active.every((value) => value);
           props.setActive(Array(props.kana.length).fill(!toggled));
@@ -176,8 +165,7 @@ function ToggleButtons(props: ToggleButtonsProps) {
           return (
             <Button
               size="md"
-              class="btn-line-indigo"
-              classList={{ "btn-line-indigo-active": props.active[i()] }}
+              hue={props.active[i()] ? "indigo" : "default"}
               onClick={() => props.setActive(i(), !props.active[i()])}
             >
               {row[0][props.mode]}/{row[0].romaji[notHepburn ? 1 : 0]}
