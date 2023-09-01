@@ -10,5 +10,4 @@ export default defineConfig({
     }),
     UnoCSS(),
   ],
-  ssr: { external: ["@prisma/client"] },
 });
