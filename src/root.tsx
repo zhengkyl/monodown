@@ -16,7 +16,6 @@ import {
 import "@unocss/reset/tailwind.css";
 import "virtual:uno.css";
 import "./root.css";
-import { Button } from "./components/ui/Button";
 
 export default function Root() {
   return (
@@ -40,6 +39,7 @@ export default function Root() {
         <Suspense>
           <ErrorBoundary>
             <A href="/">Index</A>
+            <A href="/kana">Kana</A>
             <Routes>
               <FileRoutes />
             </Routes>

@@ -1,4 +1,4 @@
-import { For, Show, createSignal } from "solid-js";
+import { For, Show, createSignal, onMount } from "solid-js";
 import { SetStoreFunction, createStore } from "solid-js/store";
 import { Button } from "~/components/ui/Button";
 import { Textfield } from "~/components/ui/Textfield";
@@ -22,33 +22,30 @@ export default function Kana() {
   function rowToItems(row: KanaInfo[]) {
     return row.map((entry) => ({
       prompt: entry[mode()],
-      type: entry.romaji,
+      romaji: entry.romaji,
     }));
   }
 
   function studyList() {
     const list = [];
     mainActive.forEach((selected, i) => {
-      if (!selected) return;
-      list.push(...rowToItems(mainKana[i]));
+      if (selected) list.push(...rowToItems(mainKana[i]));
     });
     dakutenActive.forEach((selected, i) => {
-      if (!selected) return;
-      list.push(...rowToItems(mainKana[i]));
+      if (selected) list.push(...rowToItems(dakutenKana[i]));
     });
     comboActive.forEach((selected, i) => {
-      if (!selected) return;
-      list.push(...rowToItems(mainKana[i]));
+      if (selected) list.push(...rowToItems(comboKana[i]));
     });
     return list;
   }
 
   return (
-    <main>
+    <main class="max-w-screen-sm mx-auto">
       <Show
         when={started()}
         fallback={
-          <div>
+          <>
             <Button
               size="md"
               hue={mode() === "hira" ? "indigo" : "default"}
@@ -64,7 +61,13 @@ export default function Kana() {
             >
               Katakana
             </Button>
-            <Button onClick={[setStarted, true]} size="md">
+            <Button
+              onClick={[setStarted, true]}
+              size="md"
+              disabled={[...mainActive, ...dakutenActive, ...comboActive].every(
+                (e) => !e
+              )}
+            >
               Start
             </Button>
             <div class="flex items-start gap-4">
@@ -96,17 +99,18 @@ export default function Kana() {
                 />
               </div>
             </div>
-          </div>
+          </>
         }
       >
-        <KanaQuiz studyList={studyList()} />
+        <KanaQuiz studyList={studyList()} onFinish={() => setStarted(false)} />
       </Show>
     </main>
   );
 }
 
 type KanaQuizProps = {
-  studyList: { prompt: string; type: string[] }[];
+  studyList: { prompt: string; romaji: string[] }[];
+  onFinish: () => void;
 };
 
 function KanaQuiz(props: KanaQuizProps) {
@@ -114,25 +118,45 @@ function KanaQuiz(props: KanaQuizProps) {
 
   const [value, setValue] = createSignal("");
 
+  let textfield: HTMLInputElement;
+
+  onMount(() => {
+    textfield.focus();
+  });
+
   return (
-    <div>
-      <Show when={index() < props.studyList.length}>
-        {props.studyList[index()].prompt}
+    <Show
+      when={index() < props.studyList.length}
+      fallback={
+        <div class="flex gap-4">
+          <Button variant="fill" hue="green" onClick={props.onFinish}>
+            Finish
+          </Button>
+          <Button variant="fill" hue="indigo" onClick={[setIndex, 0]}>
+            Try again
+          </Button>
+        </div>
+      }
+    >
+      <div class="flex flex-col gap-8 items-center">
+        <div class="text-9xl">{props.studyList[index()].prompt}</div>
         <Textfield
           value={value()}
           onChange={setValue}
+          ref={textfield}
+          class="w-24"
           onKeyPress={(e) => {
             if (e.key !== "Enter" && e.key !== " ") return;
 
             e.preventDefault();
-            if (props.studyList[index()].type.includes(value())) {
+            if (props.studyList[index()].romaji.includes(value())) {
               setIndex(index() + 1);
               setValue("");
             }
           }}
         />
-      </Show>
-    </div>
+      </div>
+    </Show>
   );
 }
 
