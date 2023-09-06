@@ -1,6 +1,7 @@
 export class StrokeAnimator {
-  private paths: NodeListOf<SVGPathElement>;
-  private index: number;
+  private groups: SVGPathElement[][];
+  private groupIndex: number;
+  private pathIndex: number;
   private scale: number;
   private requestFrameId: number;
 
@@ -9,23 +10,36 @@ export class StrokeAnimator {
   private currStart: number;
 
   constructor(svgEl: SVGSVGElement) {
-    this.paths = svgEl.querySelectorAll("path");
-    this.index = this.paths.length;
+    this.groups = [];
+    svgEl.querySelector("g").childNodes.forEach((node) => {
+      if (node.nodeName === "g")
+        this.groups.push(Array.from(node.childNodes) as SVGPathElement[]);
+      else if (node.nodeName === "path")
+        this.groups.push([node as SVGPathElement]);
+    });
 
-    this.scale = svgEl.width.baseVal.value;
+    this.groupIndex = this.groups.length;
+    this.pathIndex = 0;
 
-    for (let i = 0; i < this.index; i++) {
-      const path = this.paths[i];
-      const length = path.getTotalLength();
-      path.style.strokeDasharray = length.toString();
+    this.scale = svgEl.viewBox.baseVal.width;
+
+    for (let i = 0; i < this.groupIndex; i++) {
+      const group = this.groups[i];
+      for (let j = 0; j < group.length; j++) {
+        const path = group[j];
+        const length = path.getTotalLength();
+        path.style.strokeDasharray = length.toString();
+      }
     }
   }
 
   private setup() {
-    for (let i = 0; i < this.index; i++) {
-      const path = this.paths[i];
-      path.style.strokeDashoffset = path.style.strokeDasharray;
-      // path.style.display = "none";
+    for (let i = 0; i < this.groupIndex; i++) {
+      const group = this.groups[i];
+      for (let j = 0; j < group.length; j++) {
+        const path = group[j];
+        path.style.strokeDashoffset = path.style.strokeDasharray;
+      }
     }
   }
 
@@ -33,20 +47,27 @@ export class StrokeAnimator {
     // Finish previous animation immediately
     if (this.requestFrameId) {
       cancelAnimationFrame(this.requestFrameId);
-      const path = this.paths[this.index];
-      path.style.strokeDashoffset = "0";
-      this.index++;
       this.requestFrameId = null;
+
+      const group = this.groups[this.groupIndex];
+      for (; this.pathIndex < group.length; this.pathIndex++) {
+        const path = group[this.pathIndex];
+        path.style.strokeDashoffset = "0";
+      }
+
+      this.groupIndex++;
       return;
     }
 
-    if (this.index === this.paths.length) {
+    if (this.groupIndex === this.groups.length) {
       this.setup();
-      this.index = 0;
+      this.groupIndex = 0;
     }
 
-    const path = this.paths[this.index];
-    // path.style.display = "block";
+    this.pathIndex = 0;
+
+    const group = this.groups[this.groupIndex];
+    const path = group[this.pathIndex];
 
     this.currLength = path.getTotalLength();
     this.currOffset = this.currLength;
@@ -56,20 +77,29 @@ export class StrokeAnimator {
   }
 
   private pathFrame(time) {
-    const path = this.paths[this.index];
+    const group = this.groups[this.groupIndex];
+    const path = group[this.pathIndex];
 
     this.currOffset = Math.max(
-      this.currLength - this.scale * ((time - this.currStart) / 500),
+      this.currLength - this.scale * ((time - this.currStart) / 250),
       0
     );
-    console.log(this.currOffset);
 
     path.style.strokeDashoffset = this.currOffset.toString();
 
     if (this.currOffset === 0) {
-      this.index++;
-      this.requestFrameId = null;
-      return;
+      this.pathIndex++;
+
+      if (this.pathIndex === group.length) {
+        this.requestFrameId = null;
+        this.groupIndex++;
+        return;
+      }
+
+      const path = group[this.pathIndex];
+      this.currLength = path.getTotalLength();
+      this.currOffset = this.currLength;
+      this.currStart = performance.now();
     }
 
     this.requestFrameId = requestAnimationFrame(this.pathFrame.bind(this));
