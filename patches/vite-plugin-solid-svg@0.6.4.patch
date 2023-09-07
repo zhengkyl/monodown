@@ -1,0 +1,26 @@
+diff --git a/dist/cjs/index.cjs b/dist/cjs/index.cjs
+index e4b2ab67d6e4a6f840eb4b4b77a2ce4cfc01a800..1fb6e8d2deb2683a5320d0e80472f1c11bfae82f 100644
+--- a/dist/cjs/index.cjs
++++ b/dist/cjs/index.cjs
+@@ -4,7 +4,7 @@ var promises = require('node:fs/promises');
+ var svgo = require('svgo');
+ 
+ async function compileSvg(source, compilerOptions) {
+-  let svgWithProps = source.replace(/([{}])/g, "{'$1'}").replace(/<!--\s*([\s\S]*?)\s*-->/g, '{/* $1 */}').replace(/(?<=<svg.*?)(>)/i, '{...props}>');
++  let svgWithProps = source.replace(/([{}])/g, "{'$1'}").replace(/<!--\s*([\s\S]*?)\s*-->/g, '{/* $1 */}').replace(/(<svg[^>]*)(>)/i, '$1{...props}>');
+   if (compilerOptions.allow_props_children) {
+     svgWithProps = svgWithProps.replace(/\{'\{'\}\s*(props\.children)\s*\{'\}'\}/g, '{$1}');
+   }
+diff --git a/dist/es/index.mjs b/dist/es/index.mjs
+index a606d7251337eff179797984945a59e660158956..448961e4c0f47fac22db8eec4c4978d549f2f200 100644
+--- a/dist/es/index.mjs
++++ b/dist/es/index.mjs
+@@ -2,7 +2,7 @@ import { readFile } from 'node:fs/promises';
+ import { loadConfig, optimize } from 'svgo';
+ 
+ async function compileSvg(source, compilerOptions) {
+-  let svgWithProps = source.replace(/([{}])/g, "{'$1'}").replace(/<!--\s*([\s\S]*?)\s*-->/g, '{/* $1 */}').replace(/(?<=<svg.*?)(>)/i, '{...props}>');
++  let svgWithProps = source.replace(/([{}])/g, "{'$1'}").replace(/<!--\s*([\s\S]*?)\s*-->/g, '{/* $1 */}').replace(/(<svg[^>]*)(>)/i, '$1{...props}>');
+   if (compilerOptions.allow_props_children) {
+     svgWithProps = svgWithProps.replace(/\{'\{'\}\s*(props\.children)\s*\{'\}'\}/g, '{$1}');
+   }

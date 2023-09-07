@@ -4,6 +4,12 @@ it's gonna be good i swear
 
 ## todos
 
+- [ ] make svgs for all kana
+
+  - [ ] automate somehow + guide
+  - [ ] unique ids for clip paths? generate component?
+  - [ ] css/js snippet for easy auto play
+
 - [ ] multiple choice
 
   - [x] button

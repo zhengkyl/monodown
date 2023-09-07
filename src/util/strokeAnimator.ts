@@ -11,7 +11,7 @@ export class StrokeAnimator {
 
   constructor(svgEl: SVGSVGElement) {
     this.groups = [];
-    svgEl.querySelector("g").childNodes.forEach((node) => {
+    svgEl.querySelector(".stroke-paths").childNodes.forEach((node) => {
       if (node.nodeName === "g")
         this.groups.push(Array.from(node.childNodes) as SVGPathElement[]);
       else if (node.nodeName === "path")
@@ -56,7 +56,9 @@ export class StrokeAnimator {
       }
 
       this.groupIndex++;
-      return;
+
+      // Don't move on if it's the last stroke
+      if (this.groupIndex === this.groups.length) return;
     }
 
     if (this.groupIndex === this.groups.length) {

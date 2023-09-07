@@ -1,5 +1,6 @@
 import vercel from "solid-start-vercel";
 import solid from "solid-start/vite";
+import solidSvg from "vite-plugin-solid-svg";
 import UnoCSS from "unocss/vite";
 import { defineConfig } from "vite";
 
@@ -9,5 +10,10 @@ export default defineConfig({
       adapter: vercel({}),
     }),
     UnoCSS(),
+    solidSvg({
+      svgo: {
+        enabled: false, // figure out later
+      },
+    }),
   ],
 });
