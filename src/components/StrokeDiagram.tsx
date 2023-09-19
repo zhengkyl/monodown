@@ -1,16 +1,18 @@
 import { Button } from "~/components/ui/Button";
 import { createSignal, onMount } from "solid-js";
 import { StrokeAnimator } from "~/util/strokeAnimator";
+
 import ASVG from "~/assets/kana/あ.svg";
+// import "./StrokeDiagram.css";
 
 export function StrokeDiagram() {
   let svg: SVGSVGElement;
 
   const [animator, setAnimator] = createSignal<StrokeAnimator>();
 
-  onMount(() => {
-    setAnimator(new StrokeAnimator(svg));
-  });
+  // onMount(() => {
+  //   setAnimator(new StrokeAnimator(svg));
+  // });
 
   return (
     <div>
