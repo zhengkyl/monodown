@@ -4,7 +4,7 @@ import { Button } from "~/components/ui/Button";
 import { Textfield } from "~/components/ui/Textfield";
 import { mainKana, dakutenKana, comboKana, KanaInfo } from "~/data/kana";
 
-export default function Kana() {
+export default function Test() {
   const [mode, setMode] = createSignal<"hira" | "kata">("hira");
 
   const [started, setStarted] = createSignal(false);

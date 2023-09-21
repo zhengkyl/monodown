@@ -38,8 +38,10 @@ export default function Root() {
       <Body class="flex flex-col">
         <Suspense>
           <ErrorBoundary>
-            <A href="/">Index</A>
-            <A href="/kana">Kana</A>
+            <A href="/">Home</A>
+            <A href="/test">Test</A>
+            <A href="/learn">Learn</A>
+            <A href="/components">Components</A>
             <Routes>
               <FileRoutes />
             </Routes>
