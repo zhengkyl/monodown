@@ -1,108 +1,151 @@
-export class StrokeAnimator {
-  private groups: SVGPathElement[][];
-  private groupIndex: number;
-  private scale: number;
-  private requestFrameId: number;
+type StrokerOptions = {
+  time: number;
+  gap: number;
+  delay: number;
+};
+export function strokeAnimator(
+  svgEl: SVGSVGElement,
+  options: StrokerOptions = { time: 300, gap: 400, delay: 300 }
+) {
+  const strokes = [];
 
-  private currOffset: number;
-  private currLength: number;
-  private currStart: number;
-  private animateAll: boolean;
-
-  constructor(svgEl: SVGSVGElement) {
-    this.groups = [];
-    svgEl
-      .querySelectorAll('path[clip-path][style^="--i:"]')
-      .forEach((e: SVGPathElement) => {
-        const index = parseInt(getComputedStyle(e).getPropertyValue("--i"));
-        if (index == this.groups.length) {
-          this.groups.push([]);
-        }
-        this.groups[index].push(e);
-      });
-
-    this.groupIndex = this.groups.length;
-
-    this.scale = svgEl.viewBox.baseVal.width;
-
-    for (let i = 0; i < this.groupIndex; i++) {
-      const group = this.groups[i];
-      for (let j = 0; j < group.length; j++) {
-        const path = group[j];
-        const length = path.getTotalLength();
-        path.style.strokeDasharray = length.toString();
+  svgEl
+    .querySelectorAll("[data-strokesvg] > g:last-of-type > path")
+    .forEach((e: SVGPathElement) => {
+      const index = parseInt(getComputedStyle(e).getPropertyValue("--i"));
+      if (index == strokes.length) {
+        strokes.push([]);
       }
+      strokes[index].push(e);
+    });
+
+  strokes.forEach((strokePaths) => {
+    strokePaths.forEach((path) => {
+      const length = path.getTotalLength();
+      path.style.strokeDasharray = length.toString();
+    });
+  });
+
+  let strokeIndex = strokes.length;
+  let requestFrameId = null;
+  let timeoutId = null;
+
+  function skipOne() {
+    const strokePaths = strokes[strokeIndex];
+    strokePaths.forEach((path) => {
+      path.style.strokeDashoffset = "0";
+    });
+    strokeIndex++;
+  }
+
+  function prev() {
+    stop();
+
+    if (strokeIndex === strokes.length) {
+      strokeIndex--;
+    } else if (
+      strokes[strokeIndex][0].style.strokeDashoffset ===
+      strokes[strokeIndex][0].style.strokeDasharray
+    ) {
+      if (strokeIndex === 0) return;
+      strokeIndex--;
+    }
+
+    const strokePaths = strokes[strokeIndex];
+
+    strokePaths.forEach((path) => {
+      path.style.strokeDashoffset = path.style.strokeDasharray;
+    });
+  }
+
+  function next() {
+    stop();
+    if (strokeIndex < strokes.length) {
+      skipOne();
     }
   }
 
-  private setup() {
-    for (let i = 0; i < this.groupIndex; i++) {
-      const group = this.groups[i];
-      for (let j = 0; j < group.length; j++) {
-        const path = group[j];
-        path.style.strokeDashoffset = path.style.strokeDasharray;
-      }
+  function stop() {
+    if (timeoutId != null) {
+      clearTimeout(timeoutId);
+      timeoutId = null;
+    } else if (requestFrameId != null) {
+      cancelAnimationFrame(requestFrameId);
+      requestFrameId = null;
     }
   }
 
-  public animatePath(animateAll = false) {
-    this.animateAll = animateAll;
-    // Finish previous animation immediately
-    if (this.requestFrameId) {
-      cancelAnimationFrame(this.requestFrameId);
-      this.requestFrameId = null;
-
-      const group = this.groups[this.groupIndex];
-      for (let i = 0; i < group.length; i++) {
-        const path = group[i];
-        path.style.strokeDashoffset = "0";
+  function play() {
+    if (timeoutId != null || requestFrameId != null) {
+      // state = playing
+      stop();
+      skipOne();
+      if (strokeIndex < strokes.length) {
+        startNextStroke(options.delay);
       }
-
-      this.groupIndex++;
-
-      // Don't move on if it's the last stroke
-      if (this.groupIndex === this.groups.length) return;
-    }
-
-    if (this.groupIndex === this.groups.length) {
-      this.setup();
-      this.groupIndex = 0;
-    }
-
-    const group = this.groups[this.groupIndex];
-
-    this.currLength = group[0].getTotalLength();
-    this.currOffset = this.currLength;
-    this.currStart = performance.now();
-
-    for (let i = 0; i < group.length; i++) {
-      const path = group[i];
-      path.style.strokeDashoffset = this.currLength.toString();
-    }
-
-    this.requestFrameId = requestAnimationFrame(this.pathFrame.bind(this));
-  }
-
-  private pathFrame(time) {
-    const group = this.groups[this.groupIndex];
-
-    this.currOffset = Math.max(
-      this.currLength - this.scale * ((time - this.currStart) / 250),
-      0
-    );
-
-    for (const path of group) {
-      path.style.strokeDashoffset = this.currOffset.toString();
-    }
-
-    if (this.currOffset === 0) {
-      this.requestFrameId = null;
-      this.groupIndex++;
-      if (this.animateAll && this.groupIndex < this.groups.length)
-        this.animatePath(true);
       return;
     }
 
-    this.requestFrameId = requestAnimationFrame(this.pathFrame.bind(this));
+    if (strokeIndex === strokes.length) {
+      // state = not started
+      clearStrokes();
+      startNextStroke(options.delay);
+    } else {
+      // state = stopped
+      startNextStroke(0);
+    }
   }
+
+  function clearStrokes() {
+    strokes.forEach((strokePaths) => {
+      strokePaths.forEach((path) => {
+        path.style.strokeDashoffset = path.style.strokeDasharray;
+      });
+    });
+    strokeIndex = 0;
+  }
+
+  let currOffset;
+  let currPrevTime;
+
+  function startNextStroke(timeout) {
+    const strokePaths = strokes[strokeIndex];
+
+    currOffset = parseInt(strokePaths[0].style.strokeDashoffset);
+
+    timeoutId = setTimeout(() => {
+      timeoutId = null;
+      currPrevTime = performance.now();
+      requestFrameId = requestAnimationFrame(pathFrame);
+    }, timeout);
+  }
+
+  const scale = svgEl.viewBox.baseVal.width;
+  const speed = scale / options.time;
+
+  function pathFrame(time) {
+    const strokePaths = strokes[strokeIndex];
+
+    currOffset = Math.max(currOffset - speed * (time - currPrevTime), 0);
+    currPrevTime = time;
+
+    strokePaths.forEach((path) => {
+      path.style.strokeDashoffset = currOffset.toString();
+    });
+
+    if (currOffset === 0) {
+      requestFrameId = null;
+      strokeIndex++;
+      if (strokeIndex < strokes.length) startNextStroke(options.gap);
+    } else {
+      requestFrameId = requestAnimationFrame(pathFrame);
+    }
+  }
+
+  return {
+    play,
+    stop,
+    next,
+    prev,
+  };
 }

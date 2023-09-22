@@ -10,8 +10,7 @@ import IAudio from "~/assets/audio/i.mp3";
 import UAudio from "~/assets/audio/u.mp3";
 import EAudio from "~/assets/audio/e.mp3";
 import OAudio from "~/assets/audio/o.mp3";
-import { Textfield } from "~/components/ui/Textfield";
-import { StrokeAnimator } from "~/util/strokeAnimator";
+import { strokeAnimator } from "~/util/strokeAnimator";
 import { Button } from "~/components/ui/Button";
 
 export default function Learn() {
@@ -65,10 +64,11 @@ const classes = [
 function Door(props) {
   let svg: SVGSVGElement;
 
-  const [animator, setAnimator] = createSignal<StrokeAnimator>();
+  const [animator, setAnimator] =
+    createSignal<ReturnType<typeof strokeAnimator>>();
 
   onMount(() => {
-    setAnimator(new StrokeAnimator(svg));
+    setAnimator(strokeAnimator(svg));
   });
 
   return (
@@ -93,7 +93,7 @@ function Door(props) {
         </Button>
         <Button
           onClick={() => {
-            animator()?.animatePath(true);
+            animator()?.play();
           }}
           size="icon-lg"
         >
