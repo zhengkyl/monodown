@@ -16,6 +16,8 @@ import {
 import "@unocss/reset/tailwind.css";
 import "virtual:uno.css";
 import "./root.css";
+import { Button } from "./components/ui/Button";
+import { As } from "@kobalte/core";
 
 export default function Root() {
   return (
@@ -35,16 +37,36 @@ export default function Root() {
         />
         <link rel="apple-touch-icon" href="/apple-touch-icon.png" />
       </Head>
-      <Body class="flex flex-col">
+      <Body class="flex flex-col h-screen">
         <Suspense>
           <ErrorBoundary>
-            <A href="/">Home</A>
-            <A href="/test">Test</A>
-            <A href="/learn">Learn</A>
-            <A href="/components">Components</A>
-            <Routes>
-              <FileRoutes />
-            </Routes>
+            <div>
+              <Button asChild>
+                <As component={A} href="/">
+                  Home
+                </As>
+              </Button>
+              <Button asChild>
+                <As component={A} href="/test">
+                  Test
+                </As>
+              </Button>
+              <Button asChild>
+                <As component={A} href="/learn">
+                  Learn
+                </As>
+              </Button>
+              <Button asChild>
+                <As component={A} href="/components">
+                  Components
+                </As>
+              </Button>
+            </div>
+            <div>
+              <Routes>
+                <FileRoutes />
+              </Routes>
+            </div>
           </ErrorBoundary>
         </Suspense>
         <Scripts />
