@@ -4,7 +4,7 @@ import { twMerge } from "tailwind-merge";
 import { cva, type VariantProps } from "class-variance-authority";
 import { ButtonRootProps } from "@kobalte/core/dist/types/button";
 
-const buttonVariants = cva(
+export const buttonVariants = cva(
   [
     "inline-flex",
     "justify-center",
@@ -15,12 +15,8 @@ const buttonVariants = cva(
     "select-none",
     "[box-shadow:0_var(--btn-depth)_0_var(--un-shadow-color)]", // use arbitary to avoid tailwind-merge conflict
     "mb-[var(--btn-depth)]",
-    `d-active:(shadow-none translate-y-[var(--btn-travel)])`,
-    `m-active:(shadow-none translate-y-[var(--btn-travel)])`,
-    `disabled:(shadow-none translate-y-[var(--btn-travel)] pointer-events-none)`,
 
     "[--btn-depth:3px]",
-    "[--btn-travel:3px]",
     "[--btn-edge-opacity:1]",
     "[--btn-edge-color:hsl(var(--btn-h)_var(--btn-s)_calc(var(--btn-l)-5%)/var(--btn-edge-opacity))]",
     "[--un-shadow-color:var(--btn-edge-color)]",
@@ -31,17 +27,12 @@ const buttonVariants = cva(
         fill: [
           "bg-[hsl(var(--btn-h)_var(--btn-s)_var(--btn-l))]",
           "text-white",
-          "@hover:(bg-opacity-95 [--btn-edge-opacity:.95])",
-          "disabled:(bg-stone-200 text-stone-400 shadow-stone-400)",
         ],
         line: [
-          "bg-[hsl(var(--btn-h)_var(--btn-s)_var(--btn-l))]",
-          "bg-opacity-5",
+          "bg-white",
           "border-[var(--btn-edge-color)]",
           "border-2",
           "text-[var(--btn-edge-color)]",
-          "@hover:(bg-opacity-0 text-opacity-80 [--btn-edge-opacity:.8])",
-          "disabled:(bg-stone-100 text-stone-300 border-stone-300)",
         ],
       },
       size: {
@@ -58,8 +49,33 @@ const buttonVariants = cva(
         stone: "[--btn-h:25] [--btn-s:5%] [--btn-l:45%]",
         default: "[--btn-h:0] [--btn-s:0%] [--btn-l:83%]",
       },
+      element: {
+        button: [
+          "[--btn-travel:3px]",
+          `d-active:(shadow-none translate-y-[var(--btn-travel)])`,
+          `m-active:(shadow-none translate-y-[var(--btn-travel)])`,
+          `disabled:(shadow-none translate-y-[var(--btn-travel)] pointer-events-none)`,
+        ],
+        block: "",
+      },
     },
     compoundVariants: [
+      {
+        variant: "line",
+        element: "button",
+        class: [
+          "@hover:(bg-opacity-0 text-opacity-80 [--btn-edge-opacity:.8])",
+          "disabled:(bg-stone-100 text-stone-300 border-stone-300)",
+        ],
+      },
+      {
+        variant: "fill",
+        element: "button",
+        class: [
+          "@hover:(bg-opacity-95 [--btn-edge-opacity:.95])",
+          "disabled:(bg-stone-200 text-stone-400 shadow-stone-400)",
+        ],
+      },
       {
         variant: "line",
         hue: "default",
@@ -70,6 +86,7 @@ const buttonVariants = cva(
       variant: "line",
       size: "md",
       hue: "default",
+      element: "button",
     },
   }
 );

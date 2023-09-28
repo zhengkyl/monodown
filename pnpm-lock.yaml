@@ -22,6 +22,9 @@ dependencies:
   '@tanstack/solid-table':
     specifier: ^8.9.3
     version: 8.9.3(solid-js@1.7.9)
+  '@thisbeyond/solid-dnd':
+    specifier: ^0.7.4
+    version: 0.7.4(solid-js@1.7.9)
   '@unocss/reset':
     specifier: ^0.55.0
     version: 0.55.0
@@ -1925,6 +1928,14 @@ packages:
   /@tanstack/table-core@8.9.3:
     resolution: {integrity: sha512-NpHZBoHTfqyJk0m/s/+CSuAiwtebhYK90mDuf5eylTvgViNOujiaOaxNDxJkQQAsVvHWZftUGAx1EfO1rkKtLg==}
     engines: {node: '>=12'}
+    dev: false
+
+  /@thisbeyond/solid-dnd@0.7.4(solid-js@1.7.9):
+    resolution: {integrity: sha512-jgV9EtR3gAtVsILG8p1OAGrhHIgnK4W04YxpyLgJRCDKEFYQWuDrMdUe8F5Kc6pcVXlC4IMXr4cB8fS2Ut3/Ow==}
+    peerDependencies:
+      solid-js: ^1.5
+    dependencies:
+      solid-js: 1.7.9
     dev: false
 
   /@trysound/sax@0.2.0:

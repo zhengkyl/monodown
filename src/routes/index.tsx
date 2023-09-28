@@ -1,6 +1,7 @@
 import { Show } from "solid-js";
 import { useRouteData } from "solid-start";
 import { createServerData$ } from "solid-start/server";
+import FreeResponse from "~/components/FreeResponse/FreeResponse";
 import { Prompt } from "~/components/MultipleChoice/format";
 import { Question, Quiz } from "~/components/Quiz";
 import { randomNChoices } from "~/util/arrays";
@@ -81,9 +82,10 @@ export default function Home() {
 
   return (
     <main class="flex-1">
-      <Show when={questions() != null}>
+      {/* <Show when={questions() != null}>
         <Quiz questions={questions()} />
-      </Show>
+      </Show> */}
+      <FreeResponse />
     </main>
   );
 }
