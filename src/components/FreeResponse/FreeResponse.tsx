@@ -60,8 +60,7 @@ function Bank(props) {
 export default function FreeResponse() {
   const [containers, setContainers] = createStore({
     response: [],
-    // bank: ["Are", "Nice", "Hi", "to", "How", "meet", "you"],
-    bank: ["Are", "Nice"],
+    bank: ["Are", "Nice", "Hi", "to", "How", "meet", "you"],
   });
 
   const onDragOver: DragEventHandler = ({ draggable, droppable }) => {
@@ -75,22 +74,11 @@ export default function FreeResponse() {
 
   const move = (draggable, droppable) => {
     if (draggable.id === droppable.id) return;
-    // console.log(
-    //   "dragover",
-    //   draggable.id,
-    //   droppable.id,
-    //   containers.bank.indexOf(draggable.id),
-    //   containers.bank.indexOf(droppable.id),
-    //   containers.bank.toString()
-    // );
     const dragCon = getContainer(draggable.id);
     const dropCon = isContainer(droppable.id)
       ? droppable.id
       : getContainer(droppable.id);
 
-    // if (!dragEnd && dragCon === dropCon) return;
-
-    console.log("move", draggable.id, droppable.id);
     let i = containers[dropCon].indexOf(droppable.id);
     if (i === -1) i = containers[dropCon].length;
 
@@ -101,31 +89,8 @@ export default function FreeResponse() {
         draggable.id,
         ...ids.slice(i),
       ]);
-      // console.log(
-      //   "dragOVER",
-      //   draggable.id,
-      //   droppable.id,
-      //   containers.bank.indexOf(draggable.id),
-      //   containers.bank.indexOf(droppable.id),
-      //   containers.bank.toString()
-      // );
     });
   };
-
-  // var closestCenter = (draggable, droppables, context) => {
-  //   const point1 = draggable.transformed.center;
-  //   const collision = { distance: Infinity, droppable: null };
-  //   for (const droppable of droppables) {
-  //     const distance = distanceBetweenPoints(point1, droppable.layout.center);
-  //     if (distance < collision.distance) {
-  //       collision.distance = distance;
-  //       collision.droppable = droppable;
-  //     } else if (distance === collision.distance && droppable.id === context.activeDroppableId) {
-  //       collision.droppable = droppable;
-  //     }
-  //   }
-  //   return collision.droppable;
-  // };
 
   const closestContainerOrItem = (draggable, droppables, context) => {
     const closestContainer = closestCenter(
@@ -142,30 +107,8 @@ export default function FreeResponse() {
     if (!closestItem) {
       return closestContainer;
     }
-    // console.log(
-    //   draggable.id,
-    //   "closest to",
-    //   closestItem.id,
-    //   " : ",
-    //   // draggable.node.getBoundingClientRect().x,
-    //   // filtered[0].id,
-    //   // filtered[0].node.getBoundingClientRect().x,
-    //   // filtered[1].id,
-    //   // filtered[1].node.getBoundingClientRect().x
-    //   "draggable",
-    //   draggable.transformed.center.x,
-    //   filtered[0].id,
-    //   filtered[0].layout.center.x,
-    //   filtered[1].id,
-    //   filtered[1].layout.center.x
-    //   // draggable.id,
-    //   // draggable.node.getBoundingClientRect().x,
-    //   // closestItem.id,
-    //   // closestItem.node.getBoundingClientRect().x
-    // );
 
     if (getContainer(draggable.id) !== closestContainer.id) {
-      console.log("should not happen");
       const isLastItem =
         containerItemIds.indexOf(closestItem.id as number) ===
         containerItemIds.length - 1;
@@ -189,7 +132,6 @@ export default function FreeResponse() {
       on(
         [() => containers.bank, () => containers.response],
         () => {
-          console.log("RECOMPUTE");
           recomputeLayouts();
         },
         { defer: true }

@@ -82,9 +82,9 @@ export default function Home() {
 
   return (
     <main class="flex-1">
-      {/* <Show when={questions() != null}>
+      <Show when={questions() != null}>
         <Quiz questions={questions()} />
-      </Show> */}
+      </Show>
       <FreeResponse />
     </main>
   );
