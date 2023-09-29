@@ -12,6 +12,7 @@ import {
 import { For, batch, createEffect, on } from "solid-js";
 import { buttonVariants } from "../ui/Button";
 import { createStore } from "solid-js/store";
+import { createAutoAnimateDirective } from "@formkit/auto-animate/solid";
 
 declare module "solid-js" {
   namespace JSX {
@@ -27,8 +28,10 @@ function Item(props) {
   return (
     <div
       use:sortable
-      class={buttonVariants({ variant: "line", element: "block" })}
-      classList={{ "opacity-25": sortable.isActiveDraggable }}
+      class={buttonVariants({ variant: "line", element: "block", size: "sm" })}
+      classList={{
+        invisible: sortable.isActiveDraggable,
+      }}
     >
       {props.id}
     </div>
@@ -37,8 +40,13 @@ function Item(props) {
 
 function Response(props) {
   const droppable = createDroppable("response");
+  const autoAnimate = createAutoAnimateDirective();
   return (
-    <div use:droppable class="bg-red min-h-20 flex flex-wrap gap-x-1 gap-y-2">
+    <div
+      use:autoAnimate
+      use:droppable
+      class="border p-6 rounded-lg bg-stone-100 min-h-20 flex flex-wrap gap-x-1 gap-y-2"
+    >
       <SortableProvider ids={props.items}>
         <For each={props.items}>{(item) => <Item id={item}></Item>}</For>
       </SortableProvider>
@@ -46,10 +54,15 @@ function Response(props) {
   );
 }
 
-function Bank(props) {
-  const droppable = createDroppable("bank");
+function WordBank(props) {
+  const droppable = createDroppable("wordBank");
+  const autoAnimate = createAutoAnimateDirective();
   return (
-    <div use:droppable class="bg-blue min-h-20 flex flex-wrap gap-x-1 gap-y-2">
+    <div
+      use:autoAnimate
+      use:droppable
+      class="border p-6 rounded-lg min-h-20 flex flex-wrap gap-x-1 gap-y-2"
+    >
       <SortableProvider ids={props.items}>
         <For each={props.items}>{(item) => <Item id={item}></Item>}</For>
       </SortableProvider>
@@ -58,9 +71,9 @@ function Bank(props) {
 }
 
 export default function FreeResponse() {
-  const [containers, setContainers] = createStore({
+  const [boxes, setBoxes] = createStore({
     response: [],
-    bank: ["Are", "Nice", "Hi", "to", "How", "meet", "you"],
+    wordBank: ["Are", "Nice", "Hi", "to", "How", "meet", "you"],
   });
 
   const onDragOver: DragEventHandler = ({ draggable, droppable }) => {
@@ -68,23 +81,21 @@ export default function FreeResponse() {
     move(draggable, droppable);
   };
 
-  const isContainer = (id) => id === "bank" || id === "response";
-  const getContainer = (id) =>
-    containers["bank"].includes(id) ? "bank" : "response";
+  const isBox = (id) => id === "wordBank" || id === "response";
+  const getBox = (id) =>
+    boxes["wordBank"].includes(id) ? "wordBank" : "response";
 
   const move = (draggable, droppable) => {
     if (draggable.id === droppable.id) return;
-    const dragCon = getContainer(draggable.id);
-    const dropCon = isContainer(droppable.id)
-      ? droppable.id
-      : getContainer(droppable.id);
+    const dragBoxId = getBox(draggable.id);
+    const dropBoxId = isBox(droppable.id) ? droppable.id : getBox(droppable.id);
 
-    let i = containers[dropCon].indexOf(droppable.id);
-    if (i === -1) i = containers[dropCon].length;
+    let i = boxes[dropBoxId].indexOf(droppable.id);
+    if (i === -1) i = boxes[dropBoxId].length;
 
     batch(() => {
-      setContainers(dragCon, (ids) => ids.filter((id) => id !== draggable.id));
-      setContainers(dropCon, (ids) => [
+      setBoxes(dragBoxId, (ids) => ids.filter((id) => id !== draggable.id));
+      setBoxes(dropBoxId, (ids) => [
         ...ids.slice(0, i),
         draggable.id,
         ...ids.slice(i),
@@ -92,33 +103,59 @@ export default function FreeResponse() {
     });
   };
 
-  const closestContainerOrItem = (draggable, droppables, context) => {
-    const closestContainer = closestCenter(
+  const targetBoxOrItem = (draggable, droppables, context) => {
+    const responseBox = droppables.find(
+      (droppable) => droppable.id === "response"
+    );
+    const wordBankBox = droppables.find(
+      (droppable) => droppable.id === "wordBank"
+    );
+
+    // Idea: b/c can't animate end position or click, maybe reduce drag distance
+    // this moves box once as soon as outside box
+    //
+    // let targetBox;
+    // // need drag origin, otherwise flicker back and forth
+    // if (getBox(draggable.id) === "wordBank") {
+    //   // transform's top and bottom are distance from top
+    //   if (draggable.transformed.bottom < wordBankBox.layout.top) {
+    //     targetBox = responseBox;
+    //   } else {
+    //     targetBox = wordBankBox;
+    //   }
+    // } else {
+    //   if (draggable.transformed.top > responseBox.layout.bottom) {
+    //     targetBox = wordBankBox;
+    //   } else {
+    //     targetBox = responseBox;
+    //   }
+    // }
+
+    const targetBox = closestCenter(
       draggable,
-      droppables.filter((droppable) => isContainer(droppable.id)),
+      [wordBankBox, responseBox],
       context
     );
-    if (!closestContainer) return;
-    const containerItemIds = containers[closestContainer.id];
-    const filtered = droppables.filter((droppable) =>
-      containerItemIds.includes(droppable.id)
+
+    const boxItemIds = boxes[targetBox.id];
+    const targetBoxItemIds = droppables.filter((droppable) =>
+      boxItemIds.includes(droppable.id)
     );
-    const closestItem = closestCenter(draggable, filtered, context);
+    const closestItem = closestCenter(draggable, targetBoxItemIds, context);
     if (!closestItem) {
-      return closestContainer;
+      return targetBox;
     }
 
-    if (getContainer(draggable.id) !== closestContainer.id) {
+    if (getBox(draggable.id) !== targetBox.id) {
       const isLastItem =
-        containerItemIds.indexOf(closestItem.id as number) ===
-        containerItemIds.length - 1;
+        boxItemIds.indexOf(closestItem.id as number) === boxItemIds.length - 1;
 
       if (isLastItem) {
         const belowLastItem =
           draggable.transformed.center.x > closestItem.transformed.center.x;
 
         if (belowLastItem) {
-          return closestContainer;
+          return targetBox;
         }
       }
     }
@@ -130,7 +167,7 @@ export default function FreeResponse() {
     const [_, { recomputeLayouts }] = useDragDropContext();
     createEffect(
       on(
-        [() => containers.bank, () => containers.response],
+        [() => boxes.wordBank, () => boxes.response],
         () => {
           recomputeLayouts();
         },
@@ -144,16 +181,22 @@ export default function FreeResponse() {
     <div class="max-w-screen-sm m-auto p-4 h-full flex flex-col justify-between">
       <div class="text-2xl font-semibold m-y-8">What is a cantaloupe?</div>
       <DragDropProvider
-        collisionDetector={closestContainerOrItem}
+        collisionDetector={targetBoxOrItem}
         onDragOver={onDragOver}
       >
         <LogicWrapper />
         <DragDropSensors />
-        <Response items={containers["response"]} />
-        <Bank items={containers["bank"]} />
+        <Response items={boxes["response"]} />
+        <WordBank items={boxes["wordBank"]} />
         <DragOverlay>
           {(draggable) => (
-            <div class={buttonVariants({ variant: "line", element: "block" })}>
+            <div
+              class={buttonVariants({
+                variant: "line",
+                element: "block",
+                size: "sm",
+              })}
+            >
               {draggable.id}
             </div>
           )}

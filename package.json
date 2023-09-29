@@ -18,6 +18,7 @@
     "vite-plugin-solid-svg": "^0.6.4"
   },
   "dependencies": {
+    "@formkit/auto-animate": "^0.8.0",
     "@kobalte/core": "^0.9.8",
     "@solidjs/meta": "^0.28.5",
     "@solidjs/router": "^0.8.2",

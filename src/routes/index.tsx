@@ -82,10 +82,12 @@ export default function Home() {
 
   return (
     <main class="flex-1">
-      <Show when={questions() != null}>
-        <Quiz questions={questions()} />
-      </Show>
-      <FreeResponse />
+      <div class="overflow-auto h-1000px">
+        <Show when={questions() != null}>
+          <Quiz questions={questions()} />
+        </Show>
+        <FreeResponse />
+      </div>
     </main>
   );
 }
