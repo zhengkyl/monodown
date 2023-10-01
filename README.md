@@ -1,28 +1,34 @@
-# monodown
+# `Turborepo` Vite starter
 
-it's gonna be good i swear
+This is an official starter Turborepo.
 
-## todos
+## Using this example
 
-- [ ] make svgs for all kana
+Run the following command:
 
-  - [x] automate somehow + guide
-  - [x] unique ids for clip paths? generate component?
-  - [x] css/js snippet for easy auto play
+```sh
+npx create-turbo@latest -e with-vite
+```
 
-- [x] multiple choice
+## What's inside?
 
-  - [x] button
-  - [x] grid/col/row
-  - [ ] `<ruby>` text component
-  - [x] progress through questions
-  - [x] figure out audio???
+This Turborepo includes the following packages and apps:
 
-- [ ] matching
-- [ ] typing/wordbank
-- [ ] wysiwyg editor
+### Apps and Packages
 
-  - [ ] annotations (furigana, pinyin, etc)
+- `docs`: a vanilla [vite](https://vitejs.dev) ts app
+- `web`: another vanilla [vite](https://vitejs.dev) ts app
+- `ui`: a stub component & utility library shared by both `web` and `docs` applications
+- `eslint-config-custom`: shared `eslint` configurations
+- `tsconfig`: `tsconfig.json`s used throughout the monorepo
 
-- [ ] mascot
-  - [ ] animation
+Each package and app is 100% [TypeScript](https://www.typescriptlang.org/).
+
+### Utilities
+
+This Turborepo has some additional tools already setup for you:
+
+- [TypeScript](https://www.typescriptlang.org/) for static type checking
+- [ESLint](https://eslint.org/) for code linting
+- [Jest](https://jestjs.io) test runner for all things JavaScript
+- [Prettier](https://prettier.io) for code formatting
