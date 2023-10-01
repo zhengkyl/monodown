@@ -6,19 +6,23 @@ it's gonna be good i swear
 
 - [ ] make svgs for all kana
 
-  - [ ] automate somehow + guide
-  - [ ] unique ids for clip paths? generate component?
-  - [ ] css/js snippet for easy auto play
+  - [x] automate somehow + guide
+  - [x] unique ids for clip paths? generate component?
+  - [x] css/js snippet for easy auto play
 
-- [ ] multiple choice
+- [x] multiple choice
 
   - [x] button
   - [x] grid/col/row
   - [ ] `<ruby>` text component
   - [x] progress through questions
-  - [ ] figure out audio???
+  - [x] figure out audio???
 
 - [ ] matching
 - [ ] typing/wordbank
 - [ ] wysiwyg editor
+
   - [ ] annotations (furigana, pinyin, etc)
+
+- [ ] mascot
+  - [ ] animation
