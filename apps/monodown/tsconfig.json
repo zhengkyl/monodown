@@ -1,18 +1,17 @@
 {
-  "extends": "tsconfig/base.json",
   "compilerOptions": {
     "allowSyntheticDefaultImports": true,
+    "esModuleInterop": true,
     "target": "ESNext",
     "module": "ESNext",
+    "moduleResolution": "node",
     "jsxImportSource": "solid-js",
     "jsx": "preserve",
+    "strict": false,
     "types": ["vite-plugin-solid-svg/types-component-solid", "solid-start/env"],
     "baseUrl": "./",
     "paths": {
       "~/*": ["./src/*"]
-    },
-    // causes ts issues in uno/vite config.ts
-    "declaration": false,
-    "declarationMap": false
+    }
   }
 }

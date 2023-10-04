@@ -24,15 +24,15 @@
      inkscape:pagecheckerboard="0"
      inkscape:deskcolor="#d1d1d1"
      inkscape:document-units="mm"
-     inkscape:zoom="1.8101934"
-     inkscape:cx="-28.45"
-     inkscape:cy="144.45971"
+     inkscape:zoom="1.28"
+     inkscape:cx="80.859375"
+     inkscape:cy="124.60938"
      inkscape:window-width="1920"
      inkscape:window-height="1111"
      inkscape:window-x="-9"
      inkscape:window-y="-9"
      inkscape:window-maximized="1"
-     inkscape:current-layer="g55" />
+     inkscape:current-layer="g50" />
   <defs
      id="defs1">
     <clipPath
@@ -265,36 +265,40 @@
         <g
            id="g55"
            clip-path="url(#clipPath27)"
-           inkscape:label="iris">
-          <ellipse
-             style="fill:#9a57f9;fill-opacity:1;stroke-width:10.8303;stroke-linecap:round;stroke-linejoin:round"
-             id="path5"
-             cx="127.80962"
-             cy="100.24122"
-             rx="10.524639"
-             ry="10.799145"
-             inkscape:label="path5" />
-          <circle
-             style="fill:#442457;fill-opacity:1;stroke-width:28.7965;stroke-linecap:round;stroke-linejoin:round"
-             id="path6"
-             cx="127.89627"
-             cy="100.77892"
-             r="7.1991391" />
+           inkscape:label="clip_group">
+          <g
+             id="g63"
+             inkscape:label="iris">
+            <ellipse
+               style="fill:#9a57f9;fill-opacity:1;stroke-width:10.8303;stroke-linecap:round;stroke-linejoin:round"
+               id="path5"
+               cx="127.80962"
+               cy="100.24122"
+               rx="10.524639"
+               ry="10.799145"
+               inkscape:label="path5" />
+            <circle
+               style="fill:#442457;fill-opacity:1;stroke-width:28.7965;stroke-linecap:round;stroke-linejoin:round"
+               id="path6"
+               cx="127.89627"
+               cy="100.77892"
+               r="7.1991391" />
+          </g>
+          <path
+             id="path14"
+             style="fill:#1a023d;fill-opacity:0.415655;stroke-width:17.0025;stroke-linecap:round;stroke-linejoin:round"
+             d="M 147.10008,101.35945 C 147.05748,104.74972 139.32395,96.568812 128.29263,96.568812 117.26132,96.568812 110.33916,102.42383 110.33916,99.033412 110.33916,95.642862 118.70839,86.641349 129.7397,86.641349 138.25098,86.985636 147.22417,91.139372 147.10008,101.35945 Z"
+             sodipodi:nodetypes="sssss"
+             inkscape:label="shadow" />
           <ellipse
              style="fill:#ffffff;fill-opacity:1;stroke:none;stroke-width:9.85385;stroke-linecap:round;stroke-linejoin:round"
              id="path11"
              cx="133.76189"
              cy="100.91018"
              rx="2.6862392"
-             ry="1.568607" />
+             ry="1.568607"
+             inkscape:label="highlight" />
         </g>
-        <path
-           id="path14"
-           style="fill:#1a023d;fill-opacity:0.415655;stroke-width:17.0025;stroke-linecap:round;stroke-linejoin:round"
-           d="M 147.10008,101.35945 C 147.05748,104.74972 139.32395,96.568812 128.29263,96.568812 117.26132,96.568812 110.33916,102.42383 110.33916,99.033412 110.33916,95.642862 118.70839,86.641349 129.7397,86.641349 138.25098,86.985636 147.22417,91.139372 147.10008,101.35945 Z"
-           sodipodi:nodetypes="sssss"
-           inkscape:label="shadow"
-           clip-path="url(#clipPath27)" />
       </g>
       <path
          style="font-variation-settings:normal;vector-effect:none;fill:#573f33;fill-opacity:1;stroke:none;stroke-width:792.625;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:4;stroke-dasharray:none;stroke-dashoffset:0;stroke-opacity:1;-inkscape-stroke:none;stop-color:#000000"
@@ -329,36 +333,40 @@
            inkscape:label="white" />
         <g
            id="g61"
-           clip-path="url(#clipPath24)"
-           inkscape:label="iris">
-          <ellipse
-             style="fill:#9a57f9;fill-opacity:1;stroke-width:10.8303;stroke-linecap:round;stroke-linejoin:round"
-             id="ellipse90"
-             cx="72.190857"
-             cy="100.24122"
-             rx="10.524639"
-             ry="10.799145" />
-          <circle
-             style="fill:#442457;fill-opacity:1;stroke-width:28.7965;stroke-linecap:round;stroke-linejoin:round"
-             id="circle90"
-             cx="72.104202"
-             cy="100.77892"
-             r="7.1991391" />
+           inkscape:label="clip_group"
+           clip-path="url(#clipPath24)">
+          <g
+             id="g62"
+             inkscape:label="iris">
+            <ellipse
+               style="fill:#9a57f9;fill-opacity:1;stroke-width:10.8303;stroke-linecap:round;stroke-linejoin:round"
+               id="ellipse90"
+               cx="72.190857"
+               cy="100.24122"
+               rx="10.524639"
+               ry="10.799145" />
+            <circle
+               style="fill:#442457;fill-opacity:1;stroke-width:28.7965;stroke-linecap:round;stroke-linejoin:round"
+               id="circle90"
+               cx="72.104202"
+               cy="100.77892"
+               r="7.1991391" />
+          </g>
+          <path
+             id="path91"
+             style="fill:#1a023d;fill-opacity:0.415655;stroke-width:17.0025;stroke-linecap:round;stroke-linejoin:round"
+             d="m 52.900399,101.35945 c 0.04259,3.39027 7.776133,-4.790638 18.807449,-4.790638 11.031315,0 17.953475,5.855018 17.953475,2.4646 0,-3.39055 -8.369231,-12.392063 -19.400546,-12.392063 -8.511276,0.344287 -17.484464,4.498023 -17.360378,14.718101 z"
+             sodipodi:nodetypes="sssss"
+             inkscape:label="shadow" />
           <ellipse
              style="fill:#ffffff;fill-opacity:1;stroke:none;stroke-width:9.85385;stroke-linecap:round;stroke-linejoin:round"
              id="ellipse91"
              cx="66.238586"
              cy="100.91018"
              rx="2.6862392"
-             ry="1.568607" />
+             ry="1.568607"
+             inkscape:label="highlight" />
         </g>
-        <path
-           id="path91"
-           style="fill:#1a023d;fill-opacity:0.415655;stroke-width:17.0025;stroke-linecap:round;stroke-linejoin:round"
-           d="m 52.900399,101.35945 c 0.04259,3.39027 7.776133,-4.790638 18.807449,-4.790638 11.031315,0 17.953475,5.855018 17.953475,2.4646 0,-3.39055 -8.369231,-12.392063 -19.400546,-12.392063 -8.511276,0.344287 -17.484464,4.498023 -17.360378,14.718101 z"
-           sodipodi:nodetypes="sssss"
-           inkscape:label="shadow"
-           clip-path="url(#clipPath24)" />
       </g>
       <path
          style="font-variation-settings:normal;vector-effect:none;fill:#573f33;fill-opacity:1;stroke:none;stroke-width:792.625;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:4;stroke-dasharray:none;stroke-dashoffset:0;stroke-opacity:1;-inkscape-stroke:none;stop-color:#000000"
