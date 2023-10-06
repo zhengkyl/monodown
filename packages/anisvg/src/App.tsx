@@ -5,6 +5,7 @@ import "external-svg-loader";
 import { Irises } from "./components/Irises";
 import { Mouth } from "./components/Mouth";
 import { Eyes } from "./components/Eyes";
+import { Brows } from "./components/Brows";
 
 export function App() {
   let svg: SVGSVGElement;
@@ -21,6 +22,7 @@ export function App() {
         <div class="flex-1">
           <Show when={loaded()} fallback={<p>loading...</p>}>
             <h2>Eyes</h2>
+            <Brows svg={svg} />
             <Eyes svg={svg} />
             <Irises svg={svg} />
             <h2>Mouth</h2>
