@@ -1,101 +1,106 @@
-import { createEffect } from "solid-js";
-import { createStore } from "solid-js/store";
-
-import { makeDraggable } from "../util/makeDraggable";
-makeDraggable; // preserve import b/c ts strips unused
-
-declare module "solid-js" {
-  namespace JSX {
-    interface Directives {
-      makeDraggable;
-    }
-  }
-}
+import { animatePaths } from "../util/animatePaths";
+import { tweenPath, pathToString } from "../util/path";
 
 type Props = {
   svg: SVGSVGElement;
 };
 
 export function Eyes(props: Props) {
-  const irises = props.svg.querySelectorAll('[data-label="iris"]');
-
-  let dot: HTMLDivElement;
-  let thetaSlider: HTMLInputElement;
-  let rSlider: HTMLInputElement;
-
-  const [transforms, setTransforms] = createStore({
-    irises: {
-      r: 0,
-      theta: 0,
-    },
-  });
-
-  createEffect(() => {
-    const x = transforms.irises.r * Math.cos(transforms.irises.theta);
-    const y = transforms.irises.r * Math.sin(transforms.irises.theta);
-    if (irises) {
-      irises.forEach((element) => {
-        element.setAttribute("transform", `translate(${x * 10}, ${y * 10})`);
-      });
-    }
-    dot.style.translate = `${x * 80}px ${y * 80}px`;
-  });
+  let leftSlider: HTMLInputElement;
+  let rightSlider: HTMLInputElement;
 
   return (
     <div>
       <div>
         <input
-          ref={thetaSlider}
           type="range"
-          id="theta"
-          name="Theta"
-          value="0"
-          min="-180"
-          max="180"
-          onInput={(e) => {
-            const theta = (Math.PI * parseInt(e.target.value)) / 180;
-            setTransforms("irises", "theta", theta);
-          }}
-        />
-        <label for="theta">Theta</label>
-      </div>
-      <div>
-        <input
-          ref={rSlider}
-          type="range"
-          id="r"
-          name="Radius"
+          id="eyes_open"
+          name="Eyes Open"
           value="0"
           min="0"
           max="1"
           step="0.01"
           onInput={(e) => {
-            const r = parseFloat(e.target.value);
-            setTransforms("irises", "r", r);
+            leftSlider.value = e.target.value;
+            rightSlider.value = e.target.value;
+            leftSlider.dispatchEvent(
+              new Event("input", {
+                bubbles: true,
+                cancelable: true,
+              })
+            );
+            rightSlider.dispatchEvent(
+              new Event("input", {
+                bubbles: true,
+                cancelable: true,
+              })
+            );
           }}
         />
-        <label for="r">Radius</label>
+        <label for="eye_open">Both Open</label>
       </div>
-      <div class="rounded-full h-[160px] w-[160px] bg-stone-200 flex justify-center items-center">
-        <div
-          ref={dot}
-          class="rounded-full bg-red-400 h-8 w-8 cursor-grab"
-          use:makeDraggable={{
-            // onStart: () => console.log("start"),
-            // onEnd: () => console.log("end"),
-            onMove: (dx, dy) => {
-              const theta = Math.atan2(dy, dx);
-              const r = Math.min(Math.sqrt(dx ** 2 + dy ** 2), 80) / 80;
-              thetaSlider.value = ((theta / Math.PI) * 180).toString();
-              rSlider.value = r.toString();
-              setTransforms("irises", {
-                r,
-                theta,
-              });
-            },
-          }}
-        ></div>
-      </div>
+      <Eye svg={props.svg} side="left" ref={leftSlider} />
+      <Eye svg={props.svg} side="right" ref={rightSlider} />
+    </div>
+  );
+}
+
+type EyeProps = {
+  svg: SVGSVGElement;
+  side: "left" | "right";
+  ref: HTMLInputElement;
+};
+
+function Eye(props: EyeProps) {
+  const { shape: featShape, shapeInfo: featShapeInfo } = animatePaths(
+    props.svg.querySelector(
+      `[data-label="eye_${props.side}"] > [data-label="features"]`
+    )
+  );
+
+  const { shape: whiteShape, shapeInfo: whiteShapeInfo } = animatePaths(
+    props.svg.querySelector(
+      `[data-label="eye_${props.side}"] > [data-label="whites"]`
+    )
+  );
+
+  return (
+    <div>
+      <input
+        ref={props.ref}
+        type="range"
+        id={`${props.side}_open`}
+        name={`${props.side} eye`}
+        value="0"
+        min="0"
+        max="1"
+        step="0.01"
+        onInput={(e) => {
+          for (const element of featShape.children) {
+            const label = element.getAttribute("data-label");
+
+            const basePath = tweenPath(
+              featShapeInfo["closed"][label],
+              featShapeInfo["open"][label],
+              parseFloat(e.target.value)
+            );
+
+            element.setAttribute("d", pathToString(basePath));
+          }
+          for (const element of whiteShape.children) {
+            const label = element.getAttribute("data-label");
+
+            const basePath = tweenPath(
+              whiteShapeInfo["closed"][label],
+              whiteShapeInfo["open"][label],
+              parseFloat(e.target.value)
+            );
+
+            element.setAttribute("d", pathToString(basePath));
+          }
+        }}
+      />
+      <label for={`${props.side}_open`}>{props.side} Open</label>
     </div>
   );
 }

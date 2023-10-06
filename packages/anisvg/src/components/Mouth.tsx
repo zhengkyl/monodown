@@ -1,26 +1,15 @@
 import { createEffect, createSignal } from "solid-js";
-import { tweenPath, parsePath, pathToString } from "../util/parsePath";
+import { tweenPath, pathToString } from "../util/path";
+import { animatePaths } from "../util/animatePaths";
 
 type Props = {
   svg: SVGSVGElement;
 };
 
 export function Mouth(props: Props) {
-  const mouthShapes = props.svg.querySelector('[data-label="Mouth"]');
-  const shapeInfo = {};
-  for (const child of mouthShapes.children) {
-    const shape = child.getAttribute("data-label");
-    shapeInfo[shape] = {};
-    child.classList.add("hidden");
-    for (const element of child.children) {
-      const label = element.getAttribute("data-label");
-      const path = parsePath(element.getAttribute("d"));
-      shapeInfo[shape][label] = path;
-    }
-  }
-
-  const mouth = mouthShapes.children[0];
-  mouth.classList.remove("hidden");
+  const { shape, shapeInfo } = animatePaths(
+    props.svg.querySelector('[data-label="Mouth"]')
+  );
 
   let openSlider;
   let smileSlider;
@@ -29,7 +18,7 @@ export function Mouth(props: Props) {
   const [expressionValue, setExpressionValue] = createSignal(0);
 
   createEffect(() => {
-    for (const element of mouth.children) {
+    for (const element of shape.children) {
       const label = element.getAttribute("data-label");
 
       const basePath = tweenPath(

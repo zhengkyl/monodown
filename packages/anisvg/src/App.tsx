@@ -2,8 +2,9 @@ import { Show, createSignal } from "solid-js";
 import monaUrl from "../mona.min.svg";
 
 import "external-svg-loader";
-import { Eyes } from "./components/Eyes";
+import { Irises } from "./components/Irises";
 import { Mouth } from "./components/Mouth";
+import { Eyes } from "./components/Eyes";
 
 export function App() {
   let svg: SVGSVGElement;
@@ -21,6 +22,7 @@ export function App() {
           <Show when={loaded()} fallback={<p>loading...</p>}>
             <h2>Eyes</h2>
             <Eyes svg={svg} />
+            <Irises svg={svg} />
             <h2>Mouth</h2>
             <Mouth svg={svg} />
           </Show>
