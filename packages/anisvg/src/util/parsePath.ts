@@ -17,24 +17,39 @@ export function parsePath(path: string) {
 }
 
 // tween parsed paths from parsePath()
-export function getTweenedPath(pp1, pp2, t) {
-  let str = "";
+export function tweenPath(pp1, pp2, t) {
+  const pp3 = structuredClone(pp1);
+
   if (pp1.length !== pp2.length)
     throw new Error("Tween paths have different number of points");
   for (let i = 0; i < pp1.length; i++) {
     if (pp1[i].length !== pp2[i].length)
       throw new Error("Tween paths have different commands");
-
-    str += pp1[i][1]; // first is command
+    // str += pp1[i][0]; // first is command
     for (let j = 1; j < pp1[i].length; j++) {
       const num = pp1[i][j] + t * (pp2[i][j] - pp1[i][j]);
       // not following letter and not negative
-      if (j > 1 && num > 0) {
-        str += " ";
-      }
-      str += num;
+      pp3[i][j] = num;
+      // if (j > 1 && num >= 0) {
+      //   str += " ";
+      // }
+      // str += num.toString();
     }
   }
 
+  return pp3;
+}
+
+export function pathToString(pp) {
+  let str = "";
+  for (let i = 0; i < pp.length; i++) {
+    str += pp[i][0]; // first is command
+    for (let j = 1; j < pp[i].length; j++) {
+      if (j > 1 && pp[i][j] >= 0) {
+        str += " ";
+      }
+      str += pp[i][j].toString();
+    }
+  }
   return str;
 }

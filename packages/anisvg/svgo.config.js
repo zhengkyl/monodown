@@ -46,9 +46,14 @@ module.exports = {
       params: {
         overrides: {
           collapseGroups: false,
-          // convertPathData: {
-          // floatPrecision: 4,
-          // },
+          convertPathData: {
+            // Disable all optimizations that change node type or number of nodes
+            makeArcs: false,
+            straightCurves: false,
+            lineShorthands: false,
+            collapseRepeated: false,
+            curveSmoothShorthands: false,
+          },
         },
       },
     },

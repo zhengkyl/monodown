@@ -21,7 +21,6 @@
   "dependencies": {
     "@unocss/reset": "^0.55.0",
     "external-svg-loader": "^1.6.10",
-    "parse-svg-path": "^0.1.2",
     "solid-js": "^1.7.6"
   }
 }

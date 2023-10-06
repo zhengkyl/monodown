@@ -49,6 +49,7 @@ export function Eyes(props: Props) {
           type="range"
           id="theta"
           name="Theta"
+          value="0"
           min="-180"
           max="180"
           onInput={(e) => {
@@ -64,6 +65,7 @@ export function Eyes(props: Props) {
           type="range"
           id="r"
           name="Radius"
+          value="0"
           min="0"
           max="1"
           step="0.01"
