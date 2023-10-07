@@ -6,6 +6,7 @@ import { Irises } from "./components/Irises";
 import { Mouth } from "./components/Mouth";
 import { Eyes } from "./components/Eyes";
 import { Brows } from "./components/Brows";
+import { Whole } from "./components/Whole";
 
 export function App() {
   let svg: SVGSVGElement;
@@ -27,6 +28,8 @@ export function App() {
             <Irises svg={svg} />
             <h2>Mouth</h2>
             <Mouth svg={svg} />
+            <h2>Whole Rotation</h2>
+            <Whole svg={svg} />
           </Show>
         </div>
       </div>

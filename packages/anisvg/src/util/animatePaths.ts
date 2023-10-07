@@ -5,7 +5,8 @@ export function animatePaths(shapesEl: SVGElement) {
   for (const child of shapesEl.children) {
     const shapeLabel = child.getAttribute("data-label");
     shapeInfo[shapeLabel] = {};
-    child.classList.add("hidden");
+    // @ts-expect-error shut up
+    child.style.display = "none";
     for (const el of child.children) {
       const elLabel = el.getAttribute("data-label");
       const path = parsePath(el.getAttribute("d"));
@@ -14,7 +15,8 @@ export function animatePaths(shapesEl: SVGElement) {
   }
 
   const shape = shapesEl.children[0];
-  shape.classList.remove("hidden");
+  // @ts-expect-error shut up
+  shape.style.display = "";
 
   return {
     shape,
