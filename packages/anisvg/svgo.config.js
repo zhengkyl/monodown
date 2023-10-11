@@ -23,15 +23,21 @@ module.exports = {
 
         const styleNodes = querySelectorAll(root, "[style]");
 
+        const allowedStyles = [
+          /fill:#[0-9a-f]{6}/,
+          /fill:url\(#[0-9a-zA-Z]+\)/,
+          /fill-opacity:0\.\d+/,
+          /stop-color:#[0-9a-f]{6}/,
+          /stop-opacity:0?\.?\d+/,
+        ];
+
         for (const node of styleNodes) {
-          const fill = node.attributes.style.match(/fill:#[0-9a-f]{6}/);
-          const opacity = node.attributes.style.match(/fill-opacity:0\.\d+/);
           const newStyle = [];
-          if (fill) {
-            newStyle.push(fill[0]);
-          }
-          if (opacity) {
-            newStyle.push(opacity[0]);
+          for (const allowedStyle of allowedStyles) {
+            const segment = node.attributes.style.match(allowedStyle);
+            if (segment) {
+              newStyle.push(segment[0]);
+            }
           }
           if (!newStyle.length) {
             delete node.attributes.style;

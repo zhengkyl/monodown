@@ -7,7 +7,8 @@
     "dev": "vite",
     "build": "vite build",
     "serve": "vite preview",
-    "min": "svgo ./mona.svg -o ./mona.min.svg"
+    "mona": "svgo ./mona.svg -o ./mona.min.svg",
+    "earth": "svgo ./earth.svg -o ./earth.min.svg"
   },
   "license": "MIT",
   "devDependencies": {

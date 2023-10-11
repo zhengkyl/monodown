@@ -37,10 +37,10 @@ export default function Root() {
         />
         <link rel="apple-touch-icon" href="/apple-touch-icon.png" />
       </Head>
-      <Body class="flex flex-col h-screen">
+      <Body class="flex flex-col h-screen bg-black">
         <Suspense>
           <ErrorBoundary>
-            <div>
+            {/* <div>
               <Button asChild>
                 <As component={A} href="/">
                   Home
@@ -61,7 +61,7 @@ export default function Root() {
                   Components
                 </As>
               </Button>
-            </div>
+            </div> */}
             <div>
               <Routes>
                 <FileRoutes />

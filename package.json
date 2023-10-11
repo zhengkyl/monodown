@@ -9,7 +9,7 @@
   "devDependencies": {
     "eslint": "^8.50.0",
     "eslint-config-custom": "workspace:*",
-    "prettier": "^2.5.1",
+    "prettier": "^3.0.3",
     "turbo": "latest"
   },
   "engines": {
