@@ -81,6 +81,13 @@ export default defineConfig({
       sm: "calc(var(--radius) - 4px)",
     },
     // keyframes: {
+    // why you now worK??? see root.css
+    //   spin: {
+    //     from: { rotate: "0deg" },
+    //     to: { rotate: "360deg" },
+    //   },
+    // },
+    // keyframes: {
     //   "accordion-down": {
     //     from: { height: 0 },
     //     to: { height: "var(--radix-accordion-content-height)" },

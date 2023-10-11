@@ -9,6 +9,7 @@ import { Button } from "~/components/ui/Button";
 import { Button2 } from "~/components/ui/Button2";
 import { randomNChoices } from "~/util/arrays";
 import EarthSVG from "../assets/svg/earth.min.svg";
+import { Planet } from "~/components/Planet";
 
 const prompt = {
   type: "text",
@@ -102,7 +103,7 @@ export default function Home() {
           <div class="i-uil:bolt-alt"></div>
         </Button2>
         <Dungeon junctions={testJunctions} />
-        <EarthSVG />
+        <Planet />
         {/* <Show when={questions() != null}>
           <Quiz questions={questions()} />
         </Show>
