@@ -125,7 +125,7 @@ export function Planet() {
   let oldMoveRad;
 
   return (
-    <div class="overflow-hidden ">
+    <div class="overflow-hidden mt-[-50%]">
       {/* div is temp wrapper b/c can't use directive on transformed code (svg comp) */}
       <div
         class="translate-y-1/2"

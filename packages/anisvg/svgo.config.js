@@ -11,9 +11,9 @@ module.exports = {
       name: "plugin",
       fn: (root, params, info) => {
         const labelNodes = querySelectorAll(root, "[inkscape\\:label]");
-        for (const node of labelNodes) {
-          node.attributes["data-label"] = node.attributes["inkscape:label"];
-        }
+        // for (const node of labelNodes) {
+        //   node.attributes["data-label"] = node.attributes["inkscape:label"];
+        // }
 
         const hrefNodes = querySelectorAll(root, "[xlink\\:href]");
         for (const node of hrefNodes) {
@@ -24,11 +24,14 @@ module.exports = {
         const styleNodes = querySelectorAll(root, "[style]");
 
         const allowedStyles = [
-          /fill:#[0-9a-f]{6}/,
-          /fill:url\(#[0-9a-zA-Z]+\)/,
-          /fill-opacity:0\.\d+/,
-          /stop-color:#[0-9a-f]{6}/,
-          /stop-opacity:0?\.?\d+/,
+          // /fill:#[0-9a-f]{6}/,
+          // /fill:url\(#[0-9a-zA-Z]+\)/,
+          // /fill-opacity:0\.\d+/,
+          // /stop-color:#[0-9a-f]{6}/,
+          // /stop-opacity:0?\.?\d+/,
+          /fill:none/,
+          /stroke-dasharray:(\d+,\s)+\d+;/,
+          /stroke-width:\d+;/,
         ];
 
         for (const node of styleNodes) {
@@ -51,15 +54,15 @@ module.exports = {
       name: "preset-default",
       params: {
         overrides: {
-          collapseGroups: false,
-          convertPathData: {
-            // Disable all optimizations that change node type or number of nodes
-            makeArcs: false,
-            straightCurves: false,
-            lineShorthands: false,
-            collapseRepeated: false,
-            curveSmoothShorthands: false,
-          },
+          // collapseGroups: false,
+          // convertPathData: {
+          //   // Disable all optimizations that change node type or number of nodes
+          //   makeArcs: false,
+          //   straightCurves: false,
+          //   lineShorthands: false,
+          //   collapseRepeated: false,
+          //   curveSmoothShorthands: false,
+          // },
         },
       },
     },

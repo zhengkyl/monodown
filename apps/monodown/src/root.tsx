@@ -37,7 +37,7 @@ export default function Root() {
         />
         <link rel="apple-touch-icon" href="/apple-touch-icon.png" />
       </Head>
-      <Body class="flex flex-col h-screen bg-black">
+      <Body class="flex flex-col bg-black overflow-hidden">
         <Suspense>
           <ErrorBoundary>
             {/* <div>

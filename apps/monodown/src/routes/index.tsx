@@ -1,4 +1,4 @@
-import { For, Show } from "solid-js";
+import { For, Show, createSignal, onMount, splitProps } from "solid-js";
 import { Dynamic } from "solid-js/web";
 import { useRouteData } from "solid-start";
 import { createServerData$ } from "solid-start/server";
@@ -10,6 +10,7 @@ import { Button2 } from "~/components/ui/Button2";
 import { randomNChoices } from "~/util/arrays";
 import EarthSVG from "../assets/svg/earth.min.svg";
 import { Planet } from "~/components/Planet";
+import { Trail } from "~/components/Trail";
 
 const prompt = {
   type: "text",
@@ -83,9 +84,27 @@ export function routeData(params) {
 export default function Home() {
   const questions = useRouteData<typeof routeData>();
 
+  let trail: SVGSVGElement;
+  let scrollCont;
+  const [pos, setPos] = createSignal([]);
+
+  onMount(() => {
+    const group = trail.querySelector('[data-label="points"]');
+    const tmp = [];
+
+    const scl = scrollCont.getBoundingClientRect().left;
+    for (const child of group.children) {
+      const rect = child.getBoundingClientRect();
+      tmp.push({ y: rect.top + scrollCont.scrollTop, x: rect.left - scl });
+    }
+    tmp.sort((a, b) => b.y - a.y);
+    setPos(tmp);
+    group.classList.add("hidden");
+  });
+
   return (
     <main class="bg-slate-900 flex-1 max-w-sm m-auto">
-      <div class="overflow-auto">
+      <div ref={scrollCont} class="h-screen overflow-auto relative">
         {/* <Button size="icon-lg" class="rounded-full">
           <div class="i-uil:map">
           </div>
@@ -102,7 +121,10 @@ export default function Home() {
         <Button2>
           <div class="i-uil:bolt-alt"></div>
         </Button2>
-        <Dungeon junctions={testJunctions} />
+        <Trail class="w-sm stroke-white" ref={trail} />
+        <Show when={pos().length > 0} fallback={<div>what is going on</div>}>
+          <Dungeon junctions={junctions} pos={pos()} />
+        </Show>
         <Planet />
         {/* <Show when={questions() != null}>
           <Quiz questions={questions()} />
@@ -115,60 +137,83 @@ export default function Home() {
 
 type DungeonProps = {
   junctions: JunctionProps[];
+  pos: { x: number; y: number }[];
 };
+const junctions = Array(16)
+  .fill(null)
+  .map((_, i) => {
+    if (i === 0 || i === 4 || i === 7) {
+      return {
+        title: "Welcome",
+        type: "info" as const,
+      };
+    }
 
-const testJunctions = [
-  {
-    title: "Welcome",
-    rooms: [{ type: "info" }],
-  },
-  {
-    title: "Welcome",
-    rooms: [{ type: "info" }, { type: "quiz" }, { type: "sort" }],
-  },
-  {
-    title: "Two",
-    rooms: [{ type: "quiz" }, { type: "sort" }],
-  },
-];
+    if (i % 2) {
+      return {
+        title: "Welcome",
+        type: "quiz" as const,
+      };
+    }
+    return {
+      title: "Two",
+      type: "sort" as const,
+    };
+  });
+// console.log(junctions);
 
 function Dungeon(props: DungeonProps) {
   return (
     <For each={props.junctions}>
-      {(junction) => <DungeonJunction {...junction} />}
+      {(junction, i) => (
+        <DungeonJunction
+          {...junction}
+          class="absolute"
+          style={`top:${props.pos[i()].y}px;left:${props.pos[i()].x}px`}
+        />
+      )}
     </For>
   );
 }
 
 type JunctionProps = {
   title: string;
-  rooms: { type: "info" | "sort" | "quiz" }[];
+  type: "info" | "sort" | "quiz";
 };
 
 const RoomByType = {
-  info: () => (
-    <Button2>
+  info: (props) => (
+    <Button size="icon" variant="fill" hue="green" depth={5} {...props}>
       <div class="i-uil:clipboard-notes"></div>
-    </Button2>
+    </Button>
   ),
-  sort: () => (
-    <Button2 class="rounded-full">
+  sort: (props) => (
+    <Button
+      class="rounded-full"
+      size="icon"
+      variant="fill"
+      hue="red"
+      depth={5}
+      {...props}
+    >
       <div class="i-uil:rocket"></div>
-    </Button2>
+    </Button>
   ),
-  quiz: () => (
-    <Button2 class="rounded-full border-amber text-amber">
+  quiz: (props) => (
+    <Button
+      class="rounded-full"
+      size="icon"
+      variant="fill"
+      hue="yellow"
+      depth={5}
+      {...props}
+    >
       <div class="i-uil:bolt-alt"></div>
-    </Button2>
+    </Button>
   ),
 };
 
 function DungeonJunction(props: JunctionProps) {
-  return (
-    <div class="border rounded-xl p-4 m-4 flex justify-center gap-6">
-      <For each={props.rooms}>
-        {(room) => <Dynamic component={RoomByType[room.type]} />}
-      </For>
-    </div>
-  );
+  const [, rest] = splitProps(props, ["type", "title"]);
+  return <Dynamic component={RoomByType[props.type]} {...rest} />;
 }

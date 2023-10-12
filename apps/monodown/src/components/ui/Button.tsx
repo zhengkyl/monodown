@@ -16,7 +16,6 @@ export const buttonVariants = cva(
     "[box-shadow:0_var(--btn-depth)_0_var(--un-shadow-color)]", // use arbitary to avoid tailwind-merge conflict
     "mb-[var(--btn-depth)]",
 
-    "[--btn-depth:3px]",
     "[--btn-edge-opacity:1]",
     "[--btn-edge-color:hsl(var(--btn-h)_var(--btn-s)_calc(var(--btn-l)-5%)/var(--btn-edge-opacity))]",
     "[--un-shadow-color:var(--btn-edge-color)]",
@@ -35,11 +34,15 @@ export const buttonVariants = cva(
           "text-[var(--btn-edge-color)]",
         ],
       },
+      depth: {
+        3: "[--btn-depth:3px] [--btn-travel:3px]",
+        5: "[--btn-depth:5px] [--btn-travel:5px]",
+      },
       size: {
         sm: "h-10 px-4 py-2",
         md: "h-12 px-6 py-3",
         lg: "h-16 px-10 py-5",
-        icon: "h-12 w-14 text-2xl",
+        icon: "h-12 w-13 text-2xl",
         "icon-lg": "h-16 w-18 text-3xl font-bold",
       },
       hue: {
@@ -48,10 +51,10 @@ export const buttonVariants = cva(
         red: "[--btn-h:0] [--btn-s:84%] [--btn-l:60%]",
         stone: "[--btn-h:25] [--btn-s:5%] [--btn-l:45%]",
         default: "[--btn-h:0] [--btn-s:0%] [--btn-l:83%]",
+        yellow: "[--btn-h:45] [--btn-s:93%] [--btn-l:47%]",
       },
       element: {
         button: [
-          "[--btn-travel:3px]",
           `d-active:(shadow-none translate-y-[var(--btn-travel)])`,
           `m-active:(shadow-none translate-y-[var(--btn-travel)])`,
           `disabled:(shadow-none translate-y-[var(--btn-travel)] pointer-events-none)`,
@@ -87,6 +90,7 @@ export const buttonVariants = cva(
       size: "md",
       hue: "default",
       element: "button",
+      depth: 3,
     },
   }
 );
@@ -103,6 +107,7 @@ export function Button(props: ButtonProps) {
     "variant",
     "size",
     "hue",
+    "depth",
     "class",
     "classList",
     "onTouchStart",
@@ -129,6 +134,7 @@ export function Button(props: ButtonProps) {
           variant: props.variant,
           size: props.size,
           hue: props.hue,
+          depth: props.depth,
         }),
         props.class
       )}
