@@ -4,11 +4,11 @@ import EarthSVG from "../assets/svg/earth.min.svg";
 declare module "solid-js" {
   namespace JSX {
     interface DirectiveFunctions {
-      makeSpinnable;
+      makeDraggable;
     }
   }
 }
-function makeSpinnable(el: HTMLElement, accessor) {
+function makeDraggable(el: HTMLElement, accessor) {
   const getElCenter = () => {
     const rect = el.getBoundingClientRect();
     return { x: rect.x + rect.width / 2, y: rect.y + rect.height / 2 };
@@ -53,8 +53,6 @@ function makeSpinnable(el: HTMLElement, accessor) {
 export function Planet() {
   let svg: SVGSVGElement;
 
-  // let angle = 0;
-
   let surface: SVGGElement;
   let clouds: SVGGElement;
 
@@ -62,54 +60,102 @@ export function Planet() {
     surface = svg.querySelector('[data-label="surface"]');
     clouds = svg.querySelector('[data-label="clouds"]');
 
-    surface.classList.add("animate-[spin_120s_linear_infinite]");
     surface.style.transformOrigin = "center";
 
     clouds.classList.add("animate-[spin_240s_linear_infinite]");
     clouds.style.transformOrigin = "center";
 
-    // requestAnimationFrame(frame);
+    frameTime = performance.now();
+    requestAnimationFrame(frame);
   });
 
-  // let prevTime = performance.now();
+  const defaultVel = Math.PI / 60_000; // 120s per spin
 
-  // const frame = (time) => {
-  //   const diff = time - prevTime;
-  //   angle += (diff / 1000) * 5;
-  //   prevTime = time;
+  let frameRad = 0;
+  let frameVel = defaultVel;
+  let frameTime;
 
-  //   surface.style.rotate = `${angle}deg`;
-  //   surface.style.rotate = `${angle}deg`;
+  const pi2 = Math.PI * 2;
 
-  //   clouds.style.rotate = `${angle / 2}deg`;
+  const reboundRad = (rad) => {
+    if (rad > -pi2 && rad < pi2) {
+      return rad;
+    }
+    return rad % pi2;
+  };
 
-  //   requestAnimationFrame(frame);
-  // };
+  const frame = (time) => {
+    const elapsed = time - frameTime;
 
-  let startRad;
-  let startDeg;
+    if (dragging) {
+      const targetRad = initRad + radSum;
+      const diff = targetRad - frameRad;
+
+      const targetVel = diff / 300;
+      frameVel += (targetVel - frameVel) / 2;
+    } else if (Math.abs(frameVel - defaultVel) < 0.0001) {
+      frameVel = defaultVel;
+      radSum = 0;
+    } else {
+      const decay = 0.000001 * elapsed;
+      radSum *= 0.95;
+      if (frameVel > defaultVel) {
+        frameVel -= decay;
+      } else if (frameVel < defaultVel) {
+        frameVel += decay;
+      }
+    }
+
+    frameRad = frameRad + frameVel * elapsed;
+    const boundedFrameRad = reboundRad(frameRad);
+    if (dragging) {
+      initRad += boundedFrameRad - frameRad;
+    }
+    frameRad = boundedFrameRad;
+
+    surface.style.rotate = `${frameRad}rad`;
+
+    frameTime = time;
+    requestAnimationFrame(frame);
+  };
+
+  let dragging = false;
+  let initRad;
+  let radSum = 0;
+  let oldMoveRad;
+
   return (
     <div class="overflow-hidden ">
       {/* div is temp wrapper b/c can't use directive on transformed code (svg comp) */}
       <div
         class="translate-y-1/2"
         // @ts-expect-error idk what is different, type is correct in anisvg
-        use:makeSpinnable={{
+        use:makeDraggable={{
           onStart: (x, y) => {
-            const startAngle = getComputedStyle(surface).rotate;
-            startDeg = parseFloat(startAngle.slice(0, -3));
-            surface.classList.remove("animate-[spin_120s_linear_infinite]");
-            surface.style.rotate = startAngle;
-            startRad = Math.atan2(y, x);
+            const initDeg = parseFloat(
+              getComputedStyle(surface).rotate.slice(0, -3)
+            );
+            initRad = (initDeg * Math.PI) / 180;
+
+            oldMoveRad = Math.atan2(y, x);
           },
           onMove: (x, y) => {
-            const newRad = Math.atan2(y, x);
-            const radDiff = newRad - startRad;
-            const degDiff = (radDiff * 180) / Math.PI;
+            dragging = true;
+            const newMoveRad = Math.atan2(y, x);
+            let diff = newMoveRad - oldMoveRad;
 
-            surface.style.rotate = `${startDeg + degDiff}deg`;
+            if (diff > Math.PI) {
+              diff -= pi2;
+            } else if (diff < -Math.PI) {
+              diff += pi2;
+            }
+            radSum += diff;
+
+            oldMoveRad = newMoveRad;
           },
-          onEnd: () => {},
+          onEnd: () => {
+            dragging = false;
+          },
         }}
       >
         <EarthSVG ref={svg} />
