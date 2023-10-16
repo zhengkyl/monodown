@@ -8,7 +8,7 @@ import { Question, Quiz } from "~/components/Quiz";
 import { Button } from "~/components/ui/Button";
 import { Button2 } from "~/components/ui/Button2";
 import { randomNChoices } from "~/util/arrays";
-import EarthSVG from "../assets/svg/earth.min.svg";
+import EarthSVG from "../../assets/svg/earth.min.svg";
 import { Planet } from "~/components/Planet";
 import { Trail } from "~/components/Trail";
 
@@ -81,7 +81,7 @@ export function routeData(params) {
   );
 }
 
-export default function Home() {
+export default function Dungeon() {
   const questions = useRouteData<typeof routeData>();
 
   let trail: SVGSVGElement;
@@ -123,7 +123,7 @@ export default function Home() {
         </Button2>
         <Trail class="w-sm stroke-white" ref={trail} />
         <Show when={pos().length > 0} fallback={<div>what is going on</div>}>
-          <Dungeon junctions={junctions} pos={pos()} />
+          <DungeonPath junctions={junctions} pos={pos()} />
         </Show>
         <Planet />
         {/* <Show when={questions() != null}>
@@ -162,7 +162,7 @@ const junctions = Array(16)
   });
 // console.log(junctions);
 
-function Dungeon(props: DungeonProps) {
+function DungeonPath(props: DungeonProps) {
   return (
     <For each={props.junctions}>
       {(junction, i) => (
