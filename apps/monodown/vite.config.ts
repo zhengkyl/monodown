@@ -8,7 +8,11 @@ import remarkGfm from "remark-gfm";
 
 export default defineConfig({
   plugins: [
-    mdx({ jsxImportSource: "solid-jsx", remarkPlugins: [remarkGfm] }),
+    mdx({
+      jsxImportSource: "solid-jsx",
+      providerImportSource: "solid-jsx",
+      remarkPlugins: [remarkGfm],
+    }),
     solid({
       adapter: vercel({}),
     }),

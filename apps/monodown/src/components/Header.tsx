@@ -5,7 +5,7 @@ import { createEffect, createSignal } from "solid-js";
 
 export function Header() {
   return (
-    <header class="px-8 py-2 flex justify-between">
+    <header class="px-8 py-2 flex justify-between border-b">
       <A href="./" class="flex items-center gap-2 font-bold">
         <Icon class="w-9 h-9" />
         monodown

@@ -3,8 +3,9 @@ import Intro from "../../mdx/intro.mdx";
 export default function Index() {
   return (
     <main>
-      hi there
-      <Intro />
+      <div class="max-w-screen-md mx-auto">
+        <Intro />
+      </div>
     </main>
   );
 }
