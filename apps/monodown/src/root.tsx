@@ -17,6 +17,15 @@ import "virtual:uno.css";
 import "./root.css";
 
 export default function Root() {
+  // Sync with change made by inline script below
+  let bodyClass = "flex flex-col";
+  if (
+    typeof document !== "undefined" &&
+    document.body.classList.contains("dark")
+  ) {
+    bodyClass += " dark";
+  }
+
   return (
     <Html lang="en">
       <Head>
@@ -34,7 +43,7 @@ export default function Root() {
         />
         <link rel="apple-touch-icon" href="/apple-touch-icon.png" />
       </Head>
-      <Body class="flex flex-col">
+      <Body class={bodyClass}>
         <Suspense>
           <ErrorBoundary>
             <Routes>
@@ -42,6 +51,18 @@ export default function Root() {
             </Routes>
           </ErrorBoundary>
         </Suspense>
+        <script
+          innerHTML={`let theme = localStorage.getItem('theme');
+if (!theme) {
+  theme = window.matchMedia('(prefers-color-scheme: dark)').matches
+    ? 'dark'
+    : 'light';
+}
+if (theme === 'dark') {
+  document.body.classList.add('dark');
+  localStorage.setItem('theme', 'dark');
+}`}
+        ></script>
         <Scripts />
       </Body>
     </Html>

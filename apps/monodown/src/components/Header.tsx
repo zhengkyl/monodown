@@ -22,7 +22,6 @@ export function Header() {
 }
 
 const getTheme = () => {
-  // We guess on the server, but if it differs, there will be a flicker between render and hydration
   if (typeof localStorage === "undefined") return "light";
 
   const saved = localStorage.getItem("theme");
@@ -38,13 +37,13 @@ const getTheme = () => {
 function DarkModeToggle() {
   const [darkMode, setDarkMode] = createSignal(getTheme() === "dark");
 
+  // See root.tsx for logic that sets dark class before hydration
   createEffect(() => {
-    const body = document.body;
     if (darkMode()) {
-      body.classList.add("dark");
+      document.body.classList.add("dark");
       localStorage.setItem("theme", "dark");
     } else {
-      body.classList.remove("dark");
+      document.body.classList.remove("dark");
       localStorage.setItem("theme", "light");
     }
   });
