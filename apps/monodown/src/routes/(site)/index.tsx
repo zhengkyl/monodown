@@ -1,4 +1,4 @@
-import Intro from "../../mdx/intro.mdx";
+import Intro from "~/mdx/intro.mdx";
 
 export default function Index() {
   return (

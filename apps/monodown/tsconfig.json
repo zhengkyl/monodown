@@ -8,11 +8,7 @@
     "jsxImportSource": "solid-js",
     "jsx": "preserve",
     "strict": false,
-    "types": [
-      "vite-plugin-solid-svg/types-component-solid",
-      "solid-start/env",
-      "solid-jsx/types"
-    ],
+    "types": ["vite-plugin-solid-svg/types-component-solid", "solid-start/env"],
     "baseUrl": "./",
     "paths": {
       "~/*": ["./src/*"]
