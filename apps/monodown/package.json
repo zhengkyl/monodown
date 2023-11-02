@@ -14,7 +14,6 @@
     "esbuild": "^0.14.54",
     "eslint": "^8.50.0",
     "eslint-config-custom": "workspace:^",
-    "solid-marked": "^0.6.1",
     "solid-start-vercel": "^0.3.3",
     "tsconfig": "workspace:*",
     "typescript": "^4.9.5",
@@ -34,6 +33,7 @@
     "@unocss/reset": "^0.55.0",
     "class-variance-authority": "^0.7.0",
     "solid-js": "^1.7.9",
+    "solid-marked": "^0.6.1",
     "solid-start": "^0.3.1",
     "tailwind-merge": "^1.14.0"
   }
