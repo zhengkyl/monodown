@@ -160,7 +160,6 @@ const junctions = Array(16)
       type: "sort" as const,
     };
   });
-// console.log(junctions);
 
 function DungeonPath(props: DungeonProps) {
   return (

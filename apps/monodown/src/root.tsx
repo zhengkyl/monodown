@@ -16,8 +16,19 @@ import "@unocss/reset/tailwind.css";
 import "virtual:uno.css";
 import "./root.css";
 
+const immediateThemeScript = `let theme = localStorage.getItem('theme');
+if (!theme) {
+  theme = window.matchMedia('(prefers-color-scheme: dark)').matches
+    ? 'dark'
+    : 'light';
+}
+if (theme === 'dark') {
+  document.body.classList.add('dark');
+  localStorage.setItem('theme', 'dark');
+}`;
+
 export default function Root() {
-  // Sync with change made by inline script below
+  // Sync with change made by immediate theme script
   let bodyClass = "flex flex-col";
   if (
     typeof document !== "undefined" &&
@@ -51,18 +62,7 @@ export default function Root() {
             </Routes>
           </ErrorBoundary>
         </Suspense>
-        <script
-          innerHTML={`let theme = localStorage.getItem('theme');
-if (!theme) {
-  theme = window.matchMedia('(prefers-color-scheme: dark)').matches
-    ? 'dark'
-    : 'light';
-}
-if (theme === 'dark') {
-  document.body.classList.add('dark');
-  localStorage.setItem('theme', 'dark');
-}`}
-        ></script>
+        <script innerHTML={immediateThemeScript}></script>
         <Scripts />
       </Body>
     </Html>

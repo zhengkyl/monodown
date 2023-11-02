@@ -1,6 +1,6 @@
 html {
   /* Prevents reload/zoom on mobile */
-  touch-action: none;
+  /* touch-action: none; */
 }
 
 html,
@@ -94,4 +94,25 @@ body {
   to {
     rotate: 360deg;
   }
+}
+
+/* Can't target TableOfContents component directly */
+.tocHack > ul:last-of-type {
+  display: none;
+  --at-apply: p-8;
+}
+
+@media (min-width: 1280px) {
+  .tocHack > ul:last-of-type {
+    display: block;
+  }
+}
+
+.tocHack > ul:last-of-type::before {
+  content: "On this page";
+  --at-apply: font-semibold block mb-2;
+}
+
+ul > li > ul {
+  --at-apply: ml-4;
 }

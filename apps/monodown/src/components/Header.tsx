@@ -50,7 +50,7 @@ function DarkModeToggle() {
 
   return (
     <Switch.Root
-      class="inline-flex items-center"
+      class="inline-flex items-center cursor-pointer"
       checked={darkMode()}
       onChange={setDarkMode}
     >
