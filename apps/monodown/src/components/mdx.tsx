@@ -1,11 +1,11 @@
 import { Show } from "solid-js";
 import { Dynamic } from "solid-js/web";
 import { A } from "solid-start";
-import { twMerge } from "tailwind-merge";
 
 export function Root(props) {
   return props.children;
 }
+
 export function Heading(props) {
   return (
     <Dynamic
@@ -25,20 +25,23 @@ export function Heading(props) {
     </Dynamic>
   );
 }
+
 export function Paragraph(props) {
   return <p>{props.children}</p>;
 }
+
 export function List(props) {
   return (
     <Dynamic
       component={props.ordered ? "ol" : "ul"}
       start={props.start}
-      class={twMerge("w-[250px]", props.class)}
+      class={props.class}
     >
       {props.children}
     </Dynamic>
   );
 }
+
 export function ListItem(props) {
   return (
     <li>
@@ -53,7 +56,7 @@ export function ListItem(props) {
 const relativeUrl = (s: string) => `${s.toLowerCase().replaceAll(" ", "-")}`;
 
 export function Link(props) {
-  // assume sidebar link
+  // left sidebar link
   if (props.url == null) {
     return (
       <A
@@ -64,7 +67,9 @@ export function Link(props) {
         {props.children}
       </A>
     );
-  } else if (props.url.startsWith("#")) {
+  }
+  // right sidebar link
+  else if (props.url.startsWith("#")) {
     return (
       <A
         href={props.url}
@@ -97,4 +102,16 @@ export function Strong(props) {
 
 export function Emphasis(props) {
   return <span class="font-italic">{props.children}</span>;
+}
+
+export function Table(props) {
+  return <table {...props} />;
+}
+
+export function TableRow(props) {
+  return <tr {...props} />;
+}
+
+export function TableCell(props) {
+  return <td {...props} />;
 }

@@ -11,7 +11,6 @@ export function Header() {
         monodown
       </A>
       <div class="flex items-center gap-4 font-bold">
-        <A href="./learn">Learn</A>
         <A href="./test">Test</A>
         <A href="./components">Components</A>
         <A href="./dungeon">Dungeon</A>

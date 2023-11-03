@@ -16,5 +16,8 @@ module.exports = {
   rules: {
     "@typescript-eslint/no-non-null-assertion": "off",
     "@typescript-eslint/no-namespace": "off",
+
+    "no-empty-function": "off",
+    "@typescript-eslint/no-empty-function": "error",
   },
 };

@@ -1,41 +1,63 @@
-type StrokerOptions = {
-  time: number;
-  gap: number;
-  delay: number;
+type Options = {
+  time?: number;
+  gap?: number;
+  delay?: number;
+  progressCallback?: (t: number) => void;
 };
+
 export function strokeAnimator(
-  svgEl: SVGSVGElement,
-  options: StrokerOptions = { time: 300, gap: 400, delay: 300 }
+  svgEl,
+  {
+    time = 500,
+    gap = 400,
+    delay = 300,
+    progressCallback = () => {},
+  }: Options = {}
 ) {
   const strokes = [];
 
   svgEl
-    .querySelectorAll("[data-strokesvg] > g:last-of-type > path")
-    .forEach((e: SVGPathElement) => {
-      const index = parseInt(getComputedStyle(e).getPropertyValue("--i"));
-      if (index == strokes.length) {
-        strokes.push([]);
-      }
-      strokes[index].push(e);
+    .querySelectorAll('svg[data-strokesvg] > g[data-strokesvg="strokes"] > *')
+    .forEach((e) => {
+      strokes.push(e);
     });
 
-  strokes.forEach((strokePaths) => {
-    strokePaths.forEach((path) => {
-      const length = path.getTotalLength();
-      path.style.strokeDasharray = length.toString();
-    });
+  const strokeLengthsPrefixSum = [0];
+
+  const epsilon = 0.1;
+
+  strokes.forEach((stroke, i) => {
+    let length;
+
+    // All strokes in a group should be the same length, but precision is lost during optimization
+    // For large errors, strokes will not offset fully, so here we minimize max error for any stroke
+    if (stroke instanceof SVGGElement) {
+      let sum = 0;
+      for (const child of stroke.children) {
+        sum += child.getTotalLength();
+      }
+      length = sum / stroke.children.length;
+    } else {
+      length = stroke.getTotalLength();
+    }
+
+    strokeLengthsPrefixSum.push(strokeLengthsPrefixSum[i] + length);
+
+    stroke.style.strokeDasharray = `${length}`;
   });
+
+  const totalStrokeLength = strokeLengthsPrefixSum[strokes.length];
 
   let strokeIndex = strokes.length;
   let requestFrameId = null;
   let timeoutId = null;
 
   function skipOne() {
-    const strokePaths = strokes[strokeIndex];
-    strokePaths.forEach((path) => {
-      path.style.strokeDashoffset = "0";
-    });
+    const stroke = strokes[strokeIndex];
+    stroke.style.strokeDashoffset = 0;
     strokeIndex++;
+
+    progressCallback(strokeLengthsPrefixSum[strokeIndex] / totalStrokeLength);
   }
 
   function prev() {
@@ -44,18 +66,19 @@ export function strokeAnimator(
     if (strokeIndex === strokes.length) {
       strokeIndex--;
     } else if (
-      strokes[strokeIndex][0].style.strokeDashoffset ===
-      strokes[strokeIndex][0].style.strokeDasharray
+      parseFloat(strokes[strokeIndex].style.strokeDasharray) -
+        parseFloat(strokes[strokeIndex].style.strokeDashoffset) <
+      2 * epsilon
     ) {
       if (strokeIndex === 0) return;
       strokeIndex--;
     }
 
-    const strokePaths = strokes[strokeIndex];
+    const stroke = strokes[strokeIndex];
+    stroke.style.strokeDashoffset =
+      parseFloat(stroke.style.strokeDasharray) - epsilon;
 
-    strokePaths.forEach((path) => {
-      path.style.strokeDashoffset = path.style.strokeDasharray;
-    });
+    progressCallback(strokeLengthsPrefixSum[strokeIndex] / totalStrokeLength);
   }
 
   function next() {
@@ -75,21 +98,31 @@ export function strokeAnimator(
     }
   }
 
+  function toggle() {
+    if (timeoutId != null || requestFrameId != null) {
+      stop();
+    } else {
+      play();
+    }
+  }
+
   function play() {
     if (timeoutId != null || requestFrameId != null) {
       // state = playing
-      stop();
-      skipOne();
-      if (strokeIndex < strokes.length) {
-        startNextStroke(options.delay);
-      }
+      //
+      // uncomment to let play() immediately finish current stroke, good for one tap controls
+      // stop();
+      // skipOne();
+      // if (strokeIndex < strokes.length) {
+      //   startNextStroke(delay);
+      // }
       return;
     }
 
     if (strokeIndex === strokes.length) {
       // state = not started
       clearStrokes();
-      startNextStroke(options.delay);
+      startNextStroke(delay);
     } else {
       // state = stopped
       startNextStroke(0);
@@ -97,55 +130,103 @@ export function strokeAnimator(
   }
 
   function clearStrokes() {
-    strokes.forEach((strokePaths) => {
-      strokePaths.forEach((path) => {
-        path.style.strokeDashoffset = path.style.strokeDasharray;
-      });
+    strokes.forEach((stroke) => {
+      stroke.style.strokeDashoffset =
+        parseFloat(stroke.style.strokeDasharray) - epsilon;
     });
     strokeIndex = 0;
+
+    // equivalent to progressCallback(strokeLengthsPrefixSum[strokeIndex] / totalStrokeLength);
+    progressCallback(0);
   }
 
   let currOffset;
   let currPrevTime;
 
   function startNextStroke(timeout) {
-    const strokePaths = strokes[strokeIndex];
+    const stroke = strokes[strokeIndex];
 
-    currOffset = parseInt(strokePaths[0].style.strokeDashoffset);
+    currOffset = parseFloat(stroke.style.strokeDashoffset);
 
     timeoutId = setTimeout(() => {
       timeoutId = null;
-      currPrevTime = performance.now();
+      currPrevTime = null;
       requestFrameId = requestAnimationFrame(pathFrame);
     }, timeout);
   }
 
   const scale = svgEl.viewBox.baseVal.width;
-  const speed = scale / options.time;
+  const speed = scale / time;
 
   function pathFrame(time) {
-    const strokePaths = strokes[strokeIndex];
+    // a performance.now() called before requestAnimationFrame may give a LATER time
+    // which causes a negative time step and may be one cause of stroke flickering
+    // I don't really understand it except browser implementation of scheduling
+    // therefore, we must use a single source of time and skip the first frame
+    if (!currPrevTime) {
+      currPrevTime = time;
+      requestFrameId = requestAnimationFrame(pathFrame);
+      return;
+    }
+
+    const stroke = strokes[strokeIndex];
 
     currOffset = Math.max(currOffset - speed * (time - currPrevTime), 0);
     currPrevTime = time;
 
-    strokePaths.forEach((path) => {
-      path.style.strokeDashoffset = currOffset.toString();
-    });
+    stroke.style.strokeDashoffset = currOffset;
+
+    progressCallback(
+      (strokeLengthsPrefixSum[strokeIndex + 1] - currOffset) / totalStrokeLength
+    );
 
     if (currOffset === 0) {
       requestFrameId = null;
       strokeIndex++;
-      if (strokeIndex < strokes.length) startNextStroke(options.gap);
+      if (strokeIndex < strokes.length) startNextStroke(gap);
     } else {
       requestFrameId = requestAnimationFrame(pathFrame);
     }
   }
 
+  function setProgress(t) {
+    stop();
+
+    const strokeProgress = t * totalStrokeLength;
+
+    if (strokeIndex === strokes.length) strokeIndex--;
+
+    let lowerBound = strokeLengthsPrefixSum[strokeIndex];
+    while (lowerBound > strokeProgress) {
+      const stroke = strokes[strokeIndex];
+
+      stroke.style.strokeDashoffset =
+        parseFloat(stroke.style.strokeDasharray) - epsilon;
+
+      strokeIndex--;
+      lowerBound = strokeLengthsPrefixSum[strokeIndex];
+    }
+
+    let upperBound = strokeLengthsPrefixSum[strokeIndex + 1];
+    while (upperBound <= strokeProgress) {
+      const stroke = strokes[strokeIndex];
+      stroke.style.strokeDashoffset = 0;
+
+      strokeIndex++;
+      if (strokeIndex === strokes.length) return;
+      upperBound = strokeLengthsPrefixSum[strokeIndex + 1];
+    }
+
+    const stroke = strokes[strokeIndex];
+    stroke.style.strokeDashoffset = upperBound - strokeProgress;
+  }
+
   return {
     play,
     stop,
+    toggle,
     next,
     prev,
+    setProgress,
   };
 }

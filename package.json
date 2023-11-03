@@ -18,10 +18,9 @@
   "packageManager": "pnpm@8.6.10",
   "pnpm": {
     "//": "https://github.com/jfgodoy/vite-plugin-solid-svg/pull/38",
-    "////": "https://github.com/lxsmnsyc/solid-marked/pull/7",
     "patchedDependencies": {
       "vite-plugin-solid-svg@0.6.4": "patches/vite-plugin-solid-svg@0.6.4.patch",
-      "solid-marked@0.6.1": "patches/solid-marked@0.6.1.patch"
+      "solid-marked@0.6.2": "patches/solid-marked@0.6.2.patch"
     },
     "///": "https://github.com/nuxt/nuxt/issues/23493",
     "overrides": {

@@ -3,8 +3,8 @@ import { List, ListItem, Link, Paragraph } from "~/components/mdx";
 
 export default function JALayout() {
   return (
-    <div class="flex overflow-hidden tocHack">
-      <aside class="p-8 bg-accent">
+    <>
+      <aside class="bg-accent">
         <List ordered={false}>
           <ListItem>
             <Paragraph>
@@ -26,6 +26,6 @@ export default function JALayout() {
         </List>
       </aside>
       <Outlet />
-    </div>
+    </>
   );
 }

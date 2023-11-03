@@ -12,7 +12,11 @@ import {
   Image,
   Strong,
   Emphasis,
+  Table,
+  TableCell,
+  TableRow,
 } from "~/components/mdx";
+import { Door } from "~/components/Door";
 
 export default function SiteLayout() {
   return (
@@ -30,18 +34,26 @@ export default function SiteLayout() {
           Image,
           Strong,
           Emphasis,
+          Table,
+          TableRow,
+          TableCell,
         }}
         components={{
           Content(props: { children: JSX.Element }) {
             return (
-              <article class="flex-1 max-w-screen-lg m-auto p-16 pt-0 space-y-4 h-full overflow-y-auto">
-                {props.children}
-              </article>
+              <div class="flex-1 h-full overflow-y-auto">
+                <article class="max-w-screen-xl m-auto p-16 pt-0 space-y-4">
+                  {props.children}
+                </article>
+              </div>
             );
           },
+          Door,
         }}
       >
-        <Outlet />
+        <div class="flex h-full overflow-hidden tocHack">
+          <Outlet />
+        </div>
       </MDXProvider>
     </>
   );

@@ -91,8 +91,6 @@ export function Irises(props: Props) {
           ref={dot}
           class="rounded-full bg-red-400 h-8 w-8 cursor-grab"
           use:makeDraggable={{
-            // onStart: () => console.log("start"),
-            // onEnd: () => console.log("end"),
             onMove: (dx, dy) => {
               const theta = Math.atan2(dy, dx);
               const r = Math.min(Math.sqrt(dx ** 2 + dy ** 2), 80) / 80;

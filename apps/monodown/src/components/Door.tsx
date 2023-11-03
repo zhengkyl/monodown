@@ -13,19 +13,6 @@ import OAudio from "~/assets/audio/o.mp3";
 import { strokeAnimator } from "~/util/strokeAnimator";
 import { Button } from "~/components/ui/Button";
 
-export default function Learn() {
-  const [index, setIndex] = createSignal(0);
-  return (
-    <main class="flex flex-wrap gap-4">
-      <Door index={0} />
-      <Door index={1} />
-      <Door index={2} />
-      <Door index={3} />
-      <Door index={4} />
-    </main>
-  );
-}
-
 const lesson = [
   {
     svg: ASvg,
@@ -61,7 +48,7 @@ const classes = [
   "bg-orange-300",
 ];
 
-function Door(props) {
+export function Door(props) {
   let svg: SVGSVGElement;
 
   const [animator, setAnimator] =
@@ -72,11 +59,11 @@ function Door(props) {
   });
 
   return (
-    <div class="flex flex-col items-center max-w-sm p-4 border-2 border-border rounded-lg">
+    <div class="flex flex-col items-center border-2 border-border rounded-lg">
       <Dynamic
         ref={svg}
         component={lesson[props.index].svg}
-        class="max-w-xs [&_g:first-of-type]:fill-stone-300 [&_g:last-of-type]:stroke-stone-800"
+        class="w-[200px]"
       />
       <div class="font-bold text-4xl mb-4 text-indigo-900">
         {lesson[props.index].text}

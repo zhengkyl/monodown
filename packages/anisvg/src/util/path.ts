@@ -12,7 +12,6 @@ export function parsePath(path: string) {
     const numbers = match[2].match(numberRe) ?? [];
     data.push([match[1], ...numbers.map(parseFloat)]);
   }
-  // console.log("parsePath", path, data);
   return data;
 }
 
