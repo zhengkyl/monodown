@@ -8,7 +8,7 @@ export function Header() {
     <header class="px-8 py-2 flex justify-between border-b">
       <A href="./" class="flex items-center gap-2 font-bold">
         <Icon class="w-9 h-9" />
-        monodown
+        monono
       </A>
       <div class="flex items-center gap-4 font-bold">
         <A href="./test">Test</A>

@@ -1,5 +1,5 @@
 {
-  "name": "monodown",
+  "name": "monono",
   "scripts": {
     "dev": "solid-start dev",
     "build": "solid-start build",

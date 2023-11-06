@@ -1,6 +1,7 @@
 import { createSignal, onMount } from "solid-js";
 import { Dynamic } from "solid-js/web";
 import ASvg from "~/assets/kana/あ.svg";
+import MASvg from "~/assets/kana/mあ.svg";
 import ISvg from "~/assets/kana/い.svg";
 import USvg from "~/assets/kana/う.svg";
 import ESvg from "~/assets/kana/え.svg";
@@ -40,13 +41,13 @@ const lesson = [
     text: "o",
   },
 ];
-const classes = [
-  "bg-red-300",
-  "bg-green-300",
-  "bg-blue-300",
-  "bg-yellow-200",
-  "bg-orange-300",
-];
+// const classes = [
+//   "bg-red-300",
+//   "bg-green-300",
+//   "bg-blue-300",
+//   "bg-yellow-200",
+//   "bg-orange-300",
+// ];
 
 export function Door(props) {
   let svg: SVGSVGElement;
@@ -59,34 +60,37 @@ export function Door(props) {
   });
 
   return (
-    <div class="flex flex-col items-center border-2 border-border rounded-lg">
-      <Dynamic
-        ref={svg}
-        component={lesson[props.index].svg}
-        class="w-[200px]"
-      />
-      <div class="font-bold text-4xl mb-4 text-indigo-900">
-        {lesson[props.index].text}
-      </div>
+    <div class="flex flex-col">
       <div class="flex gap-4">
-        <Button
-          onClick={() => {
-            const audio = new Audio(lesson[props.index].audio);
-            audio.play();
-          }}
-          size="icon-lg"
-        >
-          <div class="i-uil:volume"></div>
-        </Button>
-        <Button
-          onClick={() => {
-            animator()?.play();
-          }}
-          size="icon-lg"
-        >
-          <div class="i-uil:pen"></div>
-        </Button>
+        <div class="space-y-2">
+          <Button
+            size="icon-lg"
+            onClick={() => {
+              const audio = new Audio(lesson[props.index].audio);
+              audio.play();
+            }}
+          >
+            <div class="i-uil:volume"></div>
+          </Button>
+          <Button
+            onClick={() => {
+              animator()?.play();
+            }}
+            size="icon-lg"
+          >
+            <div class="i-uil:pen"></div>
+          </Button>
+        </div>
+        <Dynamic
+          ref={svg}
+          component={lesson[props.index].svg}
+          class="w-full border"
+        />
+        <MASvg class="w-full border" />
       </div>
+      {/* <div class="font-bold text-4xl mb-4 text-indigo-900">
+        {lesson[props.index].text}
+      </div> */}
       {/* <Textfield class="m-auto w-[80px]" /> */}
     </div>
   );
