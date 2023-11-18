@@ -16,7 +16,7 @@ export function Textfield(props: TextfieldProps) {
       </Show>
       <TextField.Input
         ref={props.ref}
-        class="px-2 py-2 h-10 w-full rounded-md border border-input focus-visible:(outline-none ring-offset-2 ring-ring ring-2) placeholder:text-muted-foreground disabled:opacity-50"
+        class="px-2 py-2 h-10 w-full bg-background rounded-md border border-input focus-visible:(outline-none ring-offset-2 ring-ring ring-2) placeholder:text-muted-foreground disabled:opacity-50"
       />
     </TextField.Root>
   );

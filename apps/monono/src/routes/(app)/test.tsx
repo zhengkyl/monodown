@@ -1,13 +1,22 @@
-import { For, Show, createSignal, onMount } from "solid-js";
+import { createAutoAnimateDirective } from "@formkit/auto-animate/solid";
+import { TextField } from "@kobalte/core";
+import { TextFieldRootProps } from "@kobalte/core/dist/types/text-field";
+import {
+  For,
+  Show,
+  createEffect,
+  createSignal,
+  on,
+  splitProps,
+} from "solid-js";
 import { SetStoreFunction, createStore } from "solid-js/store";
 import { Button } from "~/components/ui/Button";
-import { Textfield } from "~/components/ui/Textfield";
 import { mainKana, dakutenKana, comboKana, KanaInfo } from "~/data/kana";
 
 export default function Test() {
   const [mode, setMode] = createSignal<"hira" | "kata">("hira");
 
-  const [started, setStarted] = createSignal(false);
+  const [started, setStarted] = createSignal(true);
 
   const [mainActive, setMainActive] = createStore(
     Array(mainKana.length).fill(false)
@@ -41,7 +50,7 @@ export default function Test() {
   }
 
   return (
-    <main class="max-w-screen-sm mx-auto">
+    <main class="">
       <Show
         when={started()}
         fallback={
@@ -107,6 +116,67 @@ export default function Test() {
     </main>
   );
 }
+export interface TextlineProps extends TextFieldRootProps {
+  ref?: HTMLInputElement;
+}
+function Textline(props: TextlineProps) {
+  const [, rest] = splitProps(props, ["ref"]);
+  return (
+    <TextField.Root
+      {...rest}
+      class="bg-foreground/5 w-[clamp(1rem,_16rem,_90vw)] h-16 pt-2 pb-2 rounded relative after:(border-b-2 border-b-foreground content-[''] absolute left-0 right-0 bottom-0)"
+    >
+      <TextField.Input
+        ref={props.ref}
+        class="bg-transparent w-full text-4xl font-bold text-center focus-visible:outline-none placeholder:text-muted-foreground"
+      />
+    </TextField.Root>
+  );
+}
+
+type QuestionProps = {
+  prompt: string;
+  answers: string[];
+  active: boolean;
+  onFinish: (pass) => void;
+};
+
+function Question(props: QuestionProps) {
+  let pass = true;
+  let textfield: HTMLInputElement;
+
+  // props.active changes reference so this always reruns
+  createEffect(() => {
+    console.log(props.active);
+    if (!props.active) return;
+    textfield.disabled = false;
+    textfield.focus();
+  });
+
+  return (
+    <li>
+      <div class="[font-size:clamp(1rem,_16rem,_90vw)]">{props.prompt}</div>
+      <Textline
+        disabled
+        ref={textfield}
+        onKeyPress={(e) => {
+          if (!(e.key === "Enter" || e.key === " ")) return;
+          // console.log(props.textfield, props.textfield.value);
+          e.preventDefault();
+
+          if (props.answers.includes(textfield.value)) {
+            props.onFinish(pass);
+            textfield.disabled = true;
+          } else {
+            pass = false;
+            textfield.placeholder = textfield.value;
+            textfield.value = "";
+          }
+        }}
+      />
+    </li>
+  );
+}
 
 type KanaQuizProps = {
   studyList: { prompt: string; romaji: string[] }[];
@@ -116,13 +186,20 @@ type KanaQuizProps = {
 function KanaQuiz(props: KanaQuizProps) {
   const [index, setIndex] = createSignal(0);
 
-  const [value, setValue] = createSignal("");
+  const [list, setList] = createSignal([null, null, ...props.studyList]);
 
-  let textfield: HTMLInputElement;
+  // eslint-disable-next-line
+  const autoAnimate = createAutoAnimateDirective();
 
-  onMount(() => {
-    textfield.focus();
-  });
+  createEffect(
+    on(
+      index,
+      () => {
+        setList((l) => l.slice(1));
+      },
+      { defer: true }
+    )
+  );
 
   return (
     <Show
@@ -138,24 +215,25 @@ function KanaQuiz(props: KanaQuizProps) {
         </div>
       }
     >
-      <div class="flex flex-col gap-8 items-center">
-        <div class="text-9xl">{props.studyList[index()].prompt}</div>
-        <Textfield
-          value={value()}
-          onChange={setValue}
-          ref={textfield}
-          class="w-24"
-          onKeyPress={(e) => {
-            if (e.key !== "Enter" && e.key !== " ") return;
-
-            e.preventDefault();
-            if (props.studyList[index()].romaji.includes(value())) {
-              setIndex(index() + 1);
-              setValue("");
-            }
-          }}
-        />
-      </div>
+      <ul
+        use:autoAnimate
+        class="relative flex gap-[8rem] ml-[calc(50vw-56rem)] overflow-hidden"
+      >
+        <For each={list()}>
+          {(item, i) =>
+            i() < 2 ? (
+              <div class="min-w-[16rem]"></div>
+            ) : (
+              <Question
+                prompt={item.prompt}
+                answers={item.romaji}
+                active={i() === 2}
+                onFinish={() => setIndex((i) => i + 1)}
+              />
+            )
+          }
+        </For>
+      </ul>
     </Show>
   );
 }
