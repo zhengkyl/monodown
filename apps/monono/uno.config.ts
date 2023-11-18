@@ -13,7 +13,6 @@ export default defineConfig({
   transformers: [transformerVariantGroup(), transformerDirectives()],
   variants: [
     // desktop active, with same conditions as sticky hover variant
-    // @ts-expect-error idk it's literally a union containing this type
     variantMatcher("d-active", (input) => {
       return {
         parent: `${

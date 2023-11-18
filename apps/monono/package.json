@@ -10,14 +10,14 @@
   "devDependencies": {
     "@iconify-json/uil": "^1.1.5",
     "@types/node": "^18.16.19",
-    "@unocss/preset-mini": "^0.55.2",
+    "@unocss/preset-mini": "^0.57.5",
     "esbuild": "^0.14.54",
     "eslint": "^8.50.0",
     "eslint-config-custom": "workspace:^",
     "solid-start-vercel": "^0.3.3",
     "tsconfig": "workspace:*",
     "typescript": "^4.9.5",
-    "unocss": "^0.55.0",
+    "unocss": "^0.57.5",
     "vite": "^4.4.6",
     "vite-plugin-solid": "^2.7.0",
     "vite-plugin-solid-marked": "^0.6.1",
@@ -35,6 +35,7 @@
     "solid-js": "^1.7.9",
     "solid-marked": "^0.6.2",
     "solid-start": "^0.3.1",
-    "tailwind-merge": "^1.14.0"
+    "tailwind-merge": "^1.14.0",
+    "update": "^0.7.4"
   }
 }

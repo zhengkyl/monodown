@@ -25,65 +25,65 @@ body {
 }
 
 :root {
-  --background: 0, 0%, 100%;
-  --foreground: 270, 8%, 9%;
+  --background: 0 0% 100%;
+  --foreground: 0 8% 9%;
 
-  --card: 0, 0%, 100%;
-  --card-foreground: 270, 8%, 9%;
+  --card: 0 0% 100%;
+  --card-foreground: 0 8% 9%;
 
-  --popover: 0, 0%, 100%;
-  --popover-foreground: 270, 8%, 9%;
+  --popover: 0 0% 100%;
+  --popover-foreground: 0 8% 9%;
 
-  --primary: 24, 9.8%, 10%;
-  --primary-foreground: 60, 9.1%, 97.8%;
+  --primary: 4 9.8% 10%;
+  --primary-foreground: 0 9.1% 97.8%;
 
-  --secondary: 60, 4.8%, 95.9%;
-  --secondary-foreground: 24, 9.8%, 10%;
+  --secondary: 0 4.8% 95.9%;
+  --secondary-foreground: 4 9.8% 10%;
 
-  --muted: 60, 4.8%, 95.9%;
-  --muted-foreground: 25, 5.3%, 44.7%;
+  --muted: 0 4.8% 95.9%;
+  --muted-foreground: 5 5.3% 44.7%;
 
-  --accent: 60, 4.8%, 95.9%;
-  --accent-foreground: 24, 9.8%, 10%;
+  --accent: 0 4.8% 95.9%;
+  --accent-foreground: 4 9.8% 10%;
 
-  --destructive: 0, 84.2%, 60.2%;
-  --destructive-foreground: 60, 9.1%, 97.8%;
+  --destructive: 0 84.2% 60.2%;
+  --destructive-foreground: 0 9.1% 97.8%;
 
-  --border: 20, 5.9%, 90%;
-  --input: 20, 5.9%, 90%;
-  --ring: 270, 8%, 9%;
+  --border: 0 5.9% 90%;
+  --input: 0 5.9% 90%;
+  --ring: 0 8% 9%;
 
   --radius: 0.5rem;
 }
 
 .dark {
-  --background: 270, 8%, 9%;
-  --foreground: 60, 9.1%, 97.8%;
+  --background: 0 8% 9%;
+  --foreground: 0 9.1% 97.8%;
 
-  --card: 270, 8%, 9%;
-  --card-foreground: 60, 9.1%, 97.8%;
+  --card: 0 8% 9%;
+  --card-foreground: 0 9.1% 97.8%;
 
-  --popover: 270, 8%, 9%;
-  --popover-foreground: 60, 9.1%, 97.8%;
+  --popover: 0 8% 9%;
+  --popover-foreground: 0 9.1% 97.8%;
 
-  --primary: 60, 9.1%, 97.8%;
-  --primary-foreground: 24, 9.8%, 10%;
+  --primary: 0 9.1% 97.8%;
+  --primary-foreground: 4 9.8% 10%;
 
-  --secondary: 267, 11%, 7%;
-  --secondary-foreground: 60, 9.1%, 97.8%;
+  --secondary: 7 11% 7%;
+  --secondary-foreground: 0 9.1% 97.8%;
 
-  --muted: 267, 11%, 7%;
-  --muted-foreground: 24, 5.4%, 63.9%;
+  --muted: 7 11% 7%;
+  --muted-foreground: 4 5.4% 63.9%;
 
-  --accent: 267, 11%, 7%;
-  --accent-foreground: 60, 9.1%, 97.8%;
+  --accent: 7 11% 7%;
+  --accent-foreground: 0 9.1% 97.8%;
 
-  --destructive: 0, 62.8%, 30.6%;
-  --destructive-foreground: 60, 9.1%, 97.8%;
+  --destructive: 0 62.8% 30.6%;
+  --destructive-foreground: 0 9.1% 97.8%;
 
-  --border: 267, 11%, 7%;
-  --input: 267, 11%, 7%;
-  --ring: 24, 5.7%, 82.9%;
+  --border: 7 11% 7%;
+  --input: 7 11% 7%;
+  --ring: 4 5.7% 82.9%;
 }
 
 /* override default spin which uses transform */
