@@ -11,9 +11,9 @@ export function Header() {
         monono
       </A>
       <div class="flex items-center gap-4 font-bold">
-        <A href="./test">Test</A>
+        <a href="./test">Test</a>
         <A href="./components">Components</A>
-        <A href="./dungeon">Dungeon</A>
+        <a href="./dungeon">Dungeon</a>
         <DarkModeToggle />
       </div>
     </header>

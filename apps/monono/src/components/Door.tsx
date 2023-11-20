@@ -60,38 +60,34 @@ export function Door(props) {
   });
 
   return (
-    <div class="flex flex-col">
-      <div class="flex gap-4">
-        <div class="space-y-2">
-          <Button
-            size="icon-lg"
-            onClick={() => {
-              const audio = new Audio(lesson[props.index].audio);
-              audio.play();
-            }}
-          >
-            <div class="i-uil:volume"></div>
-          </Button>
-          <Button
-            onClick={() => {
-              animator()?.play();
-            }}
-            size="icon-lg"
-          >
-            <div class="i-uil:pen"></div>
-          </Button>
-        </div>
+    <div class="flex flex-col gap-4">
+      <div class="flex">
         <Dynamic
           ref={svg}
           component={lesson[props.index].svg}
-          class="w-full border"
+          class="w-full border dark:([--stroke:#ccc] [--shadow:#000])"
         />
         <MASvg class="w-full border" />
       </div>
-      {/* <div class="font-bold text-4xl mb-4 text-indigo-900">
-        {lesson[props.index].text}
-      </div> */}
-      {/* <Textfield class="m-auto w-[80px]" /> */}
+      <div class="flex gap-2 items-end">
+        <Button
+          size="icon-lg"
+          onClick={() => {
+            const audio = new Audio(lesson[props.index].audio);
+            audio.play();
+          }}
+        >
+          <div class="i-uil:volume"></div>
+        </Button>
+        <Button
+          onClick={() => {
+            animator()?.play();
+          }}
+          size="icon"
+        >
+          <div class="i-uil:pen"></div>
+        </Button>
+      </div>
     </div>
   );
 }

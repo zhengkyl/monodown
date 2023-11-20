@@ -41,11 +41,11 @@ export default function SiteLayout() {
         components={{
           Content(props: { children: JSX.Element }) {
             return (
-              <div class="flex-1 h-full overflow-y-auto">
-                <article class="max-w-screen-xl m-auto p-6 pt-0 sm:(p-16 pt-0) space-y-4">
+              <main class="flex-1 overflow-y-auto">
+                <article class="max-w-screen-xl m-auto px-6 md:(px-8) lg:(px-16) space-y-4">
                   {props.children}
                 </article>
-              </div>
+              </main>
             );
           },
           Door,

@@ -1,14 +1,6 @@
-import { createAutoAnimateDirective } from "@formkit/auto-animate/solid";
 import { TextField } from "@kobalte/core";
 import { TextFieldRootProps } from "@kobalte/core/dist/types/text-field";
-import {
-  For,
-  Show,
-  createEffect,
-  createSignal,
-  on,
-  splitProps,
-} from "solid-js";
+import { For, Show, createSignal, onMount, splitProps } from "solid-js";
 import { SetStoreFunction, createStore } from "solid-js/store";
 import { Button } from "~/components/ui/Button";
 import { mainKana, dakutenKana, comboKana, KanaInfo } from "~/data/kana";
@@ -50,7 +42,7 @@ export default function Test() {
   }
 
   return (
-    <main class="">
+    <main class="flex flex-col justify-center h-50svh w-100vw">
       <Show
         when={started()}
         fallback={
@@ -118,17 +110,18 @@ export default function Test() {
 }
 export interface TextlineProps extends TextFieldRootProps {
   ref?: HTMLInputElement;
+  placeholder?: string;
 }
 function Textline(props: TextlineProps) {
   const [, rest] = splitProps(props, ["ref"]);
   return (
-    <TextField.Root
-      {...rest}
-      class="bg-foreground/5 w-[clamp(1rem,_16rem,_90vw)] h-16 pt-2 pb-2 rounded relative after:(border-b-2 border-b-foreground content-[''] absolute left-0 right-0 bottom-0)"
-    >
+    <TextField.Root {...rest}>
       <TextField.Input
         ref={props.ref}
-        class="bg-transparent w-full text-4xl font-bold text-center focus-visible:outline-none placeholder:text-muted-foreground"
+        placeholder={props.placeholder}
+        // autocapitalize="none"
+        // autocomplete="off"
+        class="disabled:bg-transparent w-full px-2 py-1 rounded text-4xl font-bold text-center bg-foreground/5 focus-visible:outline-none placeholder:text-muted-foreground"
       />
     </TextField.Root>
   );
@@ -136,43 +129,22 @@ function Textline(props: TextlineProps) {
 
 type QuestionProps = {
   prompt: string;
-  answers: string[];
+  // answers: string[];
   active: boolean;
-  onFinish: (pass) => void;
+  // onFinish: (pass) => void;
+  value: string;
+  placeholder: string;
 };
 
 function Question(props: QuestionProps) {
-  let pass = true;
-  let textfield: HTMLInputElement;
-
-  // props.active changes reference so this always reruns
-  createEffect(() => {
-    console.log(props.active);
-    if (!props.active) return;
-    textfield.disabled = false;
-    textfield.focus();
-  });
-
   return (
-    <li>
-      <div class="[font-size:clamp(1rem,_16rem,_90vw)]">{props.prompt}</div>
+    <li class="w-[8rem]">
+      <div class="[font-size:8rem]">{props.prompt}</div>
       <Textline
+        class="w-[8rem]"
         disabled
-        ref={textfield}
-        onKeyPress={(e) => {
-          if (!(e.key === "Enter" || e.key === " ")) return;
-          // console.log(props.textfield, props.textfield.value);
-          e.preventDefault();
-
-          if (props.answers.includes(textfield.value)) {
-            props.onFinish(pass);
-            textfield.disabled = true;
-          } else {
-            pass = false;
-            textfield.placeholder = textfield.value;
-            textfield.value = "";
-          }
-        }}
+        value={props.value}
+        placeholder={props.placeholder}
       />
     </li>
   );
@@ -186,20 +158,23 @@ type KanaQuizProps = {
 function KanaQuiz(props: KanaQuizProps) {
   const [index, setIndex] = createSignal(0);
 
-  const [list, setList] = createSignal([null, null, ...props.studyList]);
+  const [value, setValue] = createSignal("");
+  const [answers, setAnswers] = createStore(Array(props.studyList.length));
 
-  // eslint-disable-next-line
-  const autoAnimate = createAutoAnimateDirective();
+  let ulist: HTMLUListElement;
 
-  createEffect(
-    on(
-      index,
-      () => {
-        setList((l) => l.slice(1));
-      },
-      { defer: true }
-    )
-  );
+  const next = () => {
+    setIndex((i) => i + 1);
+    // 4 (center) + 16 (gap + width)
+    ulist.style.marginLeft = `calc(50vw - ${4 + index() * 16}rem)`;
+  };
+
+  let textfield: HTMLInputElement;
+
+  onMount(() => {
+    textfield && textfield.focus();
+    console.log("onMount");
+  });
 
   return (
     <Show
@@ -215,23 +190,48 @@ function KanaQuiz(props: KanaQuizProps) {
         </div>
       }
     >
-      <ul
-        use:autoAnimate
-        class="relative flex gap-[8rem] ml-[calc(50vw-56rem)] overflow-hidden"
-      >
-        <For each={list()}>
-          {(item, i) =>
-            i() < 2 ? (
-              <div class="min-w-[16rem]"></div>
-            ) : (
-              <Question
-                prompt={item.prompt}
-                answers={item.romaji}
-                active={i() === 2}
-                onFinish={() => setIndex((i) => i + 1)}
-              />
-            )
+      <input
+        type="text"
+        class="w-0 h-0 outline-none"
+        autofocus
+        autocapitalize="none"
+        onBlur={() => setTimeout(() => textfield.focus(), 20)}
+        ref={textfield}
+        value={value()}
+        onInput={(e) => {
+          setValue(e.target.value);
+          setAnswers(index(), e.target.value);
+        }}
+        onKeyPress={(e) => {
+          if (!(e.key === "Enter" || e.key === " ")) return;
+          e.preventDefault();
+
+          if (props.studyList[index()].romaji.includes(value())) {
+            next();
           }
+          setValue("");
+        }}
+      />
+      <ul
+        ref={ulist}
+        style={{ "margin-left": "calc(50vw - 4rem)" }}
+        class="overflow-hidden flex gap-[8rem] [transition:margin-left_300ms_ease-in-out]"
+      >
+        <For each={props.studyList}>
+          {(item, i) => (
+            <Question
+              prompt={item.prompt}
+              value={
+                i() === index() && value() !== answers[i()] ? "" : answers[i()]
+              }
+              placeholder={
+                i() === index() && value() !== answers[i()]
+                  ? answers[i()]
+                  : null
+              }
+              active={i() === index()}
+            />
+          )}
         </For>
       </ul>
     </Show>

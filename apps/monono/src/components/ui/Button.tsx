@@ -17,18 +17,19 @@ export const buttonVariants = cva(
     "mb-[var(--btn-depth)]",
 
     "[--btn-edge-opacity:1]",
-    "[--btn-edge-color:hsl(var(--btn-h)_var(--btn-s)_calc(var(--btn-l)-5%)/var(--btn-edge-opacity))]",
     "[--un-shadow-color:var(--btn-edge-color)]",
   ],
   {
     variants: {
       variant: {
         fill: [
+          "[--btn-edge-color:hsl(var(--btn-h)_var(--btn-s)_calc(var(--btn-l)-5%)/var(--btn-edge-opacity))]",
           "bg-[hsl(var(--btn-h)_var(--btn-s)_var(--btn-l))]",
           "text-white",
         ],
         line: [
-          "bg-white",
+          "[--btn-edge-color:hsl(var(--btn-h)_var(--btn-s)_calc(var(--btn-l))/var(--btn-edge-opacity))]",
+          "bg-background",
           "border-[var(--btn-edge-color)]",
           "border-2",
           "text-[var(--btn-edge-color)]",
@@ -51,7 +52,8 @@ export const buttonVariants = cva(
         green: "[--btn-h:142] [--btn-s:71%] [--btn-l:45%]",
         red: "[--btn-h:0] [--btn-s:84%] [--btn-l:60%]",
         stone: "[--btn-h:25] [--btn-s:5%] [--btn-l:45%]",
-        default: "[--btn-h:0] [--btn-s:0%] [--btn-l:83%]",
+        default:
+          "[--btn-h:270] [--btn-s:8%] [--btn-l:9%] dark:([--btn-h:60] [--btn-s:9.1%] [--btn-l:97.8%])",
         yellow: "[--btn-h:45] [--btn-s:93%] [--btn-l:47%]",
       },
       element: {
@@ -69,7 +71,7 @@ export const buttonVariants = cva(
         element: "button",
         class: [
           "@hover:(bg-opacity-0 text-opacity-80 [--btn-edge-opacity:.8])",
-          "disabled:(bg-stone-100 text-stone-300 border-stone-300)",
+          // "disabled:(bg-stone-100 text-stone-300 border-stone-300)",
         ],
       },
       {
@@ -77,13 +79,8 @@ export const buttonVariants = cva(
         element: "button",
         class: [
           "@hover:(bg-opacity-95 [--btn-edge-opacity:.95])",
-          "disabled:(bg-stone-200 text-stone-400 shadow-stone-400)",
+          // "disabled:(bg-stone-200 text-stone-400 shadow-stone-400)",
         ],
-      },
-      {
-        variant: "line",
-        hue: "default",
-        class: "text-dark",
       },
     ],
     defaultVariants: {
