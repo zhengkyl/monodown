@@ -80,13 +80,6 @@ export default defineConfig({
       sm: "calc(var(--radius) - 4px)",
     },
     // keyframes: {
-    // why you now worK??? see root.css
-    //   spin: {
-    //     from: { rotate: "0deg" },
-    //     to: { rotate: "360deg" },
-    //   },
-    // },
-    // keyframes: {
     //   "accordion-down": {
     //     from: { height: 0 },
     //     to: { height: "var(--radix-accordion-content-height)" },
@@ -96,9 +89,23 @@ export default defineConfig({
     //     to: { height: 0 },
     //   },
     // },
-    // animation: {
-    //   "accordion-down": "accordion-down 0.2s ease-out",
-    //   "accordion-up": "accordion-up 0.2s ease-out",
-    // },
+    animation: {
+      keyframes: {
+        /* override default spin which uses transform */
+        spin: "{from { rotate: 0deg; } to { rotate: 360deg; }}",
+        blink: "{from { opacity: 0%; }}",
+      },
+      durations: {
+        blink: "0.8s",
+      },
+      timingFns: {
+        blink: "cubic-bezier(.65,.05,.36,1) ",
+      },
+      counts: {
+        blink: "infinite",
+      },
+      // "accordion-down": "accordion-down 0.2s ease-out",
+      // "accordion-up": "accordion-up 0.2s ease-out",
+    },
   },
 });

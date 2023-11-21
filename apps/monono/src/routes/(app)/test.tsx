@@ -1,6 +1,4 @@
-import { TextField } from "@kobalte/core";
-import { TextFieldRootProps } from "@kobalte/core/dist/types/text-field";
-import { For, Show, createSignal, onMount, splitProps } from "solid-js";
+import { For, Show, createSignal, onMount } from "solid-js";
 import { SetStoreFunction, createStore } from "solid-js/store";
 import { Button } from "~/components/ui/Button";
 import { mainKana, dakutenKana, comboKana, KanaInfo } from "~/data/kana";
@@ -42,7 +40,7 @@ export default function Test() {
   }
 
   return (
-    <main class="flex flex-col justify-center h-50svh w-100vw">
+    <main>
       <Show
         when={started()}
         fallback={
@@ -108,44 +106,42 @@ export default function Test() {
     </main>
   );
 }
-export interface TextlineProps extends TextFieldRootProps {
-  ref?: HTMLInputElement;
-  placeholder?: string;
-}
-function Textline(props: TextlineProps) {
-  const [, rest] = splitProps(props, ["ref"]);
-  return (
-    <TextField.Root {...rest}>
-      <TextField.Input
-        ref={props.ref}
-        placeholder={props.placeholder}
-        // autocapitalize="none"
-        // autocomplete="off"
-        class="disabled:bg-transparent w-full px-2 py-1 rounded text-4xl font-bold text-center bg-foreground/5 focus-visible:outline-none placeholder:text-muted-foreground"
-      />
-    </TextField.Root>
-  );
-}
-
 type QuestionProps = {
   prompt: string;
   // answers: string[];
   active: boolean;
   // onFinish: (pass) => void;
   value: string;
-  placeholder: string;
+  isPlaceholder: boolean;
 };
 
 function Question(props: QuestionProps) {
   return (
     <li class="w-[8rem]">
       <div class="[font-size:8rem]">{props.prompt}</div>
-      <Textline
-        class="w-[8rem]"
-        disabled
-        value={props.value}
-        placeholder={props.placeholder}
-      />
+      <div
+        class="w-[8rem] px-2 py-1 rounded"
+        classList={{
+          "bg-foreground/5": props.active,
+        }}
+      >
+        <div
+          class="w-fit text-4xl h-10 font-bold m-auto relative"
+          classList={{
+            "text-muted-foreground": props.isPlaceholder,
+            "after:(absolute content-[''] w-0.5 h-full bg-red animate-blink)":
+              props.active,
+
+            "after:left-1/2": props.active && props.isPlaceholder,
+            "after:ml-[-1px]":
+              props.active && (!props.value || props.isPlaceholder),
+            "after:ml-0.5":
+              props.active && !(!props.value || props.isPlaceholder),
+          }}
+        >
+          {props.value}
+        </div>
+      </div>
     </li>
   );
 }
@@ -173,68 +169,70 @@ function KanaQuiz(props: KanaQuizProps) {
 
   onMount(() => {
     textfield && textfield.focus();
-    console.log("onMount");
   });
 
   return (
-    <Show
-      when={index() < props.studyList.length}
-      fallback={
-        <div class="flex gap-4">
-          <Button variant="fill" hue="green" onClick={props.onFinish}>
-            Finish
-          </Button>
-          <Button variant="fill" hue="indigo" onClick={[setIndex, 0]}>
-            Try again
-          </Button>
-        </div>
-      }
-    >
-      <input
-        type="text"
-        class="w-0 h-0 outline-none"
-        autofocus
-        autocapitalize="none"
-        onBlur={() => setTimeout(() => textfield.focus(), 20)}
-        ref={textfield}
-        value={value()}
-        onInput={(e) => {
-          setValue(e.target.value);
-          setAnswers(index(), e.target.value);
-        }}
-        onKeyPress={(e) => {
-          if (!(e.key === "Enter" || e.key === " ")) return;
-          e.preventDefault();
-
-          if (props.studyList[index()].romaji.includes(value())) {
-            next();
-          }
-          setValue("");
-        }}
-      />
-      <ul
-        ref={ulist}
-        style={{ "margin-left": "calc(50vw - 4rem)" }}
-        class="overflow-hidden flex gap-[8rem] [transition:margin-left_300ms_ease-in-out]"
+    <div>
+      <Show
+        when={index() < props.studyList.length}
+        fallback={
+          <div class="flex gap-4">
+            <Button variant="fill" hue="green" onClick={props.onFinish}>
+              Finish
+            </Button>
+            <Button variant="fill" hue="indigo" onClick={[setIndex, 0]}>
+              Try again
+            </Button>
+          </div>
+        }
       >
-        <For each={props.studyList}>
-          {(item, i) => (
-            <Question
-              prompt={item.prompt}
-              value={
-                i() === index() && value() !== answers[i()] ? "" : answers[i()]
+        <input
+          type="text"
+          class="w-0 h-0 outline-none"
+          maxLength={3}
+          autofocus
+          autocapitalize="none"
+          ref={textfield}
+          value={value()}
+          onInput={(e) => {
+            setValue(e.target.value);
+            setAnswers(index(), e.target.value);
+          }}
+          onKeyPress={(e) => {
+            if (!(e.key === "Enter" || e.key === " ")) return;
+            e.preventDefault();
+
+            // Avoid all duplicate cases and force unique answers (match tofugu quiz behavior)
+            if (props.studyList[index()].romaji.length === 3) {
+              // maybe reprompt instead of wrong
+              if (props.studyList[index()].romaji[1] === value()) {
+                next();
               }
-              placeholder={
-                i() === index() && value() !== answers[i()]
-                  ? answers[i()]
-                  : null
-              }
-              active={i() === index()}
-            />
-          )}
-        </For>
-      </ul>
-    </Show>
+            } else if (props.studyList[index()].romaji.includes(value())) {
+              next();
+            }
+
+            setValue("");
+          }}
+        />
+        <ul
+          ref={ulist}
+          style={{ "margin-left": "calc(50vw - 4rem)" }}
+          class="overflow-hidden flex gap-[8rem] [transition:margin-left_300ms_ease-in-out]"
+        >
+          <For each={props.studyList}>
+            {(item, i) => (
+              <Question
+                prompt={item.prompt}
+                value={answers[i()]}
+                active={i() === index()}
+                isPlaceholder={i() === index() && value() !== answers[i()]}
+              />
+            )}
+          </For>
+        </ul>
+      </Show>
+    </div>
   );
 }
 

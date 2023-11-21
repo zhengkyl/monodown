@@ -86,16 +86,6 @@ body {
   --ring: 4 5.7% 82.9%;
 }
 
-/* override default spin which uses transform */
-@keyframes spin {
-  from {
-    rotate: 0rad;
-  }
-  to {
-    rotate: 360deg;
-  }
-}
-
 /* Can't target TableOfContents component directly */
 .tocHack > aside,
 .tocHack > ul {
