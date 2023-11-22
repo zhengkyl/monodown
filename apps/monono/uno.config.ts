@@ -94,12 +94,20 @@ export default defineConfig({
         /* override default spin which uses transform */
         spin: "{from { rotate: 0deg; } to { rotate: 360deg; }}",
         blink: "{from { opacity: 0%; }}",
+        slideDown:
+          "{from {height: 0;} to {height: var(--kb-accordion-content-height);}}",
+        slideUp:
+          "{from {height: var(--kb-accordion-content-height);} to {height: 0;}}",
       },
       durations: {
         blink: "0.8s",
+        slideDown: "300ms",
+        slideUp: "300ms",
       },
       timingFns: {
         blink: "cubic-bezier(.65,.05,.36,1) ",
+        slideDown: "cubic-bezier(0.87, 0, 0.13, 1)",
+        slideUp: "cubic-bezier(0.87, 0, 0.13, 1)",
       },
       counts: {
         blink: "infinite",

@@ -2,7 +2,7 @@ import { TextField } from "@kobalte/core";
 import { TextFieldRootProps } from "@kobalte/core/dist/types/text-field";
 import { Show, splitProps } from "solid-js";
 
-export interface TextfieldProps extends TextFieldRootProps {
+interface TextfieldProps extends TextFieldRootProps {
   ref?: HTMLInputElement;
   label?: Element;
 }

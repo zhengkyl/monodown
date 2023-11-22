@@ -2,11 +2,13 @@ import { For, Show, createSignal, onMount } from "solid-js";
 import { SetStoreFunction, createStore } from "solid-js/store";
 import { Button } from "~/components/ui/Button";
 import { mainKana, dakutenKana, comboKana, KanaInfo } from "~/data/kana";
+import { Accordion } from "~/components/ui/Accordion";
+import { Checkbox } from "~/components/ui/Checkbox";
 
 export default function Test() {
   const [mode, setMode] = createSignal<"hira" | "kata">("hira");
 
-  const [started, setStarted] = createSignal(true);
+  const [started, setStarted] = createSignal(false);
 
   const [mainActive, setMainActive] = createStore(
     Array(mainKana.length).fill(false)
@@ -69,6 +71,40 @@ export default function Test() {
             >
               Start
             </Button>
+            <Checkbox />
+            <div class="max-w-sm my-16 mx-auto">
+              <Accordion
+                defaultValue={["item-0"]}
+                collapsible
+                items={[
+                  {
+                    title: "Main",
+                    content: (
+                      <div class="px-4 grid grid-cols-2 gap-2 text-lg">
+                        <For each={mainKana}>
+                          {(row, j) => (
+                            <div>
+                              <Checkbox
+                                label={`${row[0].hira}/${row[0].romaji[0]}`}
+                                class="w-full cursor-pointer"
+                              />
+                            </div>
+                          )}
+                        </For>
+                      </div>
+                    ),
+                  },
+                  {
+                    title: "Dakuten",
+                    content: <p>hey therere</p>,
+                  },
+                  {
+                    title: "Other",
+                    content: <p>hey therere</p>,
+                  },
+                ]}
+              ></Accordion>
+            </div>
             <div class="flex items-start gap-4">
               <div class="grid grid-cols-2 gap-3">
                 <ToggleButtons
@@ -202,13 +238,7 @@ function KanaQuiz(props: KanaQuizProps) {
             if (!(e.key === "Enter" || e.key === " ")) return;
             e.preventDefault();
 
-            // Avoid all duplicate cases and force unique answers (match tofugu quiz behavior)
-            if (props.studyList[index()].romaji.length === 3) {
-              // maybe reprompt instead of wrong
-              if (props.studyList[index()].romaji[1] === value()) {
-                next();
-              }
-            } else if (props.studyList[index()].romaji.includes(value())) {
+            if (props.studyList[index()].romaji.includes(value())) {
               next();
             }
 
