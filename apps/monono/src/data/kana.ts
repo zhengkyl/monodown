@@ -6,7 +6,7 @@
  *  - ["shi", "si"] for し
  *  - ["ji", "di", "ji"] for ぢ
  *
- * Other romanizations like inputs for IME are not included
+ * Exceptions: The じゃ and ぢゃ columns contain a 4th column for jya/jyu/jyo
  */
 export type KanaInfo = { hira: string; kata: string; romaji: string[] };
 
@@ -134,9 +134,9 @@ export const comboKana = [
     { hira: "しょ", kata: "ショ", romaji: ["sho", "syo"] },
   ],
   [
-    { hira: "じゃ", kata: "ジャ", romaji: ["ja", "zya"] },
-    { hira: "じゅ", kata: "ジュ", romaji: ["ju", "zyu"] },
-    { hira: "じょ", kata: "ジョ", romaji: ["jo", "zyo"] },
+    { hira: "じゃ", kata: "ジャ", romaji: ["ja", "zya", "zya", "jya"] },
+    { hira: "じゅ", kata: "ジュ", romaji: ["ju", "zyu", "zyu", "jyu"] },
+    { hira: "じょ", kata: "ジョ", romaji: ["jo", "zyo", "zyo", "jyo"] },
   ],
   [
     { hira: "ちゃ", kata: "チャ", romaji: ["cha", "tya"] },
@@ -144,9 +144,9 @@ export const comboKana = [
     { hira: "ちょ", kata: "チョ", romaji: ["cho", "tyo"] },
   ],
   [
-    { hira: "ぢゃ", kata: "ヂャ", romaji: ["ja", "dya", "zya"] },
-    { hira: "ぢゅ", kata: "ヂュ", romaji: ["ju", "dyu", "zyu"] },
-    { hira: "ぢょ", kata: "ヂョ", romaji: ["jo", "dyo", "zyo"] },
+    { hira: "ぢゃ", kata: "ヂャ", romaji: ["ja", "dya", "zya", "jya"] },
+    { hira: "ぢゅ", kata: "ヂュ", romaji: ["ju", "dyu", "zyu", "jyu"] },
+    { hira: "ぢょ", kata: "ヂョ", romaji: ["jo", "dyo", "zyo", "jyo"] },
   ],
   [
     { hira: "にゃ", kata: "ニャ", romaji: ["nya"] },

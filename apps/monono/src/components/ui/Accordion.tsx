@@ -28,7 +28,7 @@ export function Accordion(props: Props) {
             >
               <Checkbox class="px-4" />
               <KAccordion.Trigger
-                class="inline-flex w-full justify-end py-4 pr-4"
+                class="group inline-flex w-full justify-end p-4 b-l border-foreground focus-visible:(outline-none ring-offset-background ring-offset-2 ring-ring ring-2)"
                 classList={{
                   "rounded-tr-lg": i() === 0,
                   "rounded-br-lg": i() === props.items.length - 1,
@@ -36,11 +36,14 @@ export function Accordion(props: Props) {
               >
                 <span class="font-bold mr-auto">{item.title}</span>
                 <span class="">5/7 selected</span>
-                <div class="i-uil:angle-down w-6 h-6 ml-3" aria-hidden></div>
+                <div
+                  class="i-uil:angle-down w-6 h-6 ml-3 group-data-[expanded]:rotate-180 transition-[transform] duration-300"
+                  aria-hidden
+                ></div>
               </KAccordion.Trigger>
             </KAccordion.Header>
             <KAccordion.Content class="overflow-hidden animate-slideUp data-[expanded]:animate-slideDown">
-              <div class="p-4 pb-4">{item.content}</div>
+              <div class="p-4">{item.content}</div>
             </KAccordion.Content>
           </KAccordion.Item>
         )}

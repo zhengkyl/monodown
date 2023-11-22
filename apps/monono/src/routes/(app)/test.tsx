@@ -80,10 +80,10 @@ export default function Test() {
                   {
                     title: "Main",
                     content: (
-                      <div class="px-4 grid grid-cols-2 gap-2 text-lg">
+                      <div class="pl-9 grid grid-cols-2 gap-4 text-lg">
                         <For each={mainKana}>
-                          {(row, j) => (
-                            <div>
+                          {(row, i) => (
+                            <div class="rounded border border-foreground px-4 py-3">
                               <Checkbox
                                 label={`${row[0].hira}/${row[0].romaji[0]}`}
                                 class="w-full cursor-pointer"
@@ -99,7 +99,7 @@ export default function Test() {
                     content: <p>hey therere</p>,
                   },
                   {
-                    title: "Other",
+                    title: "i+ゃゅょ",
                     content: <p>hey therere</p>,
                   },
                 ]}
