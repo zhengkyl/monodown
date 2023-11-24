@@ -1,14 +1,13 @@
 import { For, Show, createSignal, onMount, splitProps } from "solid-js";
-import { SetStoreFunction, createStore } from "solid-js/store";
-import { ThickButton } from "~/components/ui/ThickButton";
-import { gojuonKana, dakuonKana, yoonKana, KanaInfo } from "~/data/kana";
+import { createStore } from "solid-js/store";
 import { Accordion } from "~/components/ui/Accordion";
-import { Checkbox } from "~/components/ui/Checkbox";
 import { FlatButton } from "~/components/ui/FlatButton";
-import { twMerge } from "tailwind-merge";
+import { ThickButton } from "~/components/ui/ThickButton";
+import { ToggleButton } from "~/components/ui/ToggleButton";
+import { KanaInfo, dakuonKana, gojuonKana, yoonKana } from "~/data/kana";
 
 export default function Test() {
-  const [mode, setMode] = createSignal<"hira" | "kata">("hira");
+  const [mode, setMode] = createSignal<"Hiragana" | "Katakana">("Hiragana");
 
   const [started, setStarted] = createSignal(false);
 
@@ -24,7 +23,7 @@ export default function Test() {
 
   function rowToItems(row: KanaInfo[]) {
     return row.map((entry) => ({
-      prompt: entry[mode()],
+      prompt: entry[mode() === "Hiragana" ? "hira" : "kata"],
       romaji: entry.romaji,
     }));
   }
@@ -44,37 +43,18 @@ export default function Test() {
   }
 
   return (
-    <main>
+    <main class="h-full">
       <Show
         when={started()}
         fallback={
           <>
-            <ThickButton
-              size="md"
-              hue={mode() === "hira" ? "indigo" : "default"}
-              onClick={[setMode, "hira"]}
-            >
-              Hiragana
-            </ThickButton>
-            <ThickButton
-              size="md"
-              class="btn-line-indigo"
-              hue={mode() === "kata" ? "indigo" : "default"}
-              onClick={[setMode, "kata"]}
-            >
-              Katakana
-            </ThickButton>
-            <ThickButton
-              onClick={[setStarted, true]}
-              size="md"
-              disabled={[...gojuonActive, ...dakuonActive, ...yoonActive].every(
-                (e) => !e
-              )}
-            >
-              Start
-            </ThickButton>
-            <Checkbox />
-            <div class="max-w-sm my-16 mx-auto ">
+            <div class="max-w-sm py-8 mx-auto h-full flex flex-col gap-6">
+              <ToggleButton
+                toggles={["Hiragana", "Katakana"]}
+                defaultValue="Hiragana"
+                value={mode()}
+                onChange={setMode}
+              />
               <Accordion
                 class="text-lg"
                 defaultValue={["item-0"]}
@@ -111,7 +91,18 @@ export default function Test() {
                     ),
                   },
                 ]}
-              ></Accordion>
+              />
+              <FlatButton
+                class="mt-auto p-4 text-lg font-bold disabled:(bg-muted text-muted-foreground border-transparent)"
+                disabled={[
+                  ...gojuonActive,
+                  ...dakuonActive,
+                  ...yoonActive,
+                ].every((r) => !r)}
+                onClick={[setStarted, true]}
+              >
+                Start
+              </FlatButton>
             </div>
           </>
         }
@@ -167,10 +158,11 @@ function Content(props) {
 
 function CheckboxButton(props) {
   const [, rest] = splitProps(props, ["class", "active"]);
+  // TODO adding transition feels terrible b/c icon flashing?
   return (
     <FlatButton
       size="none"
-      class="px-2 py-1"
+      class="px-2 py-1 justify-start"
       classList={{
         "bg-foreground text-background": props.active,
         [props.class]: props.class,

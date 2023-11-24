@@ -7,7 +7,7 @@ import { ButtonRootProps } from "@kobalte/core/dist/types/button";
 export const buttonVariants = cva(
   [
     "inline-flex",
-    // "justify-center",
+    "justify-center",
     "items-center",
     "vertical-middle",
     // "rounded-lg",
