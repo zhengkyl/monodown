@@ -10,7 +10,7 @@
  */
 export type KanaInfo = { hira: string; kata: string; romaji: string[] };
 
-export const mainKana = [
+export const gojuonKana = [
   [
     { hira: "あ", kata: "ア", romaji: ["a"] },
     { hira: "い", kata: "イ", romaji: ["i"] },
@@ -79,7 +79,7 @@ export const mainKana = [
   ],
 ];
 
-export const dakutenKana = [
+export const dakuonKana = [
   [
     { hira: "が", kata: "ガ", romaji: ["ga"] },
     { hira: "ぎ", kata: "ギ", romaji: ["gi"] },
@@ -117,7 +117,7 @@ export const dakutenKana = [
   ],
 ];
 
-export const comboKana = [
+export const yoonKana = [
   [
     { hira: "きゃ", kata: "キャ", romaji: ["kya"] },
     { hira: "きゅ", kata: "キュ", romaji: ["kyu"] },

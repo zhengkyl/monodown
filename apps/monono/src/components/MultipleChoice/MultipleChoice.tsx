@@ -1,5 +1,5 @@
 import { For, Show, createSignal } from "solid-js";
-import { Button } from "../ui/Button";
+import { ThickButton } from "../ui/Button";
 import { SharedProps } from "../Quiz";
 import { Choice, Prompt } from "./format";
 
@@ -39,7 +39,7 @@ export default function MultipleChoice(
       <div class={`gap-4 mb-8 ${LayoutClass[props.format]}`}>
         <For each={props.choices}>
           {(choice) => (
-            <Button
+            <ThickButton
               onClick={() => setSel(choice.id)}
               class="px-5 py-5"
               hue={choice.id === selected() ? SelectedHue[status()] : "default"}
@@ -47,7 +47,7 @@ export default function MultipleChoice(
             >
               {/* TODO */}
               {choice.text}
-            </Button>
+            </ThickButton>
           )}
         </For>
       </div>
@@ -55,7 +55,7 @@ export default function MultipleChoice(
         <Show
           when={status() === "RIGHT"}
           fallback={
-            <Button
+            <ThickButton
               size="sm"
               variant="fill"
               hue="indigo"
@@ -66,10 +66,10 @@ export default function MultipleChoice(
               }
             >
               Check
-            </Button>
+            </ThickButton>
           }
         >
-          <Button
+          <ThickButton
             size="sm"
             variant="fill"
             hue="green"
@@ -77,7 +77,7 @@ export default function MultipleChoice(
             onClick={props.onContinue}
           >
             Continue
-          </Button>
+          </ThickButton>
         </Show>
       </div>
     </div>

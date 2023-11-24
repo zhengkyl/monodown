@@ -10,7 +10,7 @@ import {
   useDragDropContext,
 } from "@thisbeyond/solid-dnd";
 import { For, batch, createEffect, on } from "solid-js";
-import { buttonVariants } from "../ui/Button";
+import { buttonVariants } from "../ui/ThickButton";
 import { createStore } from "solid-js/store";
 import { createAutoAnimateDirective } from "@formkit/auto-animate/solid";
 

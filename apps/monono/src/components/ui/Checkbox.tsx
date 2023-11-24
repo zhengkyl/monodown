@@ -16,9 +16,7 @@ export function Checkbox(props) {
         </KCheckbox.Indicator>
       </KCheckbox.Control>
       {props.label && (
-        <KCheckbox.Label class="pl-3 flex-1 cursor-pointer">
-          {props.label}
-        </KCheckbox.Label>
+        <KCheckbox.Label class="pl-2">{props.label}</KCheckbox.Label>
       )}
     </KCheckbox.Root>
   );

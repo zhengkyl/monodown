@@ -12,7 +12,7 @@ import UAudio from "~/assets/audio/u.mp3";
 import EAudio from "~/assets/audio/e.mp3";
 import OAudio from "~/assets/audio/o.mp3";
 import { strokeAnimator } from "~/util/strokeAnimator";
-import { Button } from "~/components/ui/Button";
+import { ThickButton } from "~/components/ui/ThickButton";
 
 const lesson = [
   {
@@ -70,7 +70,7 @@ export function Door(props) {
         <MASvg class="w-full border" />
       </div>
       <div class="flex gap-2 items-end">
-        <Button
+        <ThickButton
           size="icon-lg"
           onClick={() => {
             const audio = new Audio(lesson[props.index].audio);
@@ -78,15 +78,15 @@ export function Door(props) {
           }}
         >
           <div class="i-uil:volume"></div>
-        </Button>
-        <Button
+        </ThickButton>
+        <ThickButton
           onClick={() => {
             animator()?.play();
           }}
           size="icon"
         >
           <div class="i-uil:pen"></div>
-        </Button>
+        </ThickButton>
       </div>
     </div>
   );

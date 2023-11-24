@@ -5,7 +5,7 @@ import { createServerData$ } from "solid-start/server";
 import FreeResponse from "~/components/FreeResponse/FreeResponse";
 import { Prompt } from "~/components/MultipleChoice/format";
 import { Question, Quiz } from "~/components/Quiz";
-import { Button } from "~/components/ui/Button";
+import { ThickButton } from "~/components/ui/ThickButton";
 import { Button2 } from "~/components/ui/Button2";
 import { randomNChoices } from "~/util/arrays";
 import EarthSVG from "../../assets/svg/earth.min.svg";
@@ -182,12 +182,12 @@ type JunctionProps = {
 
 const RoomByType = {
   info: (props) => (
-    <Button size="icon" variant="fill" hue="green" depth={5} {...props}>
+    <ThickButton size="icon" variant="fill" hue="green" depth={5} {...props}>
       <div class="i-uil:clipboard-notes"></div>
-    </Button>
+    </ThickButton>
   ),
   sort: (props) => (
-    <Button
+    <ThickButton
       class="rounded-full"
       size="icon"
       variant="fill"
@@ -196,10 +196,10 @@ const RoomByType = {
       {...props}
     >
       <div class="i-uil:rocket"></div>
-    </Button>
+    </ThickButton>
   ),
   quiz: (props) => (
-    <Button
+    <ThickButton
       class="rounded-full"
       size="icon"
       variant="fill"
@@ -208,7 +208,7 @@ const RoomByType = {
       {...props}
     >
       <div class="i-uil:bolt-alt"></div>
-    </Button>
+    </ThickButton>
   ),
 };
 

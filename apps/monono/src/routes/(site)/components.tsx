@@ -1,16 +1,16 @@
-import { Button } from "~/components/ui/Button";
+import { ThickButton } from "~/components/ui/ThickButton";
 
 export default function Components() {
   return (
     <main class="flex-1">
-      <Button variant="fill" hue="indigo">
+      <ThickButton variant="fill" hue="indigo">
         Test
-      </Button>
-      <Button variant="fill">Test</Button>
-      <Button variant="line">Test</Button>
-      <Button>Test</Button>
-      <Button>Test</Button>
-      <Button>Test</Button>
+      </ThickButton>
+      <ThickButton variant="fill">Test</ThickButton>
+      <ThickButton variant="line">Test</ThickButton>
+      <ThickButton>Test</ThickButton>
+      <ThickButton>Test</ThickButton>
+      <ThickButton>Test</ThickButton>
     </main>
   );
 }

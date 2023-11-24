@@ -1,23 +1,25 @@
-import { For, Show, createSignal, onMount } from "solid-js";
+import { For, Show, createSignal, onMount, splitProps } from "solid-js";
 import { SetStoreFunction, createStore } from "solid-js/store";
-import { Button } from "~/components/ui/Button";
-import { mainKana, dakutenKana, comboKana, KanaInfo } from "~/data/kana";
+import { ThickButton } from "~/components/ui/ThickButton";
+import { gojuonKana, dakuonKana, yoonKana, KanaInfo } from "~/data/kana";
 import { Accordion } from "~/components/ui/Accordion";
 import { Checkbox } from "~/components/ui/Checkbox";
+import { FlatButton } from "~/components/ui/FlatButton";
+import { twMerge } from "tailwind-merge";
 
 export default function Test() {
   const [mode, setMode] = createSignal<"hira" | "kata">("hira");
 
   const [started, setStarted] = createSignal(false);
 
-  const [mainActive, setMainActive] = createStore(
-    Array(mainKana.length).fill(false)
+  const [gojuonActive, setGojuonActive] = createStore(
+    Array(gojuonKana.length).fill(false)
   );
-  const [dakutenActive, setDakutenActive] = createStore(
-    Array(dakutenKana.length).fill(false)
+  const [dakuonActive, setDakuonActive] = createStore(
+    Array(dakuonKana.length).fill(false)
   );
-  const [comboActive, setComboActive] = createStore(
-    Array(comboKana.length).fill(false)
+  const [yoonActive, setYoonActive] = createStore(
+    Array(yoonKana.length).fill(false)
   );
 
   function rowToItems(row: KanaInfo[]) {
@@ -29,14 +31,14 @@ export default function Test() {
 
   function studyList() {
     const list = [];
-    mainActive.forEach((selected, i) => {
-      if (selected) list.push(...rowToItems(mainKana[i]));
+    gojuonActive.forEach((selected, i) => {
+      if (selected) list.push(...rowToItems(gojuonKana[i]));
     });
-    dakutenActive.forEach((selected, i) => {
-      if (selected) list.push(...rowToItems(dakutenKana[i]));
+    dakuonActive.forEach((selected, i) => {
+      if (selected) list.push(...rowToItems(dakuonKana[i]));
     });
-    comboActive.forEach((selected, i) => {
-      if (selected) list.push(...rowToItems(comboKana[i]));
+    yoonActive.forEach((selected, i) => {
+      if (selected) list.push(...rowToItems(yoonKana[i]));
     });
     return list;
   }
@@ -47,92 +49,69 @@ export default function Test() {
         when={started()}
         fallback={
           <>
-            <Button
+            <ThickButton
               size="md"
               hue={mode() === "hira" ? "indigo" : "default"}
               onClick={[setMode, "hira"]}
             >
               Hiragana
-            </Button>
-            <Button
+            </ThickButton>
+            <ThickButton
               size="md"
               class="btn-line-indigo"
               hue={mode() === "kata" ? "indigo" : "default"}
               onClick={[setMode, "kata"]}
             >
               Katakana
-            </Button>
-            <Button
+            </ThickButton>
+            <ThickButton
               onClick={[setStarted, true]}
               size="md"
-              disabled={[...mainActive, ...dakutenActive, ...comboActive].every(
+              disabled={[...gojuonActive, ...dakuonActive, ...yoonActive].every(
                 (e) => !e
               )}
             >
               Start
-            </Button>
+            </ThickButton>
             <Checkbox />
-            <div class="max-w-sm my-16 mx-auto">
+            <div class="max-w-sm my-16 mx-auto ">
               <Accordion
+                class="text-lg"
                 defaultValue={["item-0"]}
                 collapsible
                 items={[
                   {
-                    title: "Main",
-                    content: (
-                      <div class="pl-9 grid grid-cols-2 gap-4 text-lg">
-                        <For each={mainKana}>
-                          {(row, i) => (
-                            <div class="rounded border border-foreground px-4 py-3">
-                              <Checkbox
-                                label={`${row[0].hira}/${row[0].romaji[0]}`}
-                                class="w-full cursor-pointer"
-                              />
-                            </div>
-                          )}
-                        </For>
-                      </div>
+                    title: () => <Title title="Gojūon" list={gojuonActive} />,
+                    content: () => (
+                      <Content
+                        kana={gojuonKana}
+                        list={gojuonActive}
+                        setList={setGojuonActive}
+                      />
                     ),
                   },
                   {
-                    title: "Dakuten",
-                    content: <p>hey therere</p>,
+                    title: () => <Title title="Dakuon" list={dakuonActive} />,
+                    content: () => (
+                      <Content
+                        kana={dakuonKana}
+                        list={dakuonActive}
+                        setList={setDakuonActive}
+                      />
+                    ),
                   },
                   {
-                    title: "i+ゃゅょ",
-                    content: <p>hey therere</p>,
+                    title: () => <Title title="Yōon" list={yoonActive} />,
+                    content: () => (
+                      <Content
+                        kana={yoonKana}
+                        list={yoonActive}
+                        setList={setYoonActive}
+                      />
+                    ),
                   },
                 ]}
               ></Accordion>
-            </div>
-            <div class="flex items-start gap-4">
-              <div class="grid grid-cols-2 gap-3">
-                <ToggleButtons
-                  title="Main Kana"
-                  mode={mode()}
-                  kana={mainKana}
-                  active={mainActive}
-                  setActive={setMainActive}
-                />
-              </div>
-              <div class="grid grid-cols-2 gap-3">
-                <ToggleButtons
-                  title="Dakuten Kana"
-                  mode={mode()}
-                  kana={dakutenKana}
-                  active={dakutenActive}
-                  setActive={setDakutenActive}
-                />
-              </div>
-              <div class="grid grid-cols-2 gap-3">
-                <ToggleButtons
-                  title="Combo Kana"
-                  mode={mode()}
-                  kana={comboKana}
-                  active={comboActive}
-                  setActive={setComboActive}
-                />
-              </div>
             </div>
           </>
         }
@@ -142,6 +121,74 @@ export default function Test() {
     </main>
   );
 }
+
+function Title(props) {
+  return (
+    <>
+      <span class="font-bold mr-auto">{props.title}</span>
+      <span class="">
+        {`${props.list.reduce((acc, bool) => acc + (bool ? 1 : 0), 0)} / 
+        ${props.list.length} selected`}
+      </span>
+      <div
+        class="i-uil:angle-down h-7 w-7 ml-3 group-data-[expanded]:rotate-180 transition-[transform] duration-300"
+        aria-hidden
+      ></div>
+    </>
+  );
+}
+
+function Content(props) {
+  return (
+    <div class="grid grid-cols-2 gap-2">
+      <CheckboxButton
+        class="col-span-2"
+        active={props.list.every((row) => row)}
+        onClick={() => {
+          const allActive = props.list.every((row) => row);
+          props.setList(Array(props.kana.length).fill(!allActive));
+        }}
+      >
+        Select all
+      </CheckboxButton>
+      <For each={props.kana}>
+        {(row, i) => (
+          <CheckboxButton
+            active={props.list[i()]}
+            onClick={() => props.setList(i(), !props.list[i()])}
+          >
+            {`${row[0].hira}/${row[0].romaji[0]}`}
+          </CheckboxButton>
+        )}
+      </For>
+    </div>
+  );
+}
+
+function CheckboxButton(props) {
+  const [, rest] = splitProps(props, ["class", "active"]);
+  return (
+    <FlatButton
+      size="none"
+      class="px-2 py-1"
+      classList={{
+        "bg-foreground text-background": props.active,
+        [props.class]: props.class,
+      }}
+      {...rest}
+    >
+      <div
+        class="h-[20px] w-[20px] mr-1"
+        classList={{
+          "i-mdi:checkbox-intermediate": props.active,
+          "i-mdi:checkbox-blank-outline": !props.active,
+        }}
+      ></div>
+      <span>{props.children}</span>
+    </FlatButton>
+  );
+}
+
 type QuestionProps = {
   prompt: string;
   // answers: string[];
@@ -213,12 +260,12 @@ function KanaQuiz(props: KanaQuizProps) {
         when={index() < props.studyList.length}
         fallback={
           <div class="flex gap-4">
-            <Button variant="fill" hue="green" onClick={props.onFinish}>
+            <ThickButton variant="fill" hue="green" onClick={props.onFinish}>
               Finish
-            </Button>
-            <Button variant="fill" hue="indigo" onClick={[setIndex, 0]}>
+            </ThickButton>
+            <ThickButton variant="fill" hue="indigo" onClick={[setIndex, 0]}>
               Try again
-            </Button>
+            </ThickButton>
           </div>
         }
       >
@@ -263,46 +310,5 @@ function KanaQuiz(props: KanaQuizProps) {
         </ul>
       </Show>
     </div>
-  );
-}
-
-type ToggleButtonsProps = {
-  title: string;
-  kana: KanaInfo[][];
-  mode: "hira" | "kata";
-  active: boolean[];
-  setActive: SetStoreFunction<boolean[]>;
-};
-
-function ToggleButtons(props: ToggleButtonsProps) {
-  return (
-    <>
-      <Button
-        size="md"
-        class="col-span-2"
-        hue={props.active.every((value) => value) ? "indigo" : "default"}
-        onClick={() => {
-          const toggled = props.active.every((value) => value);
-          props.setActive(Array(props.kana.length).fill(!toggled));
-        }}
-      >
-        {props.title}
-      </Button>
-      <For each={props.kana}>
-        {(row, i) => {
-          // avoid showing "ja", "ju", "jo" twice
-          const notHepburn = row[0].hira === "ぢゃ";
-          return (
-            <Button
-              size="md"
-              hue={props.active[i()] ? "indigo" : "default"}
-              onClick={() => props.setActive(i(), !props.active[i()])}
-            >
-              {row[0][props.mode]}/{row[0].romaji[notHepburn ? 1 : 0]}
-            </Button>
-          );
-        }}
-      </For>
-    </>
   );
 }

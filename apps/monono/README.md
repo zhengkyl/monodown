@@ -25,4 +25,9 @@ it's gonna be good i swear
   - [ ] annotations (furigana, pinyin, etc)
 
 - [ ] mascot
+
   - [ ] animation
+
+- using `class` and `classList`
+  - https://github.com/solidjs/solid/issues/1161
+  - tldr just merge into `classList`

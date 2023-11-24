@@ -93,14 +93,12 @@ export const buttonVariants = cva(
   }
 );
 
-export interface ButtonProps
-  extends ButtonRootProps,
-    VariantProps<typeof buttonVariants> {
-  onTouchStart?: JSX.EventHandler<HTMLButtonElement, TouchEvent>;
-  onTouchEnd?: JSX.EventHandler<HTMLButtonElement, TouchEvent>;
-}
-
-export function Button(props: ButtonProps) {
+type Props = ButtonRootProps &
+  VariantProps<typeof buttonVariants> & {
+    onTouchStart?: JSX.EventHandler<HTMLButtonElement, TouchEvent>;
+    onTouchEnd?: JSX.EventHandler<HTMLButtonElement, TouchEvent>;
+  };
+export function ThickButton(props: Props) {
   const [, rest] = splitProps(props, [
     "variant",
     "size",
