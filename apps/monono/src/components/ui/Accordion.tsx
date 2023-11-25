@@ -27,7 +27,7 @@ export function Accordion(props: Props) {
               }}
             >
               <KAccordion.Trigger
-                class="group inline-flex w-full justify-end p-4 border-foreground focus-visible:(outline-none ring-offset-background ring-offset-2 ring-ring ring-2)"
+                class="group inline-flex w-full p-4 border-foreground focus-visible:(outline-none ring-offset-background ring-offset-2 ring-ring ring-2)"
                 classList={{
                   "rounded-t-lg": i() === 0,
                   "rounded-b-lg": i() === props.items.length - 1,

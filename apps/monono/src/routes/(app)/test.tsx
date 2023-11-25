@@ -61,39 +61,64 @@ export default function Test() {
                 collapsible
                 items={[
                   {
-                    title: () => <Title title="Gojūon" list={gojuonActive} />,
+                    title: () => (
+                      <Title
+                        title="Gojūon"
+                        kana={gojuonKana}
+                        list={gojuonActive}
+                        mode={mode()}
+                      />
+                    ),
+
                     content: () => (
                       <Content
                         kana={gojuonKana}
                         list={gojuonActive}
                         setList={setGojuonActive}
+                        mode={mode()}
                       />
                     ),
                   },
                   {
-                    title: () => <Title title="Dakuon" list={dakuonActive} />,
+                    title: () => (
+                      <Title
+                        title="Dakuon"
+                        kana={dakuonKana}
+                        list={dakuonActive}
+                        mode={mode()}
+                      />
+                    ),
                     content: () => (
                       <Content
                         kana={dakuonKana}
                         list={dakuonActive}
                         setList={setDakuonActive}
+                        mode={mode()}
                       />
                     ),
                   },
                   {
-                    title: () => <Title title="Yōon" list={yoonActive} />,
+                    title: () => (
+                      <Title
+                        title="Yōon"
+                        kana={yoonKana}
+                        list={yoonActive}
+                        mode={mode()}
+                      />
+                    ),
                     content: () => (
                       <Content
                         kana={yoonKana}
                         list={yoonActive}
                         setList={setYoonActive}
+                        mode={mode()}
                       />
                     ),
                   },
                 ]}
               />
               <FlatButton
-                class="mt-auto p-4 text-lg font-bold disabled:(bg-muted text-muted-foreground border-transparent)"
+                class="mt-auto p-3 text-lg font-bold disabled:(bg-muted text-muted-foreground border-transparent)"
                 disabled={[
                   ...gojuonActive,
                   ...dakuonActive,
@@ -117,10 +142,18 @@ function Title(props) {
   return (
     <>
       <span class="font-bold mr-auto">{props.title}</span>
-      <span class="">
-        {`${props.list.reduce((acc, bool) => acc + (bool ? 1 : 0), 0)} / 
-        ${props.list.length} selected`}
-      </span>
+      <div class="inline-grid grid-rows-2 grid-cols-6 grid-flow-col gap-1 mr-1">
+        <For each={props.kana}>
+          {(row, i) => (
+            <div
+              class="w-[12px] h-[12px] border rounded-[2px] border-foreground"
+              classList={{
+                "bg-white": props.list[i()],
+              }}
+            ></div>
+          )}
+        </For>
+      </div>
       <div
         class="i-uil:angle-down h-7 w-7 ml-3 group-data-[expanded]:rotate-180 transition-[transform] duration-300"
         aria-hidden
@@ -148,7 +181,9 @@ function Content(props) {
             active={props.list[i()]}
             onClick={() => props.setList(i(), !props.list[i()])}
           >
-            {`${row[0].hira}/${row[0].romaji[0]}`}
+            {`${row[0][props.mode === "Hiragana" ? "hira" : "kata"]} ${
+              row[0].romaji[0]
+            }`}
           </CheckboxButton>
         )}
       </For>
@@ -162,7 +197,7 @@ function CheckboxButton(props) {
   return (
     <FlatButton
       size="none"
-      class="px-2 py-1 justify-start"
+      class="px-2 py-1.5 justify-start"
       classList={{
         "bg-foreground text-background": props.active,
         [props.class]: props.class,
@@ -170,7 +205,7 @@ function CheckboxButton(props) {
       {...rest}
     >
       <div
-        class="h-[20px] w-[20px] mr-1"
+        class="h-[20px] w-[20px] mr-1.5"
         classList={{
           "i-mdi:checkbox-intermediate": props.active,
           "i-mdi:checkbox-blank-outline": !props.active,
