@@ -3,7 +3,10 @@ import { TabsRootProps } from "@kobalte/core/dist/types/tabs";
 import { For, splitProps } from "solid-js";
 
 type Props = TabsRootProps & {
-  toggles: string[];
+  toggles: {
+    value: string;
+    text: string;
+  }[];
 };
 
 export function ToggleButton(props: Props) {
@@ -21,9 +24,9 @@ export function ToggleButton(props: Props) {
           {(toggle, i) => (
             <Tabs.Trigger
               class="flex-1 p-2 font-bold rounded outline-none focus-visible:(ring-offset-background ring-offset-2 ring-ring ring-2) data-[selected]:(bg-foreground text-background) transition-colors"
-              value={toggle}
+              value={toggle.value}
             >
-              {toggle}
+              {toggle.text}
             </Tabs.Trigger>
           )}
         </For>

@@ -1,44 +1,119 @@
 import { For, Show, createSignal, onMount, splitProps } from "solid-js";
 import { createStore } from "solid-js/store";
+import { useLocation, useNavigate, useSearchParams } from "solid-start";
 import { Accordion } from "~/components/ui/Accordion";
 import { FlatButton } from "~/components/ui/FlatButton";
 import { ThickButton } from "~/components/ui/ThickButton";
 import { ToggleButton } from "~/components/ui/ToggleButton";
 import { KanaInfo, dakuonKana, gojuonKana, yoonKana } from "~/data/kana";
 
+const kanaCharts = [gojuonKana, dakuonKana, yoonKana];
+const chartTitles = ["Gojūon", "Dakuon", "Yōon"];
+
 export default function Test() {
-  const [mode, setMode] = createSignal<"Hiragana" | "Katakana">("Hiragana");
+  const location = useLocation();
+  const _navigate = useNavigate();
+
+  const [params, _] = useSearchParams();
+
+  // setParams uses URLSearchParams which doesn't support bare params like "?kata" or unencoded chars like "," and ";"
+  const manualSetParams = (pathname, mode, sel) => {
+    console.log("msp", mode, sel);
+    const modeParam = mode === "kata" ? mode : "";
+    const selParam = sel.length ? `sel=${sel}` : "";
+
+    _navigate(
+      `${pathname}${(modeParam || selParam) && "?"}${modeParam}${
+        modeParam && selParam && "&"
+      }${selParam}`,
+      {
+        scroll: false, // scroll to top
+        resolve: false, // resolve relative to current
+        replace: true, // replace in history
+      }
+    );
+  };
 
   const [started, setStarted] = createSignal(false);
 
-  const [gojuonActive, setGojuonActive] = createStore(
-    Array(gojuonKana.length).fill(false)
+  const mode = () => (params.kata === undefined ? "hira" : "kata");
+
+  const toChartIndex = kanaCharts.map(
+    (chart) => new Map(chart.map((row, i) => [row[0].romaji[0], i]))
   );
-  const [dakuonActive, setDakuonActive] = createStore(
-    Array(dakuonKana.length).fill(false)
-  );
-  const [yoonActive, setYoonActive] = createStore(
-    Array(yoonKana.length).fill(false)
-  );
+
+  const sellog = (...args) => {
+    console.log(...args);
+    return selections();
+  };
+
+  const selections = () => {
+    console.log("selections", params.sel);
+
+    const lists = (params.sel ?? "").split(";");
+
+    const chartSels = kanaCharts.map((chart) =>
+      Array(chart.length).fill(false)
+    );
+
+    for (let i = 0; i < 3 && i < lists.length; i++) {
+      const list = lists[i];
+      list.split(",").forEach((char) => {
+        if (char === "all") {
+          chartSels[i].fill(true);
+          return;
+        }
+
+        if (!toChartIndex[i].has(char)) return;
+        chartSels[i][toChartIndex[i].get(char)] = true;
+      });
+    }
+
+    return chartSels;
+  };
+
+  const setSelections = (i) => (ithSel) => {
+    const chartSels = sellog("setSelections"); //selections();
+    chartSels[i] = ithSel;
+
+    const lists = [[], [], []];
+
+    chartSels.forEach((chart, j) => {
+      if (chart.every((selected) => selected)) {
+        lists[j].push("all");
+        return;
+      }
+      chart.forEach((selected, k) => {
+        if (!selected) return;
+        lists[j].push(kanaCharts[j][k][0].romaji[0]);
+      });
+    });
+
+    console.log("lists", lists);
+    const sel = lists
+      .map((list) => list.join(","))
+      .join(";")
+      .replace(/;+$/, "");
+
+    manualSetParams(location.pathname, mode(), sel);
+  };
 
   function rowToItems(row: KanaInfo[]) {
     return row.map((entry) => ({
-      prompt: entry[mode() === "Hiragana" ? "hira" : "kata"],
+      prompt: entry[mode()],
       romaji: entry.romaji,
     }));
   }
 
   function studyList() {
     const list = [];
-    gojuonActive.forEach((selected, i) => {
-      if (selected) list.push(...rowToItems(gojuonKana[i]));
+
+    sellog("studylist").forEach((selection, i) => {
+      selection.forEach((selected, j) => {
+        if (selected) list.push(...rowToItems(kanaCharts[i][j]));
+      });
     });
-    dakuonActive.forEach((selected, i) => {
-      if (selected) list.push(...rowToItems(dakuonKana[i]));
-    });
-    yoonActive.forEach((selected, i) => {
-      if (selected) list.push(...rowToItems(yoonKana[i]));
-    });
+
     return list;
   }
 
@@ -50,80 +125,50 @@ export default function Test() {
           <>
             <div class="max-w-sm py-8 mx-auto h-full flex flex-col gap-6">
               <ToggleButton
-                toggles={["Hiragana", "Katakana"]}
-                defaultValue="Hiragana"
+                toggles={[
+                  { text: "Hiragana", value: "hira" },
+                  { text: "Katakana", value: "kata" },
+                ]}
+                defaultValue="hira" // acts as fallback if searchParams invalid
                 value={mode()}
-                onChange={setMode}
+                onChange={(mode) => {
+                  const index = location.search.indexOf("sel=");
+                  const sel =
+                    index !== -1 ? location.search.slice(index + 4) : "";
+                  console.log("onChange", location.search, mode, sel);
+                  manualSetParams(location.pathname, mode, sel);
+                }}
               />
               <Accordion
                 class="text-lg"
                 defaultValue={["item-0"]}
                 collapsible
-                items={[
-                  {
-                    title: () => (
-                      <Title
-                        title="Gojūon"
-                        kana={gojuonKana}
-                        list={gojuonActive}
-                        mode={mode()}
-                      />
-                    ),
-
-                    content: () => (
-                      <Content
-                        kana={gojuonKana}
-                        list={gojuonActive}
-                        setList={setGojuonActive}
-                        mode={mode()}
-                      />
-                    ),
-                  },
-                  {
-                    title: () => (
-                      <Title
-                        title="Dakuon"
-                        kana={dakuonKana}
-                        list={dakuonActive}
-                        mode={mode()}
-                      />
-                    ),
-                    content: () => (
-                      <Content
-                        kana={dakuonKana}
-                        list={dakuonActive}
-                        setList={setDakuonActive}
-                        mode={mode()}
-                      />
-                    ),
-                  },
-                  {
-                    title: () => (
-                      <Title
-                        title="Yōon"
-                        kana={yoonKana}
-                        list={yoonActive}
-                        mode={mode()}
-                      />
-                    ),
-                    content: () => (
-                      <Content
-                        kana={yoonKana}
-                        list={yoonActive}
-                        setList={setYoonActive}
-                        mode={mode()}
-                      />
-                    ),
-                  },
-                ]}
+                items={sellog("items").map((selection, i) => ({
+                  title: () => (
+                    // <Title2 params={params.sel} />
+                    <Title
+                      title={chartTitles[i]}
+                      chart={kanaCharts[i]}
+                      selections={selection}
+                      mode={mode()}
+                    />
+                  ),
+                  content: () => (
+                    // <div></div>
+                    <Content
+                      chart={kanaCharts[i]}
+                      selections={selection}
+                      setSelections={setSelections(i)}
+                      mode={mode()}
+                    />
+                  ),
+                }))}
               />
               <FlatButton
                 class="mt-auto p-3 text-lg font-bold disabled:(bg-muted text-muted-foreground border-transparent)"
-                disabled={[
-                  ...gojuonActive,
-                  ...dakuonActive,
-                  ...yoonActive,
-                ].every((r) => !r)}
+                disabled={sellog("disabled").every((sel) =>
+                  sel.every((r) => !r)
+                )}
                 onClick={[setStarted, true]}
               >
                 Start
@@ -138,17 +183,23 @@ export default function Test() {
   );
 }
 
+function Title2(props) {
+  console.log("title2 render");
+  return <div>{props.params}</div>;
+}
+
 function Title(props) {
+  console.log("title render");
   return (
     <>
       <span class="font-bold mr-auto">{props.title}</span>
-      <div class="inline-grid grid-rows-2 grid-cols-6 grid-flow-col gap-1 mr-1">
-        <For each={props.kana}>
-          {(row, i) => (
+      <div class="inline-grid grid-rows-2 grid-flow-col gap-1 mr-1 h-full my-auto [direction:rtl]">
+        <For each={props.chart}>
+          {(_, i) => (
             <div
-              class="w-[12px] h-[12px] border rounded-[2px] border-foreground"
+              class="w-[8px] h-[8px] border rounded-[2px] border-foreground"
               classList={{
-                "bg-white": props.list[i()],
+                "bg-white": props.selections[i()],
               }}
             ></div>
           )}
@@ -163,27 +214,30 @@ function Title(props) {
 }
 
 function Content(props) {
+  console.log("content render");
   return (
     <div class="grid grid-cols-2 gap-2">
       <CheckboxButton
         class="col-span-2"
-        active={props.list.every((row) => row)}
+        active={props.selections.every((row) => row)}
         onClick={() => {
-          const allActive = props.list.every((row) => row);
-          props.setList(Array(props.kana.length).fill(!allActive));
+          const allActive = props.selections.every((row) => row);
+          props.setSelections(Array(props.selections.length).fill(!allActive));
         }}
       >
         Select all
       </CheckboxButton>
-      <For each={props.kana}>
+      <For each={props.chart}>
         {(row, i) => (
           <CheckboxButton
-            active={props.list[i()]}
-            onClick={() => props.setList(i(), !props.list[i()])}
+            active={props.selections[i()]}
+            onClick={() => {
+              props.setSelections(
+                props.selections.map((sel, j) => (i() === j ? !sel : sel))
+              );
+            }}
           >
-            {`${row[0][props.mode === "Hiragana" ? "hira" : "kata"]} ${
-              row[0].romaji[0]
-            }`}
+            {`${row[0][props.mode]} ${row[0].romaji[0]}`}
           </CheckboxButton>
         )}
       </For>

@@ -1,6 +1,7 @@
 /**
- * The romaji field contains the Hepburn, Nihon-shiki, and Kunrei-shiki romanizations
+ * The romaji field has Hepburn, Nihon-shiki, and Kunrei-shiki romanizations
  * where entries are only included if they differ from the previous
+ * EXCEPT for ぢゃ ぢゅ ぢょ, where Hepburn is second
  *
  *  - ["a"] for か
  *  - ["shi", "si"] for し
@@ -144,9 +145,9 @@ export const yoonKana = [
     { hira: "ちょ", kata: "チョ", romaji: ["cho", "tyo"] },
   ],
   [
-    { hira: "ぢゃ", kata: "ヂャ", romaji: ["ja", "dya", "zya", "jya"] },
-    { hira: "ぢゅ", kata: "ヂュ", romaji: ["ju", "dyu", "zyu", "jyu"] },
-    { hira: "ぢょ", kata: "ヂョ", romaji: ["jo", "dyo", "zyo", "jyo"] },
+    { hira: "ぢゃ", kata: "ヂャ", romaji: ["dya", "ja", "zya", "jya"] },
+    { hira: "ぢゅ", kata: "ヂュ", romaji: ["dyu", "ju", "zyu", "jyu"] },
+    { hira: "ぢょ", kata: "ヂョ", romaji: ["dyo", "jo", "zyo", "jyo"] },
   ],
   [
     { hira: "にゃ", kata: "ニャ", romaji: ["nya"] },
