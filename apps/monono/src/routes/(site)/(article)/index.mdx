@@ -1,0 +1,23 @@
+export const TimeElapsed = () => {
+  const millis = new Date() - new Date(2023, 6 + 1, 18)
+  const days = Math.floor(millis / (1000 * 60 * 60 * 24))
+  const months = Math.floor(days / 30)
+  const years = Math.floor(months / 12)
+
+  if (years > 0) {
+    return `${years} year${years > 1 ? "s" : ""}`
+  } else {
+    return `${months} month${months > 1 ? "s" : ""}`
+  }
+
+};
+
+<Content>
+
+# What is this?
+
+This is an attempt at filling gaps in the resources I found while learning Japanese. Since I have only been learning for <TimeElapsed/>, I intent for this to be a long term work-in-progress.
+
+</Content>
+
+<TableOfContents />

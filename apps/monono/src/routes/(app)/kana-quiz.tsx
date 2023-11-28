@@ -20,7 +20,7 @@ const toChartIndex = kanaCharts.map(
   (chart) => new Map(chart.map((row, i) => [row[0].romaji[0], i]))
 );
 
-export default function Test() {
+export default function KanaQuiz() {
   const location = useLocation();
   const _navigate = useNavigate();
 
@@ -130,116 +130,95 @@ export default function Test() {
   return (
     <main class="h-full">
       <Show
-        when={started()}
+        when={!started()}
         fallback={
           <>
-            <div class="max-w-sm py-8 mx-auto h-full flex flex-col gap-6">
-              <ToggleButton
-                toggles={[
-                  { text: "Hiragana", value: "hira" },
-                  { text: "Katakana", value: "kata" },
-                ]}
-                defaultValue="hira" // acts as fallback if searchParams invalid
-                value={mode()}
-                onChange={(mode) => {
-                  const index = location.search.indexOf("sel=");
-                  const sel =
-                    index !== -1 ? location.search.slice(index + 4) : "";
-                  manualSetParams(location.pathname, mode, sel);
-                }}
-              />
-              <Accordion
-                class="text-lg"
-                defaultValue={[`item-${defaultIndex}`]}
-                collapsible
-                items={selections().map((selection, i) => ({
-                  title: () => (
-                    <Title
-                      title={chartTitles[i]}
-                      chart={kanaCharts[i]}
-                      selections={selection}
-                      mode={mode()}
-                    />
-                  ),
-                  content: () => (
-                    <Content
-                      chart={kanaCharts[i]}
-                      selections={selection}
-                      setSelections={setSelections(i)}
-                      mode={mode()}
-                    />
-                  ),
-                }))}
-              />
-              <FlatButton
-                class="mt-auto p-3 text-lg font-bold disabled:(bg-muted text-muted-foreground border-transparent)"
-                disabled={selections().every((sel) => sel.every((r) => !r))}
-                onClick={[setStarted, true]}
-              >
-                Start
-              </FlatButton>
-            </div>
+            <Quiz studyList={studyList()} onFinish={() => setStarted(false)} />
           </>
         }
       >
-        <KanaQuiz studyList={studyList()} onFinish={() => setStarted(false)} />
+        <div class="max-w-sm py-8 mx-auto h-full flex flex-col gap-6">
+          <ToggleButton
+            toggles={[
+              { text: "Hiragana", value: "hira" },
+              { text: "Katakana", value: "kata" },
+            ]}
+            defaultValue="hira" // acts as fallback if searchParams invalid
+            value={mode()}
+            onChange={(mode) => {
+              const index = location.search.indexOf("sel=");
+              const sel = index !== -1 ? location.search.slice(index + 4) : "";
+              manualSetParams(location.pathname, mode, sel);
+            }}
+          />
+          <Accordion
+            class="text-lg"
+            defaultValue={[`item-${defaultIndex}`]}
+            collapsible
+            items={selections().map((selection, i) => ({
+              title: () => (
+                <>
+                  <span class="font-bold mr-auto">{chartTitles[i]}</span>
+                  <div class="inline-grid grid-rows-2 grid-flow-col gap-1 mr-1 h-full my-auto [direction:rtl]">
+                    <For each={kanaCharts[i]}>
+                      {(_, j) => (
+                        <div
+                          class="w-[8px] h-[8px] border rounded-[2px] border-foreground"
+                          classList={{
+                            "bg-white": selection[j()],
+                          }}
+                        ></div>
+                      )}
+                    </For>
+                  </div>
+                  <div
+                    class="i-uil:angle-down h-7 w-7 ml-3 group-data-[expanded]:rotate-180 transition-[transform] duration-300"
+                    aria-hidden
+                  ></div>
+                </>
+              ),
+              content: () => (
+                <div class="grid grid-cols-2 gap-2">
+                  <CheckboxButton
+                    class="col-span-2"
+                    active={selection.every((row) => row)}
+                    onClick={() => {
+                      const allActive = selection.every((row) => row);
+                      setSelections(i)(
+                        Array(selection.length).fill(!allActive)
+                      );
+                    }}
+                  >
+                    Select all
+                  </CheckboxButton>
+                  <For each={kanaCharts[i]}>
+                    {(row, j) => (
+                      <CheckboxButton
+                        active={selection[j()]}
+                        onClick={() => {
+                          setSelections(i)(
+                            selection.map((sel, k) => (j() === k ? !sel : sel))
+                          );
+                        }}
+                      >
+                        {`${row[0][mode()]} ${row[0].romaji[0]}`}
+                      </CheckboxButton>
+                    )}
+                  </For>
+                </div>
+              ),
+            }))}
+          />
+          <FlatButton
+            class="mt-auto p-3 text-lg font-bold disabled:(bg-muted text-muted-foreground border-transparent)"
+            disabled={selections().every((sel) => sel.every((r) => !r))}
+            onClick={[setStarted, true]}
+          >
+            Start
+          </FlatButton>
+        </div>
       </Show>
     </main>
-  );
-}
-
-function Title(props) {
-  return (
-    <>
-      <span class="font-bold mr-auto">{props.title}</span>
-      <div class="inline-grid grid-rows-2 grid-flow-col gap-1 mr-1 h-full my-auto [direction:rtl]">
-        <For each={props.chart}>
-          {(_, i) => (
-            <div
-              class="w-[8px] h-[8px] border rounded-[2px] border-foreground"
-              classList={{
-                "bg-white": props.selections[i()],
-              }}
-            ></div>
-          )}
-        </For>
-      </div>
-      <div
-        class="i-uil:angle-down h-7 w-7 ml-3 group-data-[expanded]:rotate-180 transition-[transform] duration-300"
-        aria-hidden
-      ></div>
-    </>
-  );
-}
-
-function Content(props) {
-  return (
-    <div class="grid grid-cols-2 gap-2">
-      <CheckboxButton
-        class="col-span-2"
-        active={props.selections.every((row) => row)}
-        onClick={() => {
-          const allActive = props.selections.every((row) => row);
-          props.setSelections(Array(props.selections.length).fill(!allActive));
-        }}
-      >
-        Select all
-      </CheckboxButton>
-      <For each={props.chart}>
-        {(row, i) => (
-          <CheckboxButton
-            active={props.selections[i()]}
-            onClick={() => {
-              props.setSelections(
-                props.selections.map((sel, j) => (i() === j ? !sel : sel))
-              );
-            }}
-          >
-            {`${row[0][props.mode]} ${row[0].romaji[0]}`}
-          </CheckboxButton>
-        )}
-      </For>
-    </div>
   );
 }
 
@@ -268,53 +247,12 @@ function CheckboxButton(props) {
   );
 }
 
-type QuestionProps = {
-  prompt: string;
-  active: boolean;
-  value: string;
-  isPlaceholder: boolean;
-  focus: () => void;
-  focused: boolean;
-};
-
-function Question(props: QuestionProps) {
-  return (
-    <li class="w-[8rem]">
-      <div class="[font-size:8rem]">{props.prompt}</div>
-      <div
-        class="w-[8rem] px-2 py-1 rounded cursor-text"
-        classList={{
-          "bg-foreground/5": props.active,
-        }}
-        onClick={props.focus}
-      >
-        <div
-          class="w-fit text-4xl h-10 font-bold m-auto relative select-none"
-          classList={{
-            "text-muted-foreground": props.isPlaceholder,
-            "after:(absolute content-[''] w-0.5 h-full bg-foreground animate-blink)":
-              props.active && props.focused,
-
-            "after:left-1/2": props.active && props.isPlaceholder,
-            "after:ml-[-1px]":
-              props.active && (!props.value || props.isPlaceholder),
-            "after:ml-0.5":
-              props.active && !(!props.value || props.isPlaceholder),
-          }}
-        >
-          {props.value}
-        </div>
-      </div>
-    </li>
-  );
-}
-
 type KanaQuizProps = {
   studyList: { prompt: string; romaji: string[] }[];
   onFinish: () => void;
 };
 
-function KanaQuiz(props: KanaQuizProps) {
+function Quiz(props: KanaQuizProps) {
   const [index, setIndex] = createSignal(0);
 
   const [value, setValue] = createSignal("");
@@ -414,5 +352,46 @@ function KanaQuiz(props: KanaQuizProps) {
         </ul>
       </Show>
     </div>
+  );
+}
+
+type QuestionProps = {
+  prompt: string;
+  active: boolean;
+  value: string;
+  isPlaceholder: boolean;
+  focus: () => void;
+  focused: boolean;
+};
+
+function Question(props: QuestionProps) {
+  return (
+    <li class="w-[8rem]">
+      <div class="[font-size:8rem]">{props.prompt}</div>
+      <div
+        class="w-[8rem] px-2 py-1 rounded cursor-text"
+        classList={{
+          "bg-foreground/5": props.active,
+        }}
+        onClick={props.focus}
+      >
+        <div
+          class="w-fit text-4xl h-10 font-bold m-auto relative select-none"
+          classList={{
+            "text-muted-foreground": props.isPlaceholder,
+            "after:(absolute content-[''] w-0.5 h-full bg-foreground animate-blink)":
+              props.active && props.focused,
+
+            "after:left-1/2": props.active && props.isPlaceholder,
+            "after:ml-[-1px]":
+              props.active && (!props.value || props.isPlaceholder),
+            "after:ml-0.5":
+              props.active && !(!props.value || props.isPlaceholder),
+          }}
+        >
+          {props.value}
+        </div>
+      </div>
+    </li>
   );
 }

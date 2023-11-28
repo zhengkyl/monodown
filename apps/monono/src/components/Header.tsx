@@ -11,7 +11,7 @@ export function Header() {
         monono
       </A>
       <div class="flex items-center gap-4 font-bold">
-        <a href="./test">Test</a>
+        <a href="./kana-quiz">Quiz</a>
         <A href="./components">Components</A>
         <a href="./dungeon">Dungeon</a>
         <DarkModeToggle />
@@ -52,10 +52,8 @@ function DarkModeToggle() {
       class="inline-flex items-center cursor-pointer"
       checked={darkMode()}
       onChange={setDarkMode}
+      aria-label={darkMode() ? "light mode switch" : "dark mode switch"}
     >
-      {/* <Switch.Label class="mr-[6px] select-none text-sm">
-        Dark Mode
-      </Switch.Label> */}
       <Switch.Input class="peer" />
       <Switch.Control class="inline-flex items-center bg-stone-200 border rounded-[12px] h-[24px] w-[46px] px-[2px] peer-focus:(ring-2 ring-ring ring-offset-2 ring-offset-background) data-[checked]:(border bg-stone-800)">
         <Switch.Thumb class="inline-flex items-center h-[20px] w-[20px] rounded-[10px] transition-transform bg-background data-[checked]:translate-x-full">

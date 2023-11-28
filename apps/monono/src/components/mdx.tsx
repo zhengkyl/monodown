@@ -57,12 +57,12 @@ const relativeUrl = (s: string) => `${s.toLowerCase().replaceAll(" ", "-")}`;
 
 export function Link(props) {
   // left sidebar link
-  if (props.url == null) {
+  if (props.url == null || props.leftSidebar) {
     return (
       <A
-        href={relativeUrl(props.children)}
+        href={props.url ?? relativeUrl(props.children)}
         title={props.title ?? undefined}
-        class="block font-semibold py-1 hover:text-amber"
+        class="block font-semibold py-1 text-foreground/80 hover:text-amber-600"
       >
         {props.children}
       </A>
@@ -74,7 +74,7 @@ export function Link(props) {
       <A
         href={props.url}
         title={props.title ?? undefined}
-        class="block font-semibold py-0.5 text-sm text-foreground/60 hover:text-foreground"
+        class="block font-semibold py-0.5 text-sm text-foreground/80 hover:text-foreground"
       >
         {props.children}
       </A>
