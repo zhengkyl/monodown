@@ -1,5 +1,5 @@
 import { Accordion as KAccordion } from "@kobalte/core";
-import { For, JSX, splitProps } from "solid-js";
+import { For, Index, JSX, splitProps } from "solid-js";
 import { twMerge } from "tailwind-merge";
 
 type Props = KAccordion.AccordionRootProps & {
@@ -15,25 +15,25 @@ export function Accordion(props: Props) {
       defaultValue={["item-1"]}
       {...rest}
     >
-      <For each={props.items}>
+      <Index each={props.items}>
         {(item, i) => (
-          <KAccordion.Item value={`item-${i()}`}>
+          <KAccordion.Item value={`item-${i}`}>
             <KAccordion.Header
               class="flex items-center"
               classList={{
-                "border-t border-foreground": i() !== 0,
-                "rounded-t-lg": i() === 0,
-                "rounded-b-lg": i() === props.items.length - 1,
+                "border-t border-foreground": i !== 0,
+                "rounded-t-lg": i === 0,
+                "rounded-b-lg": i === props.items.length - 1,
               }}
             >
               <KAccordion.Trigger
                 class="group inline-flex w-full p-4 border-foreground focus-visible:(outline-none ring-offset-background ring-offset-2 ring-ring ring-2)"
                 classList={{
-                  "rounded-t-lg": i() === 0,
-                  "rounded-b-lg": i() === props.items.length - 1,
+                  "rounded-t-lg": i === 0,
+                  "rounded-b-lg": i === props.items.length - 1,
                 }}
               >
-                {item.title()}
+                {item().title()}
               </KAccordion.Trigger>
             </KAccordion.Header>
             <KAccordion.Content class="overflow-hidden animate-slideUp data-[expanded]:animate-slideDown">
@@ -41,12 +41,12 @@ export function Accordion(props: Props) {
                 class="p-4"
                 //  border-t border-foreground
               >
-                {item.content()}
+                {item().content()}
               </div>
             </KAccordion.Content>
           </KAccordion.Item>
         )}
-      </For>
+      </Index>
     </KAccordion.Root>
   );
 }

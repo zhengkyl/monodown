@@ -93,7 +93,7 @@ export default defineConfig({
       keyframes: {
         /* override default spin which uses transform */
         spin: "{from { rotate: 0deg; } to { rotate: 360deg; }}",
-        blink: "{from { opacity: 0%; }}",
+        blink: "{to { opacity: 0%; }}",
         slideDown:
           "{from {height: 0;} to {height: var(--kb-accordion-content-height);}}",
         slideUp:

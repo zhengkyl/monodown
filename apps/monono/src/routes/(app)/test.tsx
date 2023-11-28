@@ -1,4 +1,11 @@
-import { For, Show, createSignal, onMount, splitProps } from "solid-js";
+import {
+  For,
+  Show,
+  createEffect,
+  createSignal,
+  onMount,
+  splitProps,
+} from "solid-js";
 import { createStore } from "solid-js/store";
 import { useLocation, useNavigate, useSearchParams } from "solid-start";
 import { Accordion } from "~/components/ui/Accordion";
@@ -9,12 +16,19 @@ import { KanaInfo, dakuonKana, gojuonKana, yoonKana } from "~/data/kana";
 
 const kanaCharts = [gojuonKana, dakuonKana, yoonKana];
 const chartTitles = ["Gojūon", "Dakuon", "Yōon"];
+const toChartIndex = kanaCharts.map(
+  (chart) => new Map(chart.map((row, i) => [row[0].romaji[0], i]))
+);
 
 export default function Test() {
   const location = useLocation();
   const _navigate = useNavigate();
 
   const [params, _] = useSearchParams();
+
+  createEffect(() => {
+    console.log("params CHANGED", params.sel);
+  });
 
   // setParams uses URLSearchParams which doesn't support bare params like "?kata" or unencoded chars like "," and ";"
   const manualSetParams = (pathname, mode, sel) => {
@@ -38,17 +52,14 @@ export default function Test() {
 
   const mode = () => (params.kata === undefined ? "hira" : "kata");
 
-  const toChartIndex = kanaCharts.map(
-    (chart) => new Map(chart.map((row, i) => [row[0].romaji[0], i]))
-  );
-
   const sellog = (...args) => {
-    console.log(...args);
-    return selections();
+    console.log("BEFORE", ...args);
+    const t = selections();
+    return t;
   };
 
   const selections = () => {
-    console.log("selections", params.sel);
+    console.log("     selections", params.sel);
 
     const lists = (params.sel ?? "").split(";");
 
@@ -71,6 +82,21 @@ export default function Test() {
 
     return chartSels;
   };
+
+  // const [ga, gb, gc] = (() => {
+  //   const [a, b, c] = selections();
+  //   return [() => a, () => b, () => c];
+  // })();
+
+  // createEffect(() => {
+  //   console.log("ga", ga());
+  // });
+  // createEffect(() => {
+  //   console.log("gb", gb());
+  // });
+  // createEffect(() => {
+  //   console.log("gc", gc());
+  // });
 
   const setSelections = (i) => (ithSel) => {
     const chartSels = sellog("setSelections"); //selections();
@@ -114,8 +140,18 @@ export default function Test() {
       });
     });
 
+    for (let i = list.length - 1; i > 0; i--) {
+      const j = Math.floor(Math.random() * (i + 1));
+      [list[i], list[j]] = [list[j], list[i]];
+    }
+
     return list;
   }
+
+  const firstSelected = sellog("findFirstSelectedIndex").findIndex(
+    (selection) => selection.some((selected) => selected)
+  );
+  const defaultIndex = firstSelected !== -1 ? firstSelected : 0;
 
   return (
     <main class="h-full">
@@ -139,13 +175,30 @@ export default function Test() {
                   manualSetParams(location.pathname, mode, sel);
                 }}
               />
+              {/* <For each={sellog("foritmes")}>
+                {(selection, i) => (
+                  <>
+                    <Title
+                      title={chartTitles[i()]}
+                      chart={kanaCharts[i()]}
+                      selections={selection}
+                      mode={mode()}
+                    />
+                    <Content
+                      chart={kanaCharts[i()]}
+                      selections={selection}
+                      setSelections={setSelections(i())}
+                      mode={mode()}
+                    />
+                  </>
+                )}
+              </For> */}
               <Accordion
                 class="text-lg"
-                defaultValue={["item-0"]}
+                defaultValue={[`item-${defaultIndex}`]}
                 collapsible
                 items={sellog("items").map((selection, i) => ({
                   title: () => (
-                    // <Title2 params={params.sel} />
                     <Title
                       title={chartTitles[i]}
                       chart={kanaCharts[i]}
@@ -154,7 +207,6 @@ export default function Test() {
                     />
                   ),
                   content: () => (
-                    // <div></div>
                     <Content
                       chart={kanaCharts[i]}
                       selections={selection}
@@ -181,11 +233,6 @@ export default function Test() {
       </Show>
     </main>
   );
-}
-
-function Title2(props) {
-  console.log("title2 render");
-  return <div>{props.params}</div>;
 }
 
 function Title(props) {
@@ -272,11 +319,11 @@ function CheckboxButton(props) {
 
 type QuestionProps = {
   prompt: string;
-  // answers: string[];
   active: boolean;
-  // onFinish: (pass) => void;
   value: string;
   isPlaceholder: boolean;
+  focus: () => void;
+  focused: boolean;
 };
 
 function Question(props: QuestionProps) {
@@ -284,17 +331,18 @@ function Question(props: QuestionProps) {
     <li class="w-[8rem]">
       <div class="[font-size:8rem]">{props.prompt}</div>
       <div
-        class="w-[8rem] px-2 py-1 rounded"
+        class="w-[8rem] px-2 py-1 rounded cursor-text"
         classList={{
           "bg-foreground/5": props.active,
         }}
+        onClick={props.focus}
       >
         <div
           class="w-fit text-4xl h-10 font-bold m-auto relative"
           classList={{
             "text-muted-foreground": props.isPlaceholder,
-            "after:(absolute content-[''] w-0.5 h-full bg-red animate-blink)":
-              props.active,
+            "after:(absolute content-[''] w-0.5 h-full bg-foreground animate-blink)":
+              props.active && props.focused,
 
             "after:left-1/2": props.active && props.isPlaceholder,
             "after:ml-[-1px]":
@@ -316,10 +364,13 @@ type KanaQuizProps = {
 };
 
 function KanaQuiz(props: KanaQuizProps) {
+  // TODO this remove reactivity b/c shuffle and idk why signal runs multiple times
+  const { studyList } = props;
+
   const [index, setIndex] = createSignal(0);
 
   const [value, setValue] = createSignal("");
-  const [answers, setAnswers] = createStore(Array(props.studyList.length));
+  const [answers, setAnswers] = createStore(Array(studyList.length));
 
   let ulist: HTMLUListElement;
 
@@ -331,14 +382,21 @@ function KanaQuiz(props: KanaQuizProps) {
 
   let textfield: HTMLInputElement;
 
+  const [focused, setFocused] = createSignal(false);
+
   onMount(() => {
     textfield && textfield.focus();
   });
 
+  const [missedKana, setMissedKana] = createStore([]);
+  const onMiss = (entry) => {
+    setMissedKana(missedKana.length, entry);
+  };
+
   return (
     <div>
       <Show
-        when={index() < props.studyList.length}
+        when={index() < studyList.length}
         fallback={
           <div class="flex gap-4">
             <ThickButton variant="fill" hue="green" onClick={props.onFinish}>
@@ -347,6 +405,17 @@ function KanaQuiz(props: KanaQuizProps) {
             <ThickButton variant="fill" hue="indigo" onClick={[setIndex, 0]}>
               Try again
             </ThickButton>
+            <div>You missed:</div>
+            <For each={missedKana}>
+              {(entry) => {
+                return (
+                  <div>
+                    {entry.prompt}
+                    <span>{entry.romaji[0]}</span>
+                  </div>
+                );
+              }}
+            </For>
           </div>
         }
       >
@@ -366,21 +435,27 @@ function KanaQuiz(props: KanaQuizProps) {
             if (!(e.key === "Enter" || e.key === " ")) return;
             e.preventDefault();
 
-            if (props.studyList[index()].romaji.includes(value())) {
+            if (studyList[index()].romaji.includes(value())) {
               next();
+            } else {
+              onMiss(studyList[index()]);
             }
 
             setValue("");
           }}
+          onFocus={[setFocused, true]}
+          onBlur={[setFocused, false]}
         />
         <ul
           ref={ulist}
           style={{ "margin-left": "calc(50vw - 4rem)" }}
           class="overflow-hidden flex gap-[8rem] [transition:margin-left_300ms_ease-in-out]"
         >
-          <For each={props.studyList}>
+          <For each={studyList}>
             {(item, i) => (
               <Question
+                focus={() => textfield.focus()}
+                focused={focused()}
                 prompt={item.prompt}
                 value={answers[i()]}
                 active={i() === index()}
