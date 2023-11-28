@@ -1,7 +1,7 @@
 import {
   For,
   Show,
-  createEffect,
+  createMemo,
   createSignal,
   onMount,
   splitProps,
@@ -12,7 +12,7 @@ import { Accordion } from "~/components/ui/Accordion";
 import { FlatButton } from "~/components/ui/FlatButton";
 import { ThickButton } from "~/components/ui/ThickButton";
 import { ToggleButton } from "~/components/ui/ToggleButton";
-import { KanaInfo, dakuonKana, gojuonKana, yoonKana } from "~/data/kana";
+import { dakuonKana, gojuonKana, yoonKana } from "~/data/kana";
 
 const kanaCharts = [gojuonKana, dakuonKana, yoonKana];
 const chartTitles = ["Gojūon", "Dakuon", "Yōon"];
@@ -26,13 +26,8 @@ export default function Test() {
 
   const [params, _] = useSearchParams();
 
-  createEffect(() => {
-    console.log("params CHANGED", params.sel);
-  });
-
   // setParams uses URLSearchParams which doesn't support bare params like "?kata" or unencoded chars like "," and ";"
   const manualSetParams = (pathname, mode, sel) => {
-    console.log("msp", mode, sel);
     const modeParam = mode === "kata" ? mode : "";
     const selParam = sel.length ? `sel=${sel}` : "";
 
@@ -52,15 +47,10 @@ export default function Test() {
 
   const mode = () => (params.kata === undefined ? "hira" : "kata");
 
-  const sellog = (...args) => {
-    console.log("BEFORE", ...args);
-    const t = selections();
-    return t;
-  };
-
-  const selections = () => {
-    console.log("     selections", params.sel);
-
+  // FUTURE: This is accessed way too much and I don't know why
+  // the <For> in <Accordian> calls it twice between renders for each item
+  // Memo is good enough but I still don't understand underlying cause
+  const selections = createMemo(() => {
     const lists = (params.sel ?? "").split(";");
 
     const chartSels = kanaCharts.map((chart) =>
@@ -81,25 +71,10 @@ export default function Test() {
     }
 
     return chartSels;
-  };
-
-  // const [ga, gb, gc] = (() => {
-  //   const [a, b, c] = selections();
-  //   return [() => a, () => b, () => c];
-  // })();
-
-  // createEffect(() => {
-  //   console.log("ga", ga());
-  // });
-  // createEffect(() => {
-  //   console.log("gb", gb());
-  // });
-  // createEffect(() => {
-  //   console.log("gc", gc());
-  // });
+  });
 
   const setSelections = (i) => (ithSel) => {
-    const chartSels = sellog("setSelections"); //selections();
+    const chartSels = selections();
     chartSels[i] = ithSel;
 
     const lists = [[], [], []];
@@ -115,7 +90,6 @@ export default function Test() {
       });
     });
 
-    console.log("lists", lists);
     const sel = lists
       .map((list) => list.join(","))
       .join(";")
@@ -124,19 +98,19 @@ export default function Test() {
     manualSetParams(location.pathname, mode(), sel);
   };
 
-  function rowToItems(row: KanaInfo[]) {
-    return row.map((entry) => ({
-      prompt: entry[mode()],
-      romaji: entry.romaji,
-    }));
-  }
-
-  function studyList() {
+  // b/c list is shuffled, memo or remove reactivity needed
+  const studyList = createMemo(() => {
     const list = [];
 
-    sellog("studylist").forEach((selection, i) => {
+    selections().forEach((selection, i) => {
       selection.forEach((selected, j) => {
-        if (selected) list.push(...rowToItems(kanaCharts[i][j]));
+        if (!selected) return;
+        list.push(
+          ...kanaCharts[i][j].map((entry) => ({
+            prompt: entry[mode()],
+            romaji: entry.romaji,
+          }))
+        );
       });
     });
 
@@ -146,10 +120,10 @@ export default function Test() {
     }
 
     return list;
-  }
+  });
 
-  const firstSelected = sellog("findFirstSelectedIndex").findIndex(
-    (selection) => selection.some((selected) => selected)
+  const firstSelected = selections().findIndex((selection) =>
+    selection.some((selected) => selected)
   );
   const defaultIndex = firstSelected !== -1 ? firstSelected : 0;
 
@@ -171,33 +145,14 @@ export default function Test() {
                   const index = location.search.indexOf("sel=");
                   const sel =
                     index !== -1 ? location.search.slice(index + 4) : "";
-                  console.log("onChange", location.search, mode, sel);
                   manualSetParams(location.pathname, mode, sel);
                 }}
               />
-              {/* <For each={sellog("foritmes")}>
-                {(selection, i) => (
-                  <>
-                    <Title
-                      title={chartTitles[i()]}
-                      chart={kanaCharts[i()]}
-                      selections={selection}
-                      mode={mode()}
-                    />
-                    <Content
-                      chart={kanaCharts[i()]}
-                      selections={selection}
-                      setSelections={setSelections(i())}
-                      mode={mode()}
-                    />
-                  </>
-                )}
-              </For> */}
               <Accordion
                 class="text-lg"
                 defaultValue={[`item-${defaultIndex}`]}
                 collapsible
-                items={sellog("items").map((selection, i) => ({
+                items={selections().map((selection, i) => ({
                   title: () => (
                     <Title
                       title={chartTitles[i]}
@@ -218,9 +173,7 @@ export default function Test() {
               />
               <FlatButton
                 class="mt-auto p-3 text-lg font-bold disabled:(bg-muted text-muted-foreground border-transparent)"
-                disabled={sellog("disabled").every((sel) =>
-                  sel.every((r) => !r)
-                )}
+                disabled={selections().every((sel) => sel.every((r) => !r))}
                 onClick={[setStarted, true]}
               >
                 Start
@@ -236,7 +189,6 @@ export default function Test() {
 }
 
 function Title(props) {
-  console.log("title render");
   return (
     <>
       <span class="font-bold mr-auto">{props.title}</span>
@@ -261,7 +213,6 @@ function Title(props) {
 }
 
 function Content(props) {
-  console.log("content render");
   return (
     <div class="grid grid-cols-2 gap-2">
       <CheckboxButton
@@ -338,7 +289,7 @@ function Question(props: QuestionProps) {
         onClick={props.focus}
       >
         <div
-          class="w-fit text-4xl h-10 font-bold m-auto relative"
+          class="w-fit text-4xl h-10 font-bold m-auto relative select-none"
           classList={{
             "text-muted-foreground": props.isPlaceholder,
             "after:(absolute content-[''] w-0.5 h-full bg-foreground animate-blink)":
@@ -364,13 +315,10 @@ type KanaQuizProps = {
 };
 
 function KanaQuiz(props: KanaQuizProps) {
-  // TODO this remove reactivity b/c shuffle and idk why signal runs multiple times
-  const { studyList } = props;
-
   const [index, setIndex] = createSignal(0);
 
   const [value, setValue] = createSignal("");
-  const [answers, setAnswers] = createStore(Array(studyList.length));
+  const [answers, setAnswers] = createStore(Array(props.studyList.length));
 
   let ulist: HTMLUListElement;
 
@@ -396,7 +344,7 @@ function KanaQuiz(props: KanaQuizProps) {
   return (
     <div>
       <Show
-        when={index() < studyList.length}
+        when={index() < props.studyList.length}
         fallback={
           <div class="flex gap-4">
             <ThickButton variant="fill" hue="green" onClick={props.onFinish}>
@@ -435,10 +383,10 @@ function KanaQuiz(props: KanaQuizProps) {
             if (!(e.key === "Enter" || e.key === " ")) return;
             e.preventDefault();
 
-            if (studyList[index()].romaji.includes(value())) {
+            if (props.studyList[index()].romaji.includes(value())) {
               next();
             } else {
-              onMiss(studyList[index()]);
+              onMiss(props.studyList[index()]);
             }
 
             setValue("");
@@ -451,7 +399,7 @@ function KanaQuiz(props: KanaQuizProps) {
           style={{ "margin-left": "calc(50vw - 4rem)" }}
           class="overflow-hidden flex gap-[8rem] [transition:margin-left_300ms_ease-in-out]"
         >
-          <For each={studyList}>
+          <For each={props.studyList}>
             {(item, i) => (
               <Question
                 focus={() => textfield.focus()}
