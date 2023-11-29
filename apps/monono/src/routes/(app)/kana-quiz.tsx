@@ -1,6 +1,7 @@
 import {
   For,
   Show,
+  batch,
   createMemo,
   createSignal,
   onMount,
@@ -100,7 +101,6 @@ export default function KanaQuiz() {
     manualSetParams(location.pathname, mode(), sel);
   };
 
-  // b/c list is shuffled, memo or remove reactivity needed
   const studyList = createMemo(() => {
     const list = [];
 
@@ -116,11 +116,6 @@ export default function KanaQuiz() {
       });
     });
 
-    for (let i = list.length - 1; i > 0; i--) {
-      const j = Math.floor(Math.random() * (i + 1));
-      [list[i], list[j]] = [list[j], list[i]];
-    }
-
     return list;
   });
 
@@ -130,100 +125,107 @@ export default function KanaQuiz() {
   const defaultIndex = firstSelected !== -1 ? firstSelected : 0;
 
   return (
-    <main class="h-full w-full mx-auto max-w-screen-sm flex flex-col">
-      <Show
-        // when={false}
-        when={!started()}
-        fallback={
-          <>
-            <Quiz studyList={studyList()} onFinish={() => setStarted(false)} />
-          </>
-        }
-      >
-        <div class="w-full h-full overflow-auto p-4 flex flex-col gap-6">
-          <ToggleButton
-            toggles={[
-              { text: "Hiragana", value: "hira" },
-              { text: "Katakana", value: "kata" },
-            ]}
-            defaultValue="hira" // acts as fallback if searchParams invalid
-            value={mode()}
-            onChange={(mode) => {
-              const index = location.search.indexOf("sel=");
-              const sel = index !== -1 ? location.search.slice(index + 4) : "";
-              manualSetParams(location.pathname, mode, sel);
-            }}
-          />
-          <Accordion
-            class="text-lg"
-            defaultValue={[`item-${defaultIndex}`]}
-            collapsible
-            items={selections().map((selection, i) => ({
-              title: () => (
-                <>
-                  <span class="font-bold mr-auto">{chartTitles[i]}</span>
-                  <div class="inline-grid grid-rows-2 grid-flow-col gap-1 mr-1 h-full my-auto [direction:rtl]">
+    <main class="h-full relative overflow-hidden">
+      <div class="max-w-screen-sm mx-auto w-full h-full flex flex-col">
+        <Show
+          when={!started()}
+          fallback={
+            <>
+              <Quiz
+                studyList={studyList()}
+                onFinish={() => setStarted(false)}
+              />
+            </>
+          }
+        >
+          <div class="h-full overflow-auto p-4 flex flex-col gap-6">
+            <ToggleButton
+              toggles={[
+                { text: "Hiragana", value: "hira" },
+                { text: "Katakana", value: "kata" },
+              ]}
+              defaultValue="hira" // acts as fallback if searchParams invalid
+              value={mode()}
+              onChange={(mode) => {
+                const index = location.search.indexOf("sel=");
+                const sel =
+                  index !== -1 ? location.search.slice(index + 4) : "";
+                manualSetParams(location.pathname, mode, sel);
+              }}
+            />
+            <Accordion
+              class="text-lg"
+              defaultValue={[`item-${defaultIndex}`]}
+              collapsible
+              items={selections().map((selection, i) => ({
+                title: () => (
+                  <>
+                    <span class="font-bold mr-auto">{chartTitles[i]}</span>
+                    <div class="inline-grid grid-rows-2 grid-flow-col gap-1 mr-1 h-full my-auto [direction:rtl]">
+                      <For each={kanaCharts[i]}>
+                        {(_, j) => (
+                          <div
+                            class="w-[8px] h-[8px] border rounded-[2px] border-foreground"
+                            classList={{
+                              "bg-foreground": selection[j()],
+                            }}
+                          ></div>
+                        )}
+                      </For>
+                    </div>
+                    <div
+                      class="i-uil:angle-down h-7 w-7 ml-3 group-data-[expanded]:rotate-180 transition-[transform] duration-300"
+                      aria-hidden
+                    ></div>
+                  </>
+                ),
+                content: () => (
+                  <div class="grid grid-cols-2 gap-2">
+                    <CheckboxButton
+                      class="col-span-2"
+                      active={selection.every((row) => row)}
+                      onClick={() => {
+                        const allActive = selection.every((row) => row);
+                        setSelections(i)(
+                          Array(selection.length).fill(!allActive)
+                        );
+                      }}
+                    >
+                      Select all
+                    </CheckboxButton>
                     <For each={kanaCharts[i]}>
-                      {(_, j) => (
-                        <div
-                          class="w-[8px] h-[8px] border rounded-[2px] border-foreground"
-                          classList={{
-                            "bg-foreground": selection[j()],
+                      {(row, j) => (
+                        <CheckboxButton
+                          active={selection[j()]}
+                          onClick={() => {
+                            setSelections(i)(
+                              selection.map((sel, k) =>
+                                j() === k ? !sel : sel
+                              )
+                            );
                           }}
-                        ></div>
+                        >
+                          {`${row[0][mode()]} ${row[0].romaji[0]}`}
+                        </CheckboxButton>
                       )}
                     </For>
                   </div>
-                  <div
-                    class="i-uil:angle-down h-7 w-7 ml-3 group-data-[expanded]:rotate-180 transition-[transform] duration-300"
-                    aria-hidden
-                  ></div>
-                </>
-              ),
-              content: () => (
-                <div class="grid grid-cols-2 gap-2">
-                  <CheckboxButton
-                    class="col-span-2"
-                    active={selection.every((row) => row)}
-                    onClick={() => {
-                      const allActive = selection.every((row) => row);
-                      setSelections(i)(
-                        Array(selection.length).fill(!allActive)
-                      );
-                    }}
-                  >
-                    Select all
-                  </CheckboxButton>
-                  <For each={kanaCharts[i]}>
-                    {(row, j) => (
-                      <CheckboxButton
-                        active={selection[j()]}
-                        onClick={() => {
-                          setSelections(i)(
-                            selection.map((sel, k) => (j() === k ? !sel : sel))
-                          );
-                        }}
-                      >
-                        {`${row[0][mode()]} ${row[0].romaji[0]}`}
-                      </CheckboxButton>
-                    )}
-                  </For>
-                </div>
-              ),
-            }))}
-          />
-        </div>
-        <div class="p-4 pt-0">
-          <ThickButton
-            variant="fill"
-            class="w-full"
-            disabled={selections().every((sel) => sel.every((r) => !r))}
-            onClick={[setStarted, true]}
-          >
-            Start
-          </ThickButton>
-        </div>
-      </Show>
+                ),
+              }))}
+            />
+          </div>
+          <div class="p-4 pt-0">
+            <ThickButton
+              variant="fill"
+              class="w-full"
+              disabled={selections().every((sel) => sel.every((r) => !r))}
+              onClick={[setStarted, true]}
+            >
+              Start
+            </ThickButton>
+          </div>
+        </Show>
+      </div>
     </main>
   );
 }
@@ -258,14 +260,26 @@ type KanaQuizProps = {
   onFinish: () => void;
 };
 
+function getShuffled<T>(old: Array<T>): Array<T> {
+  const list = Array.from(old);
+
+  for (let i = list.length - 1; i > 0; i--) {
+    const j = Math.floor(Math.random() * (i + 1));
+    [list[i], list[j]] = [list[j], list[i]];
+  }
+
+  return list;
+}
+
 function Quiz(props: KanaQuizProps) {
   const [index, setIndex] = createSignal(0);
 
   const [value, setValue] = createSignal("");
-  const [answers, setAnswers] = createStore(Array(props.studyList.length));
-  const [misses, setMisses] = createStore(
-    Array(props.studyList.length).fill(0)
-  );
+
+  const [studyList, setStudyList] = createSignal(getShuffled(props.studyList));
+
+  const [answers, setAnswers] = createStore(Array(studyList().length));
+  const [misses, setMisses] = createStore(Array(studyList().length).fill(0));
 
   let ulist: HTMLUListElement;
 
@@ -293,23 +307,34 @@ function Quiz(props: KanaQuizProps) {
     return count;
   };
 
+  const tryAgain = () => {
+    batch(() => {
+      setAnswers(Array(studyList().length));
+      setMisses(Array(studyList().length).fill(0));
+      setIndex(0);
+      setStudyList(getShuffled(props.studyList));
+    });
+    textfield.focus();
+  };
+
   return (
     <Show
-      when={index() < props.studyList.length}
+      when={false}
+      // when={index() < studyList().length}
       fallback={
         <>
           <div class="h-full overflow-auto p-4">
             <div class="text-center flex flex-col justify-center">
               <div class="text-4xl font-bold my-16">
-                👏{correct()}/{props.studyList.length}!👏
+                👏{correct()}/{studyList().length}!👏
               </div>
               <Show
-                when={correct() !== props.studyList.length}
+                when={correct() !== studyList().length}
                 fallback={<img src={rewardGif} class="h-[50vw] max-h-[50vh]" />}
               >
                 <div class="text-2xl font-bold mb-4">Mistakes</div>
                 <ul class="flex flex-wrap justify-center gap-4">
-                  <For each={props.studyList}>
+                  <For each={studyList()}>
                     {(entry, i) => {
                       if (!misses[i()]) return null;
                       return (
@@ -336,7 +361,7 @@ function Quiz(props: KanaQuizProps) {
             <ThickButton class="flex-1" variant="fill" onClick={props.onFinish}>
               Finish
             </ThickButton>
-            <ThickButton class="flex-1" onClick={[setIndex, 0]}>
+            <ThickButton class="flex-1" onClick={tryAgain}>
               Try again
             </ThickButton>
           </div>
@@ -359,7 +384,7 @@ function Quiz(props: KanaQuizProps) {
           if (!(e.key === "Enter" || e.key === " ")) return;
           e.preventDefault();
 
-          if (props.studyList[index()].romaji.includes(value())) {
+          if (studyList()[index()].romaji.includes(value())) {
             next();
           } else {
             setMisses(index(), (attempt) => attempt + 1);
@@ -375,7 +400,7 @@ function Quiz(props: KanaQuizProps) {
         style={{ "margin-left": "calc(50vw - 4rem)" }}
         class="absolute left-0 flex gap-[8rem] [transition:margin-left_300ms_ease-in-out]"
       >
-        <For each={props.studyList}>
+        <For each={studyList()}>
           {(item, i) => (
             <Question
               focus={() => textfield.focus()}
