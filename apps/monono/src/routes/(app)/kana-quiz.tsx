@@ -14,6 +14,8 @@ import { ThickButton } from "~/components/ui/ThickButton";
 import { ToggleButton } from "~/components/ui/ToggleButton";
 import { dakuonKana, gojuonKana, yoonKana } from "~/data/kana";
 
+import rewardGif from "~/assets/4floss.gif";
+
 const kanaCharts = [gojuonKana, dakuonKana, yoonKana];
 const chartTitles = ["Gojūon", "Dakuon", "Yōon"];
 const toChartIndex = kanaCharts.map(
@@ -128,8 +130,9 @@ export default function KanaQuiz() {
   const defaultIndex = firstSelected !== -1 ? firstSelected : 0;
 
   return (
-    <main class="h-full">
+    <main class="h-full w-full mx-auto max-w-screen-sm flex flex-col">
       <Show
+        // when={false}
         when={!started()}
         fallback={
           <>
@@ -137,7 +140,7 @@ export default function KanaQuiz() {
           </>
         }
       >
-        <div class="max-w-sm py-8 mx-auto h-full flex flex-col gap-6">
+        <div class="w-full h-full overflow-auto p-4 flex flex-col gap-6">
           <ToggleButton
             toggles={[
               { text: "Hiragana", value: "hira" },
@@ -165,7 +168,7 @@ export default function KanaQuiz() {
                         <div
                           class="w-[8px] h-[8px] border rounded-[2px] border-foreground"
                           classList={{
-                            "bg-white": selection[j()],
+                            "bg-foreground": selection[j()],
                           }}
                         ></div>
                       )}
@@ -209,13 +212,16 @@ export default function KanaQuiz() {
               ),
             }))}
           />
-          <FlatButton
-            class="mt-auto p-3 text-lg font-bold disabled:(bg-muted text-muted-foreground border-transparent)"
+        </div>
+        <div class="p-4 pt-0">
+          <ThickButton
+            variant="fill"
+            class="w-full"
             disabled={selections().every((sel) => sel.every((r) => !r))}
             onClick={[setStarted, true]}
           >
             Start
-          </FlatButton>
+          </ThickButton>
         </div>
       </Show>
     </main>
@@ -257,6 +263,9 @@ function Quiz(props: KanaQuizProps) {
 
   const [value, setValue] = createSignal("");
   const [answers, setAnswers] = createStore(Array(props.studyList.length));
+  const [misses, setMisses] = createStore(
+    Array(props.studyList.length).fill(0)
+  );
 
   let ulist: HTMLUListElement;
 
@@ -274,84 +283,112 @@ function Quiz(props: KanaQuizProps) {
     textfield && textfield.focus();
   });
 
-  const [missedKana, setMissedKana] = createStore([]);
-  const onMiss = (entry) => {
-    setMissedKana(missedKana.length, entry);
+  const correct = () => {
+    let count = 0;
+    misses.forEach((missCount) => {
+      if (missCount === 0) {
+        count++;
+      }
+    });
+    return count;
   };
 
   return (
-    <div>
-      <Show
-        when={index() < props.studyList.length}
-        fallback={
-          <div class="flex gap-4">
-            <ThickButton variant="fill" hue="green" onClick={props.onFinish}>
+    <Show
+      when={index() < props.studyList.length}
+      fallback={
+        <>
+          <div class="h-full overflow-auto p-4">
+            <div class="text-center flex flex-col justify-center">
+              <div class="text-4xl font-bold my-16">
+                👏{correct()}/{props.studyList.length}!👏
+              </div>
+              <Show
+                when={correct() !== props.studyList.length}
+                fallback={<img src={rewardGif} class="h-[50vw] max-h-[50vh]" />}
+              >
+                <div class="text-2xl font-bold mb-4">Mistakes</div>
+                <ul class="flex flex-wrap justify-center gap-4">
+                  <For each={props.studyList}>
+                    {(entry, i) => {
+                      if (!misses[i()]) return null;
+                      return (
+                        <ThickButton
+                          size="none"
+                          class="flex-col w-[8rem] p-4 gap-2"
+                        >
+                          <div class="text-[3rem] leading-none">
+                            {entry.prompt}
+                          </div>
+                          <div class="text-2xl font-bold">
+                            {entry.romaji[0]}
+                          </div>
+                          <div class="i-mdi:volume text-xl"></div>
+                        </ThickButton>
+                      );
+                    }}
+                  </For>
+                </ul>
+              </Show>
+            </div>
+          </div>
+          <div class="flex justify-center gap-2 p-4 pt-0">
+            <ThickButton class="flex-1" variant="fill" onClick={props.onFinish}>
               Finish
             </ThickButton>
-            <ThickButton variant="fill" hue="indigo" onClick={[setIndex, 0]}>
+            <ThickButton class="flex-1" onClick={[setIndex, 0]}>
               Try again
             </ThickButton>
-            <div>You missed:</div>
-            <For each={missedKana}>
-              {(entry) => {
-                return (
-                  <div>
-                    {entry.prompt}
-                    <span>{entry.romaji[0]}</span>
-                  </div>
-                );
-              }}
-            </For>
           </div>
-        }
+        </>
+      }
+    >
+      <input
+        type="text"
+        class="w-0 h-0 outline-none"
+        maxLength={3}
+        autofocus
+        autocapitalize="none"
+        ref={textfield}
+        value={value()}
+        onInput={(e) => {
+          setValue(e.target.value);
+          setAnswers(index(), e.target.value);
+        }}
+        onKeyPress={(e) => {
+          if (!(e.key === "Enter" || e.key === " ")) return;
+          e.preventDefault();
+
+          if (props.studyList[index()].romaji.includes(value())) {
+            next();
+          } else {
+            setMisses(index(), (attempt) => attempt + 1);
+          }
+
+          setValue("");
+        }}
+        onFocus={[setFocused, true]}
+        onBlur={[setFocused, false]}
+      />
+      <ul
+        ref={ulist}
+        style={{ "margin-left": "calc(50vw - 4rem)" }}
+        class="absolute left-0 flex gap-[8rem] [transition:margin-left_300ms_ease-in-out]"
       >
-        <input
-          type="text"
-          class="w-0 h-0 outline-none"
-          maxLength={3}
-          autofocus
-          autocapitalize="none"
-          ref={textfield}
-          value={value()}
-          onInput={(e) => {
-            setValue(e.target.value);
-            setAnswers(index(), e.target.value);
-          }}
-          onKeyPress={(e) => {
-            if (!(e.key === "Enter" || e.key === " ")) return;
-            e.preventDefault();
-
-            if (props.studyList[index()].romaji.includes(value())) {
-              next();
-            } else {
-              onMiss(props.studyList[index()]);
-            }
-
-            setValue("");
-          }}
-          onFocus={[setFocused, true]}
-          onBlur={[setFocused, false]}
-        />
-        <ul
-          ref={ulist}
-          style={{ "margin-left": "calc(50vw - 4rem)" }}
-          class="overflow-hidden flex gap-[8rem] [transition:margin-left_300ms_ease-in-out]"
-        >
-          <For each={props.studyList}>
-            {(item, i) => (
-              <Question
-                focus={() => textfield.focus()}
-                focused={focused()}
-                prompt={item.prompt}
-                value={answers[i()]}
-                active={i() === index()}
-                isPlaceholder={i() === index() && value() !== answers[i()]}
-              />
-            )}
-          </For>
-        </ul>
-      </Show>
-    </div>
+        <For each={props.studyList}>
+          {(item, i) => (
+            <Question
+              focus={() => textfield.focus()}
+              focused={focused()}
+              prompt={item.prompt}
+              value={answers[i()]}
+              active={i() === index()}
+              isPlaceholder={i() === index() && value() !== answers[i()]}
+            />
+          )}
+        </For>
+      </ul>
+    </Show>
   );
 }
 

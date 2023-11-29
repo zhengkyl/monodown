@@ -1,13 +1,8 @@
 /**
- * The romaji field has Hepburn, Nihon-shiki, and Kunrei-shiki romanizations
- * where entries are only included if they differ from the previous
- * EXCEPT for ぢゃ ぢゅ ぢょ, where Hepburn is second
+ * The romaji field is ordered so that first is unique and obvious
  *
- *  - ["a"] for か
- *  - ["shi", "si"] for し
- *  - ["ji", "di", "ji"] for ぢ
- *
- * Exceptions: The じゃ and ぢゃ columns contain a 4th column for jya/jyu/jyo
+ * Mostly in this order: Hepburn, Nihon-shiki, Kunrei-shiki, other
+ * Exceptions: を, づ, じゃ row, ぢゃ row
  */
 export type KanaInfo = { hira: string; kata: string; romaji: string[] };
 
@@ -75,7 +70,7 @@ export const gojuonKana = [
   ],
   [
     { hira: "わ", kata: "ワ", romaji: ["wa"] },
-    { hira: "を", kata: "ヲ", romaji: ["o", "wo", "o"] },
+    { hira: "を", kata: "ヲ", romaji: ["wo", "o"] },
     { hira: "ん", kata: "ン", romaji: ["n"] },
   ],
 ];
@@ -98,7 +93,7 @@ export const dakuonKana = [
   [
     { hira: "だ", kata: "ダ", romaji: ["da"] },
     { hira: "ぢ", kata: "ヂ", romaji: ["ji", "di", "zi"] },
-    { hira: "づ", kata: "ヅ", romaji: ["zu", "du", "zu"] },
+    { hira: "づ", kata: "ヅ", romaji: ["zu", "du"] },
     { hira: "で", kata: "デ", romaji: ["de"] },
     { hira: "ど", kata: "ド", romaji: ["do"] },
   ],
@@ -135,9 +130,9 @@ export const yoonKana = [
     { hira: "しょ", kata: "ショ", romaji: ["sho", "syo"] },
   ],
   [
-    { hira: "じゃ", kata: "ジャ", romaji: ["ja", "zya", "zya", "jya"] },
-    { hira: "じゅ", kata: "ジュ", romaji: ["ju", "zyu", "zyu", "jyu"] },
-    { hira: "じょ", kata: "ジョ", romaji: ["jo", "zyo", "zyo", "jyo"] },
+    { hira: "じゃ", kata: "ジャ", romaji: ["ja", "zya", "jya"] },
+    { hira: "じゅ", kata: "ジュ", romaji: ["ju", "zyu", "jyu"] },
+    { hira: "じょ", kata: "ジョ", romaji: ["jo", "zyo", "jyo"] },
   ],
   [
     { hira: "ちゃ", kata: "チャ", romaji: ["cha", "tya"] },

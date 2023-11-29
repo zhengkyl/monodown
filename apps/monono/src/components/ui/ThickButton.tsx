@@ -53,7 +53,7 @@ export const buttonVariants = cva(
         red: "[--btn-h:0] [--btn-s:84%] [--btn-l:60%]",
         stone: "[--btn-h:25] [--btn-s:5%] [--btn-l:45%]",
         default:
-          "[--btn-h:270] [--btn-s:8%] [--btn-l:9%] dark:([--btn-h:60] [--btn-s:9.1%] [--btn-l:97.8%])",
+          "[--btn-h:270] [--btn-s:8%] [--btn-l:19%] dark:([--btn-h:60] [--btn-s:9.1%] [--btn-l:97.8%])",
         yellow: "[--btn-h:45] [--btn-s:93%] [--btn-l:47%]",
       },
       element: {
