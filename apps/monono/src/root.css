@@ -1,8 +1,3 @@
-html {
-  /* Prevents reload/zoom on mobile */
-  /* touch-action: none; */
-}
-
 html,
 body {
   height: 100%;
@@ -28,23 +23,23 @@ body {
   --background: 0 0% 100%;
   --foreground: 0 8% 9%;
 
-  --card: 0 0% 100%;
-  --card-foreground: 0 8% 9%;
+  /* --card: 0 0% 100%;
+  --card-foreground: 0 8% 9%; */
 
-  --popover: 0 0% 100%;
-  --popover-foreground: 0 8% 9%;
+  /* --popover: 0 0% 100%;
+  --popover-foreground: 0 8% 9%; */
+
+  --secondary: 0 4.8% 95.9%;
+  --secondary-foreground: 4 7% 25%;
+
+  --muted: 5 7% 90%;
+  --muted-foreground: 5 5.3% 44.7%;
 
   --primary: 4 9.8% 10%;
   --primary-foreground: 0 9.1% 97.8%;
 
-  --secondary: 0 4.8% 95.9%;
-  --secondary-foreground: 4 9.8% 10%;
-
-  --muted: 0 4.8% 95.9%;
-  --muted-foreground: 5 5.3% 44.7%;
-
-  --accent: 0 4.8% 95.9%;
-  --accent-foreground: 4 9.8% 10%;
+  /* --accent: 0 4.8% 95.9%;
+  --accent-foreground: 4 7% 25%; */
 
   --destructive: 0 84.2% 60.2%;
   --destructive-foreground: 0 9.1% 97.8%;
@@ -60,23 +55,23 @@ body {
   --background: 0 8% 9%;
   --foreground: 0 9.1% 97.8%;
 
-  --card: 0 8% 9%;
-  --card-foreground: 0 9.1% 97.8%;
+  /* --card: 0 8% 9%;
+  --card-foreground: 0 9.1% 97.8%; */
 
-  --popover: 0 8% 9%;
-  --popover-foreground: 0 9.1% 97.8%;
+  /* --popover: 0 8% 9%;
+  --popover-foreground: 0 9.1% 97.8%; */
+
+  --secondary: 7 11% 7%;
+  --secondary-foreground: 2 7% 80%;
+
+  --muted: 5 9% 13%;
+  --muted-foreground: 4 5.4% 63.9%;
 
   --primary: 0 9.1% 97.8%;
   --primary-foreground: 4 9.8% 10%;
 
-  --secondary: 7 11% 7%;
-  --secondary-foreground: 0 9.1% 97.8%;
-
-  --muted: 7 11% 7%;
-  --muted-foreground: 4 5.4% 63.9%;
-
-  --accent: 7 11% 7%;
-  --accent-foreground: 0 9.1% 97.8%;
+  /* --accent: 7 11% 7%;
+  --accent-foreground: 2 7% 80%; */
 
   --destructive: 0 62.8% 30.6%;
   --destructive-foreground: 0 9.1% 97.8%;
@@ -86,33 +81,50 @@ body {
   --ring: 4 5.7% 82.9%;
 }
 
-/* Can't target TableOfContents component directly */
-.tocHack > aside,
-.tocHack > ul {
-  display: none;
+#sidebarHack[data-sidebar] > #sidebarShadow {
+  position: absolute;
+  height: 100%;
+  width: 100%;
+  --at-apply: bg-black/50;
+}
+
+#sidebarHack[data-sidebar="left"] > aside {
+  left: 0px;
+}
+
+#sidebarHack[data-sidebar="right"] > main > div > ul {
+  right: 0;
+}
+
+#tocParent > ul {
+  position: absolute;
+  top: 0;
   width: 250px;
-  --at-apply: p-8;
+  right: -250px;
+  height: 100%;
+  overflow-y: auto;
+  --at-apply: bg-background transition-right p-8 z-10;
+  scrollbar-width: none;
+}
+#tocParent > ul::-webkit-scrollbar {
+  display: none;
 }
 
-/* lg */
-@media (min-width: 1024px) {
-  .tocHack > aside {
-    display: block;
-  }
-}
-
-/* xl */
-@media (min-width: 1280px) {
-  .tocHack > ul {
-    display: block;
-  }
-}
-
-.tocHack > ul::before {
+#tocParent > ul::before {
   content: "On this page";
   --at-apply: font-semibold block mb-2;
 }
 
-.tocHack ul > li > ul {
+/* xl */
+@media (min-width: 1280px) {
+  #tocParent > ul {
+    position: sticky;
+    right: 0;
+    height: calc(100dvh - 100px);
+    overflow: auto;
+  }
+}
+
+#sidebarHack > main > div ul > li > ul {
   --at-apply: ml-4;
 }

@@ -84,8 +84,7 @@ export const buttonVariants = cva(
         element: "button",
         class: [
           "@hover:(bg-opacity-95 [--btn-edge-opacity:.95])",
-          "disabled:(bg-opacity-50)",
-          // "disabled:(bg-stone-200 text-stone-400 shadow-stone-400)",
+          "disabled:(bg-muted text-muted-foreground)",
         ],
       },
     ],

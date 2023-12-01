@@ -11,8 +11,9 @@ export function Heading(props) {
     <Dynamic
       component={`h${props.depth}`}
       id={props.id}
-      class="font-bold pt-8"
+      class="font-bold"
       classList={{
+        "pt-8": props.depth !== 1,
         "text-5xl": props.depth === 1,
         "text-4xl": props.depth === 2,
         "text-3xl": props.depth === 3,
@@ -53,28 +54,14 @@ export function ListItem(props) {
   );
 }
 
-const relativeUrl = (s: string) => `${s.toLowerCase().replaceAll(" ", "-")}`;
-
 export function Link(props) {
-  // left sidebar link
-  if (props.url == null || props.leftSidebar) {
-    return (
-      <A
-        href={props.url ?? relativeUrl(props.children)}
-        title={props.title ?? undefined}
-        class="block font-semibold py-1 text-foreground/80 hover:text-amber-600"
-      >
-        {props.children}
-      </A>
-    );
-  }
-  // right sidebar link
-  else if (props.url.startsWith("#")) {
+  // right sidebar link used by TableOfContents
+  if (props.url.startsWith("#")) {
     return (
       <A
         href={props.url}
         title={props.title ?? undefined}
-        class="block font-semibold py-0.5 text-sm text-foreground/80 hover:text-foreground"
+        class="block font-semibold py-0.5 text-sm text-muted-foreground hover:text-foreground"
       >
         {props.children}
       </A>

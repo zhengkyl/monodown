@@ -5,15 +5,15 @@ import { createEffect, createSignal } from "solid-js";
 
 export function Header() {
   return (
-    <header class="px-8 py-2 flex justify-between border-b">
+    <header class="px-6 lg:px-8 py-2 flex justify-between border-b">
       <A href="./" class="flex items-center gap-2 font-bold">
         <Icon class="w-9 h-9" />
         monono
       </A>
       <div class="flex items-center gap-4 font-bold">
-        <a href="./kana-quiz">Quiz</a>
+        {/* <a href="./kana-quiz">Quiz</a>
         <A href="./components">Components</A>
-        <a href="./dungeon">Dungeon</a>
+        <a href="./dungeon">Dungeon</a> */}
         <DarkModeToggle />
       </div>
     </header>
@@ -55,7 +55,7 @@ function DarkModeToggle() {
       aria-label={darkMode() ? "light mode switch" : "dark mode switch"}
     >
       <Switch.Input class="peer" />
-      <Switch.Control class="inline-flex items-center bg-stone-200 border rounded-[12px] h-[24px] w-[46px] px-[2px] peer-focus:(ring-2 ring-ring ring-offset-2 ring-offset-background) data-[checked]:(border bg-stone-800)">
+      <Switch.Control class="inline-flex items-center bg-muted border border-muted-foreground rounded-[12px] h-[24px] w-[46px] px-[2px] peer-focus-visible:(ring-2 ring-ring ring-offset-2 ring-offset-background)">
         <Switch.Thumb class="inline-flex items-center h-[20px] w-[20px] rounded-[10px] transition-transform bg-background data-[checked]:translate-x-full">
           <div
             class="m-auto p-[2px]"

@@ -1,6 +1,6 @@
-import { Outlet } from "solid-start";
+import { A, Outlet, useLocation, useMatch } from "solid-start";
 import { MDXProvider } from "solid-marked";
-import { JSX } from "solid-js";
+import { JSX, createEffect, createSignal, on } from "solid-js";
 import {
   Root,
   Heading,
@@ -17,8 +17,28 @@ import {
 } from "~/components/mdx";
 import { Door } from "~/components/Door";
 import { Separator } from "@kobalte/core";
+import { FlatButton } from "~/components/ui/FlatButton";
 
 export default function ArticleLayout() {
+  const location = useLocation();
+
+  createEffect(
+    on(
+      () => {
+        location.pathname;
+        location.hash;
+      },
+      () => setSidebar(null),
+      { defer: true }
+    )
+  );
+
+  const [sidebar, setSidebar] = createSignal<"left" | "right" | null>(null);
+
+  const toggleLeft = () => setSidebar("left");
+  const toggleRight = () => setSidebar("right");
+  const toggleOff = () => setSidebar(null);
+
   return (
     <>
       <MDXProvider
@@ -38,13 +58,7 @@ export default function ArticleLayout() {
         }}
         components={{
           Content(props: { children: JSX.Element }) {
-            return (
-              <main class="flex-1 overflow-y-auto">
-                <article class="max-w-screen-xl m-auto px-6 md:(px-8) lg:(px-16) space-y-4">
-                  {props.children}
-                </article>
-              </main>
-            );
+            return <article class="p-8 space-y-4">{props.children}</article>;
           },
           Door,
           Initial(props: { children: JSX.Element }) {
@@ -54,43 +68,79 @@ export default function ArticleLayout() {
           },
         }}
       >
-        <div class="flex h-full overflow-hidden tocHack">
-          <aside class="bg-accent">
-            <div class="font-bold py-1">About</div>
+        <div
+          id="sidebarHack"
+          class="flex flex-col h-full overflow-hidden lg:flex-row relative"
+          data-sidebar={sidebar()}
+        >
+          <div id="sidebarShadow" class="z-1" onClick={toggleOff}></div>
+          <div class="flex justify-between border-b p-2 lg:hidden">
+            <FlatButton
+              variant="text"
+              class="text-secondary-foreground hover:text-foreground py-1 px-4"
+              onClick={toggleLeft}
+            >
+              <div class="i-mdi:menu-close h-6 w-6"></div>
+              <span class="ml-1 mt-[-1px]">Menu</span>
+            </FlatButton>
+            <FlatButton
+              variant="text"
+              class="text-secondary-foreground hover:text-foreground py-1 px-4"
+              onClick={toggleRight}
+            >
+              <span class="mt-[-1px]">On this page</span>
+              <div class="i-mdi:menu-left h-6 w-6 mr-[-8px]"></div>
+            </FlatButton>
+          </div>
+          <aside class="bg-secondary text-secondary-foreground absolute left-[-250px] w-[250px] p-8 h-full transition-left overflow-y-auto lg:(relative left-0) z-10">
             <List ordered={false}>
               <ListItem>
-                <Paragraph>
-                  <Link url="/" leftSidebar>
-                    What is this?
-                  </Link>
-                </Paragraph>
+                <LeftLink url="/">What is Monono?</LeftLink>
               </ListItem>
             </List>
             <Separator.Root class="my-2" />
-            <div class="font-bold py-1">Notes</div>
+            <div class="font-bold py-1 text-foreground">Notes</div>
             <List ordered={false}>
               <ListItem>
-                <Paragraph>
-                  <Link>Writing System</Link>
-                </Paragraph>
+                <LeftLink>Writing System</LeftLink>
                 <List ordered={false}>
                   <ListItem>
-                    <Paragraph>
-                      <Link>Hiragana</Link>
-                    </Paragraph>
+                    <LeftLink>Hiragana</LeftLink>
                   </ListItem>
                   <ListItem>
-                    <Paragraph>
-                      <Link>Katakana</Link>
-                    </Paragraph>
+                    <LeftLink>Katakana</LeftLink>
                   </ListItem>
                 </List>
               </ListItem>
             </List>
           </aside>
-          <Outlet />
+          <main class="overflow-y-scroll overflow-x-hidden w-full">
+            <div id="tocParent" class="flex mx-auto max-w-screen-xl">
+              <Outlet />
+            </div>
+          </main>
         </div>
       </MDXProvider>
     </>
+  );
+}
+
+const relativeUrl = (s: string) => `${s.toLowerCase().replaceAll(" ", "-")}`;
+
+function LeftLink(props) {
+  const url = props.url ?? relativeUrl(props.children);
+  const match = useMatch(() => url);
+
+  return (
+    <A
+      href={url}
+      title={props.title ?? undefined}
+      class="block font-semibold py-1 hover:text-amber-600"
+      classList={{
+        "text-amber-600": !!match(),
+      }}
+    >
+      {props.children}
+    </A>
   );
 }

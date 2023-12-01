@@ -26,6 +26,7 @@ export const buttonVariants = cva(
           // "text-white",
         ],
         line: ["border-foreground", "border"],
+        text: [""],
       },
       size: {
         none: "",
