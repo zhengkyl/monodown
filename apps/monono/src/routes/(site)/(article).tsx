@@ -19,8 +19,6 @@ import { Door } from "~/components/Door";
 import { Separator } from "@kobalte/core";
 import { FlatButton } from "~/components/ui/FlatButton";
 
-import Icon from "~/assets/svg/icon.svg";
-
 export default function ArticleLayout() {
   const location = useLocation();
 
@@ -37,9 +35,19 @@ export default function ArticleLayout() {
 
   const [sidebar, setSidebar] = createSignal<"left" | "right" | null>(null);
 
-  const toggleLeft = () => setSidebar("left");
-  const toggleRight = () => setSidebar("right");
-  const toggleOff = () => setSidebar(null);
+  const toggleLeft = () => {
+    setSidebar("left");
+    document.body.style.overflow = "hidden";
+  };
+  const toggleRight = () => {
+    setSidebar("right");
+    document.body.style.overflow = "hidden";
+  };
+
+  const toggleOff = () => {
+    setSidebar(null);
+    document.body.style.overflow = null;
+  };
 
   return (
     <>
