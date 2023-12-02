@@ -5,15 +5,15 @@ import { createEffect, createSignal } from "solid-js";
 
 export function Header() {
   return (
-    <header class="px-6 lg:px-8 py-2 flex justify-between border-b">
-      <A href="./" class="flex items-center gap-2 font-bold">
-        <Icon class="w-9 h-9" />
+    <header class="border-b flex lg:(border-none sticky top-0 z-11)">
+      <A
+        href="./"
+        class="flex items-center gap-2 font-bold py-2 w-[250px] px-6 lg:(px-8)"
+      >
+        <Icon class="w-8 h-8" />
         monono
       </A>
-      <div class="flex items-center gap-4 font-bold">
-        {/* <a href="./kana-quiz">Quiz</a>
-        <A href="./components">Components</A>
-        <a href="./dungeon">Dungeon</a> */}
+      <div class="bg-background flex-1 flex justify-end mx-6 lg:(mx-8 border-b)">
         <DarkModeToggle />
       </div>
     </header>

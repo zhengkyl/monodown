@@ -23,22 +23,22 @@ if (!theme) {
     : 'light';
 }
 if (theme === 'dark') {
-  document.body.classList.add('dark');
+  document.documentElement.classList.add('dark');
   localStorage.setItem('theme', 'dark');
 }`;
 
 export default function Root() {
   // Sync with change made by immediate theme script
-  let bodyClass = "flex flex-col";
+  let bodyClass = "";
   if (
     typeof document !== "undefined" &&
-    document.body.classList.contains("dark")
+    document.documentElement.classList.contains("dark")
   ) {
     bodyClass += " dark";
   }
 
   return (
-    <Html lang="en">
+    <Html lang="en" class={bodyClass}>
       <Head>
         <Title>Monono</Title>
         <Meta charset="utf-8" />
@@ -54,7 +54,7 @@ export default function Root() {
         />
         <link rel="apple-touch-icon" href="/apple-touch-icon.png" />
       </Head>
-      <Body class={bodyClass}>
+      <Body>
         <Suspense>
           <ErrorBoundary>
             <Routes>

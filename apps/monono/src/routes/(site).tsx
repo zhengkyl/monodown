@@ -4,8 +4,10 @@ import { Header } from "~/components/Header";
 export default function SiteLayout() {
   return (
     <>
-      <Header />
-      <Outlet />
+      <div class="flex flex-col min-h-full">
+        <Header />
+        <Outlet />
+      </div>
     </>
   );
 }

@@ -1,4 +1,6 @@
-html,
+html {
+  height: 100%;
+}
 body {
   height: 100%;
 }
@@ -81,15 +83,8 @@ body {
   --ring: 4 5.7% 82.9%;
 }
 
-#sidebarHack[data-sidebar] > #sidebarShadow {
-  position: absolute;
-  height: 100%;
-  width: 100%;
-  --at-apply: bg-black/50;
-}
-
 #sidebarHack[data-sidebar="left"] > aside {
-  left: 0px;
+  left: 0;
 }
 
 #sidebarHack[data-sidebar="right"] > main > div > ul {
@@ -97,15 +92,16 @@ body {
 }
 
 #tocParent > ul {
-  position: absolute;
+  position: fixed;
   top: 0;
   width: 250px;
   right: -250px;
   height: 100%;
   overflow-y: auto;
-  --at-apply: bg-background transition-right p-8 z-10;
+  --at-apply: bg-background transition-right p-6 z-10;
   scrollbar-width: none;
 }
+
 #tocParent > ul::-webkit-scrollbar {
   display: none;
 }
@@ -120,11 +116,13 @@ body {
   #tocParent > ul {
     position: sticky;
     right: 0;
-    height: calc(100dvh - 100px);
-    overflow: auto;
+    --at-apply: top-12 p-8;
+    height: calc(100dvh - 3rem);
+    overflow-y: auto;
   }
 }
 
-#sidebarHack > main > div ul > li > ul {
+#sidebarHack > main > div ul > li > ul,
+#sidebarHack > aside > div ul > li > ul {
   --at-apply: ml-4;
 }
