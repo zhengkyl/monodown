@@ -69,7 +69,9 @@ export default function ArticleLayout() {
         components={{
           Content(props: { children: JSX.Element }) {
             return (
-              <article class="p-6 lg:p-8 space-y-4">{props.children}</article>
+              <article class="p-6 lg:p-8 space-y-4 flex-1">
+                {props.children}
+              </article>
             );
           },
           Door,
@@ -81,7 +83,7 @@ export default function ArticleLayout() {
         }}
       >
         <div
-          class="z-1 fixed bg-black/50 lg:(w-0)"
+          class="z-2 fixed bg-black/50 lg:(w-0)"
           classList={{
             "h-full w-full": !!sidebar(),
           }}
@@ -92,7 +94,7 @@ export default function ArticleLayout() {
           class="flex-1 relative lg:(flex)"
           data-sidebar={sidebar()}
         >
-          <div class="flex justify-between border-b px-2 lg:hidden sticky top-0 bg-background">
+          <div class="flex justify-between border-b px-2 lg:hidden sticky top-0 bg-background z-1">
             <FlatButton
               variant="text"
               class="text-secondary-foreground hover:text-foreground py-3 px-4"

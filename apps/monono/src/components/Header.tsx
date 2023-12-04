@@ -39,10 +39,10 @@ function DarkModeToggle() {
   // See root.tsx for logic that sets dark class before hydration
   createEffect(() => {
     if (darkMode()) {
-      document.body.classList.add("dark");
+      document.documentElement.classList.add("dark");
       localStorage.setItem("theme", "dark");
     } else {
-      document.body.classList.remove("dark");
+      document.documentElement.classList.remove("dark");
       localStorage.setItem("theme", "light");
     }
   });
