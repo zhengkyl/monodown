@@ -18,7 +18,7 @@ import { dakuonKana, gojuonKana, yoonKana } from "~/data/kana";
 import rewardGif from "~/assets/4floss.gif";
 
 const kanaCharts = [gojuonKana, dakuonKana, yoonKana];
-const chartTitles = ["Gojūon", "Dakuon", "Yōon"];
+const chartTitles = ["Gojūon", "Dakuon", "Combo"];
 const toChartIndex = kanaCharts.map(
   (chart) => new Map(chart.map((row, i) => [row[0].romaji[0], i]))
 );
@@ -319,8 +319,7 @@ function Quiz(props: KanaQuizProps) {
 
   return (
     <Show
-      when={false}
-      // when={index() < studyList().length}
+      when={index() < studyList().length}
       fallback={
         <>
           <div class="h-full overflow-auto p-4">

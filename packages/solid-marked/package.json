@@ -1,8 +1,9 @@
 {
   "name": "solid-marked",
   "version": "0.6.2",
-  "types": "./src/index.ts",
-  "main": "./src/index.ts",
+  "types": "./dist/types/src/index.d.ts",
+  "main": "./dist/cjs/production/index.cjs",
+  "type": "module",
   "files": [
     "dist",
     "src",
@@ -73,11 +74,41 @@
   "typesVersions": {
     "*": {
       "compiler": [
-        "./compiler/index.ts"
+        "./dist/types/compiler/index.d.ts"
       ],
       "component": [
-        "./component/index.ts"
+        "./dist/types/component/index.d.ts"
       ]
+    }
+  },
+  "module": "./dist/esm/production/index.mjs",
+  "exports": {
+    ".": {
+      "development": {
+        "require": "./dist/cjs/development/index.cjs",
+        "import": "./dist/esm/development/index.mjs"
+      },
+      "require": "./dist/cjs/production/index.cjs",
+      "import": "./dist/esm/production/index.mjs",
+      "types": "./dist/types/src/index.d.ts"
+    },
+    "./compiler": {
+      "development": {
+        "require": "./dist/cjs/development/compiler.cjs",
+        "import": "./dist/esm/development/compiler.mjs"
+      },
+      "require": "./dist/cjs/production/compiler.cjs",
+      "import": "./dist/esm/production/compiler.mjs",
+      "types": "./dist/types/compiler/index.d.ts"
+    },
+    "./component": {
+      "development": {
+        "require": "./dist/cjs/development/component.cjs",
+        "import": "./dist/esm/development/component.mjs"
+      },
+      "require": "./dist/cjs/production/component.cjs",
+      "import": "./dist/esm/production/component.mjs",
+      "types": "./dist/types/component/index.d.ts"
     }
   }
 }

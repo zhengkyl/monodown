@@ -124,7 +124,7 @@ export default function ArticleLayout() {
               <Separator.Root class="my-2" />
               <div class="font-bold py-1 text-foreground">Notes</div>
               <List ordered={false}>
-                <ListItem>
+                {/* <ListItem>
                   <LeftLink>Writing System</LeftLink>
                   <List ordered={false}>
                     <ListItem>
@@ -134,7 +134,7 @@ export default function ArticleLayout() {
                       <LeftLink>Katakana</LeftLink>
                     </ListItem>
                   </List>
-                </ListItem>
+                </ListItem> */}
               </List>
             </div>
           </aside>

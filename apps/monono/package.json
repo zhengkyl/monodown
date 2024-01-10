@@ -16,7 +16,7 @@
     "esbuild": "^0.14.54",
     "eslint": "^8.50.0",
     "eslint-config-custom": "workspace:*",
-    "import-single-ts": "^1.0.2",
+    "import-single-ts": "^1.0.3",
     "solid-start-vercel": "^0.3.3",
     "tsconfig": "workspace:*",
     "typescript": "^4.9.5",
