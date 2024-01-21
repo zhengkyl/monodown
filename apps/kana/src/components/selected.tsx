@@ -2,7 +2,16 @@ import { createContext, useContext } from "solid-js";
 import { createStore } from "solid-js/store";
 import { comboKana, dakuonKana, gojuonKana } from "~/lib/kana";
 
-const SelectedContext = createContext();
+import type { SetStoreFunction, Store } from "solid-js/store";
+
+type Value = {
+  Gojūon: boolean[];
+  Dakuon: boolean[];
+  Combo: boolean[];
+};
+
+const SelectedContext =
+  createContext<[Store<Value>, SetStoreFunction<Value>]>();
 
 export function SelectedProvider(props) {
   const value = createStore({

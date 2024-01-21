@@ -1,6 +1,8 @@
 import { defineConfig } from "@pandacss/dev";
 import { createPreset } from "@park-ui/panda-preset";
 
+import { button } from "./src/theme/recipes/button";
+
 export default defineConfig({
   preflight: true,
   presets: [
@@ -14,6 +16,9 @@ export default defineConfig({
   include: ["./src/**/*.{js,jsx,ts,tsx}"],
   exclude: [],
   theme: {
+    recipes: {
+      button: button,
+    },
     extend: {},
   },
   jsxFramework: "solid",
