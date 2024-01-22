@@ -15,15 +15,7 @@ export default function App() {
 
   return (
     <SelectedProvider>
-      <main
-        class={css({
-          display: "flex",
-          flexDir: "column",
-          md: {
-            flexDir: "row",
-          },
-        })}
-      >
+      <main class={css({ display: "flex" })}>
         <div
           class={css({
             position: "fixed",
@@ -33,6 +25,13 @@ export default function App() {
             flexDir: "column",
             justifyContent: "space-between",
             pointerEvents: "none",
+            zIndex: 10,
+            lg: {
+              position: "sticky",
+              height: "100svh",
+              maxWidth: "96",
+              flex: 1,
+            },
           })}
         >
           <div
@@ -83,75 +82,73 @@ export default function App() {
         </div>
         <div
           class={css({
-            flex: 1,
-            maxWidth: "breakpoint-lg",
-            mx: "auto",
+            flex: 4,
             p: 4,
-            display: "flex",
-            justifyContent: "center",
-            flexWrap: "wrap",
-            alignItems: "start",
-            gap: 8,
             mt: 16,
             mb: 24,
-            md: {
-              m: 0,
+            display: "flex",
+            flexDirection: "column",
+            gap: 8,
+            lg: {
+              flexDirection: "row",
+              my: 0,
+              mx: "auto",
+              justifyContent: "center",
+              alignItems: "start",
+              maxWidth: "breakpoint-lg",
             },
           })}
         >
-          <div class={css({ flexGrow: 1 })}>
-            <div
-              class={css({
-                display: "grid",
-                gridTemplateColumns: "auto repeat(5, minmax(0, 1fr))",
-                gap: 2,
-                marginLeft: isSelecting() ? 0 : -12,
-                transition: "margin 300ms",
-              })}
-            >
-              <KanaGroup
-                title="Gojūon"
-                group={gojuonKana}
-                mode={mode()}
-                isSelecting={isSelecting()}
-              />
-            </div>
+          <div
+            class={css({
+              display: "grid",
+              gridTemplateColumns: "auto repeat(5, minmax(0, 1fr))",
+              gap: 2,
+              marginLeft: isSelecting() ? 0 : -12,
+              transition: "margin 300ms",
+              flexGrow: 1,
+            })}
+          >
+            <KanaGroup
+              title="Gojūon"
+              group={gojuonKana}
+              mode={mode()}
+              isSelecting={isSelecting()}
+            />
           </div>
-          <div class={css({ flexGrow: 1 })}>
-            <div
-              class={css({
-                display: "grid",
-                gridTemplateColumns: "auto repeat(5, minmax(0, 1fr))",
-                gap: 2,
-                marginLeft: isSelecting() ? 0 : -12,
-                transition: "margin 300ms",
-              })}
-            >
-              <KanaGroup
-                title="Dakuon"
-                group={dakuonKana}
-                mode={mode()}
-                isSelecting={isSelecting()}
-              />
-            </div>
+          <div
+            class={css({
+              display: "grid",
+              gridTemplateColumns: "auto repeat(5, minmax(0, 1fr))",
+              gap: 2,
+              marginLeft: isSelecting() ? 0 : -12,
+              transition: "margin 300ms",
+              flexGrow: 1,
+            })}
+          >
+            <KanaGroup
+              title="Dakuon"
+              group={dakuonKana}
+              mode={mode()}
+              isSelecting={isSelecting()}
+            />
           </div>
-          <div class={css({ flexGrow: 1 })}>
-            <div
-              class={css({
-                display: "grid",
-                gridTemplateColumns: "auto repeat(3, minmax(0, 1fr))",
-                gap: 2,
-                marginLeft: isSelecting() ? 0 : -12,
-                transition: "margin 300ms",
-              })}
-            >
-              <KanaGroup
-                title="Combo"
-                group={comboKana}
-                mode={mode()}
-                isSelecting={isSelecting()}
-              />
-            </div>
+          <div
+            class={css({
+              display: "grid",
+              gridTemplateColumns: "auto repeat(3, minmax(0, 1fr))",
+              gap: 2,
+              marginLeft: isSelecting() ? 0 : -12,
+              transition: "margin 300ms",
+              flexGrow: 1,
+            })}
+          >
+            <KanaGroup
+              title="Combo"
+              group={comboKana}
+              mode={mode()}
+              isSelecting={isSelecting()}
+            />
           </div>
         </div>
       </main>
@@ -214,6 +211,7 @@ function KanaGroup(props) {
                   width: 8,
                   minWidth: 0,
                   justifySelf: "end",
+                  alignSelf: "center",
                   transitionProperty:
                     "background, border-color, color, box-shadow, opacity",
                   opacity: props.isSelecting ? null : 0,

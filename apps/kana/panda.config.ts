@@ -21,6 +21,17 @@ export default defineConfig({
     },
     extend: {},
   },
+  staticCss: {
+    css: [
+      {
+        properties: {
+          // app.ts -> not generating classname used in ternary
+          // probably bug in pandacss, since it should be statically analyzed
+          opacity: [0],
+        },
+      },
+    ],
+  },
   jsxFramework: "solid",
   outdir: "styled-system",
 });
