@@ -19,7 +19,30 @@ export default defineConfig({
     recipes: {
       button: button,
     },
-    extend: {},
+    extend: {
+      keyframes: {
+        slideLeft: {
+          "0%": {
+            marginLeft: "0",
+            opacity: 1,
+          },
+          "100%": {
+            marginLeft: "-100%",
+            opacity: 0,
+          },
+        },
+        slideFromRight: {
+          "0%": {
+            marginLeft: "100%",
+            opacity: 0,
+          },
+          "100%": {
+            marginLeft: "0",
+            opacity: 1,
+          },
+        },
+      },
+    },
   },
   staticCss: {
     css: [

@@ -179,3 +179,53 @@ export const comboKana = [
     { hira: "りょ", kata: "リョ", romaji: ["ryo"] },
   ],
 ];
+
+export const extraKana = [
+  [
+    { kata: "ヴァ", romaji: [] },
+    { kata: "ヴィ", romaji: [] },
+    { kata: "ヴ", romaji: [] },
+    { kata: "ヴェ", romaji: [] },
+    { kata: "ヴォ", romaji: [] },
+  ],
+  [
+    { kata: "ファ", romaji: [] },
+    { kata: "フィ", romaji: [] },
+    { kata: "フ", romaji: [], dupe: true },
+    { kata: "フェ", romaji: [] },
+    { kata: "フォ", romaji: [] },
+  ],
+  [
+    { kata: "ワ", romaji: [], dupe: true },
+    { kata: "ウィ", romaji: [] },
+    { kata: "ウ", romaji: [], dupe: true },
+    { kata: "ウェ", romaji: [] },
+    { kata: "ウォ", romaji: [] },
+  ],
+  [
+    { kata: "ツァ", romaji: [] },
+    { kata: "ツィ", romaji: [] },
+    { kata: "ツ", romaji: [], dupe: true },
+    { kata: "ツェ", romaji: [] },
+    { kata: "ツォ", romaji: [] },
+  ],
+  [
+    { kata: "ティ", romaji: [] },
+    { kata: "ディ", romaji: [] },
+  ],
+  [
+    { kata: "トゥ", romaji: [] },
+    { kata: "ドゥ", romaji: [] },
+  ],
+  [
+    { kata: "シェ", romaji: [] },
+    { kata: "ジェ", romaji: [] },
+    { kata: "チェ", romaji: [] },
+  ],
+];
+
+export const kanaGroups = {
+  Gojūon: gojuonKana,
+  Dakuon: dakuonKana,
+  Combo: comboKana,
+};
