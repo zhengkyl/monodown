@@ -1,8 +1,11 @@
-import { For, Show, createSignal } from "solid-js";
+import { For, Show, createSignal, onMount } from "solid-js";
+import { createStore } from "solid-js/store";
 import { css } from "styled-system/css";
+
 import { kanaGroups } from "~/lib/kana";
 import { useSelected } from "~/lib/selected";
-import { Button } from "./ui/Button";
+import { Button } from "~/components/ui/Button";
+import { Input } from "~/components/ui/Input";
 
 // https://en.wikipedia.org/wiki/Fisher%E2%80%93Yates_shuffle#The_modern_algorithm
 export function shuffleArray(array) {
@@ -22,31 +25,61 @@ export function Game(props) {
     .filter((info) => info != null);
 
   const [index, setIndex] = createSignal(0);
+  const [misses, setMisses] = createStore(Array(kana.length).fill(0));
+
+  let textfield;
+
+  onMount(() => {
+    textfield && textfield.focus();
+  });
 
   return (
     <main
       class={css({
         position: "relative",
         overflowX: "hidden",
-        height: "50svh",
       })}
     >
       <Button onClick={props.onEnd}>Return</Button>
-      <Button onClick={[setIndex, index() - 1]}>Prev</Button>
-      <Button onClick={[setIndex, index() + 1]}>Next</Button>
-      <div
-        class={css({
-          marginLeft: "calc(50vw - 6rem)",
-        })}
-      >
+      <Button onClick={[setIndex, index() + 1]}>Skip</Button>
+      <div class={css({})}>
         <Show when={index() < kana.length && (index() & 1) == 0}>
           <Test index={index()} mode={mode()} kana={kana} />
         </Show>
         <Show when={index() < kana.length && (index() & 1) == 1}>
           <Test index={index()} mode={mode()} kana={kana} />
         </Show>
+        <Input
+          type="text"
+          size="2xl"
+          class={css({
+            fontWeight: "bold",
+            textAlign: "center",
+            width: 48,
+            display: "block",
+            mx: "auto",
+          })}
+          maxLength={3}
+          autofocus
+          autocapitalize="none"
+          ref={textfield}
+          onKeyPress={(e) => {
+            if (!(e.key === "Enter" || e.key === " ")) return;
+            e.preventDefault();
+
+            if (kana[index()].romaji.includes(e.currentTarget.value)) {
+              setIndex(index() + 1);
+            } else {
+              setMisses(index(), (attempt) => attempt + 1);
+            }
+
+            e.currentTarget.value = "";
+          }}
+        />
       </div>
-      {/* <For each={kana}>{(info) => <div>{info[mode()]}</div>}</For> */}
+      {/* <For each={kana}>
+        {(info, i) => <div>{misses[i()] ? info[mode()] : "GOT"}</div>}
+      </For> */}
     </main>
   );
 }
@@ -58,14 +91,11 @@ function Test(props) {
         <div
           class={css({
             position: "absolute",
+            animation: "slideLeft 500ms forwards",
+            width: "100%",
             fontSize: "9xl",
             fontWeight: "black",
             textAlign: "center",
-            width: 48,
-            height: 48,
-            borderWidth: 1,
-            borderRadius: "md",
-            animation: "slideLeft 500ms forwards",
           })}
         >
           {props.kana[props.index - 1][props.mode]}
@@ -73,15 +103,11 @@ function Test(props) {
       </Show>
       <div
         class={css({
-          position: "absolute",
+          animation: "slideFromRight 500ms",
+          width: "100%",
           fontSize: "9xl",
           fontWeight: "black",
           textAlign: "center",
-          width: 48,
-          height: 48,
-          borderWidth: 1,
-          borderRadius: "md",
-          animation: "slideFromRight 500ms",
         })}
       >
         {props.kana[props.index][props.mode]}
