@@ -23,7 +23,7 @@ export default defineConfig({
       keyframes: {
         slideLeft: {
           "0%": {
-            marginLeft: "0",
+            marginLeft: 0,
             opacity: 1,
           },
           "100%": {
@@ -37,7 +37,34 @@ export default defineConfig({
             opacity: 0,
           },
           "100%": {
-            marginLeft: "0",
+            marginLeft: 0,
+            opacity: 1,
+          },
+        },
+        errorWobble: {
+          "0%": {
+            translate: 0,
+          },
+          "25%": {
+            translate: "-0.6rem",
+          },
+          "50%": {
+            translate: "0.4rem",
+          },
+          "75%": {
+            translate: "-0.2rem",
+          },
+          "100%": {
+            translate: 0,
+          },
+        },
+        fallIn: {
+          "0%": {
+            scale: 2,
+            opacity: 0,
+          },
+          "100%": {
+            scale: 1,
             opacity: 1,
           },
         },

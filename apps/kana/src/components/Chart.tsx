@@ -115,7 +115,7 @@ export function Chart(props) {
           flex: 4,
           p: 4,
           mt: 16,
-          mb: 24,
+          mb: 28,
           display: "flex",
           flexDirection: "column",
           gap: 8,

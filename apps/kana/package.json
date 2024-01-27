@@ -19,7 +19,7 @@
   },
   "devDependencies": {
     "@pandacss/dev": "^0.27.1",
-    "@park-ui/panda-preset": "^0.28.0",
+    "@park-ui/panda-preset": "^0.31.0",
     "vite-tsconfig-paths": "^4.3.1"
   }
 }
