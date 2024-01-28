@@ -1,6 +1,8 @@
 import {
   For,
+  Match,
   Show,
+  Switch,
   batch,
   createEffect,
   createSignal,
@@ -25,6 +27,8 @@ export function shuffleArray(array) {
   }
 }
 
+const LIVES = 2;
+
 export function Game(props) {
   const { mode, selected } = useSelected();
 
@@ -33,6 +37,8 @@ export function Game(props) {
       group.flatMap((row, i) => (selected[title][i] ? row : []))
     )
     .filter((info) => info != null);
+
+  shuffleArray(kana);
 
   const [index, setIndex] = createSignal(0);
   const [misses, setMisses] = createStore(Array(kana.length).fill(0));
@@ -58,210 +64,171 @@ export function Game(props) {
     }
   });
 
+  const reset = () => {
+    batch(() => {
+      setMisses(Array(kana.length).fill(0));
+      setIndex(0);
+      setSeconds(0);
+
+      shuffleArray(kana);
+
+      timerInterval = setInterval(() => {
+        setSeconds((s) => s + 1);
+      }, 1000);
+    });
+    textfield.focus();
+  };
+
   return (
     <main
       class={css({
-        position: "relative",
         overflowX: "hidden",
+        height: "100%",
         p: 4,
-        maxWidth: "breakpoint-md",
-        mx: "auto",
       })}
     >
       <div
         class={css({
+          maxWidth: "breakpoint-md",
+          mx: "auto",
+          height: "100%",
           display: "flex",
-          alignItems: "center",
-          gap: 4,
+          flexDir: "column",
         })}
-      >
-        <Button onClick={props.onEnd} size="sm" variant="outline">
-          Quit
-        </Button>
-        <Progress
-          value={index()}
-          min={0}
-          max={kana.length}
-          class={css({ mt: 2, mb: 2 })}
-        />
-        <div
-          class={css({
-            whiteSpace: "pre",
-            fontFamily: "monospace",
-            fontSize: "lg",
-          })}
-        >
-          {`${Math.floor(seconds() / 60)
-            .toString()
-            .padStart(2, "0")}:${Math.floor(seconds() % 60)
-            .toString()
-            .padStart(2, "0")}`}
-        </div>
-      </div>
-      <Show
-        when={index() < kana.length}
-        fallback={
-          <>
-            <Show
-              when={misses.reduce((acc, miss) => miss + acc, 0)}
-              fallback={<div>Nice</div>}
-            >
-              <For each={["Skipped", "Mistakes"]}>
-                {(title, i) => {
-                  const infos =
-                    i() == 0
-                      ? kana.filter((_, j) => misses[j] >= 3)
-                      : kana.filter((_, j) => misses[j] >= 1 && misses[j] < 3);
-                  return (
-                    <Show when={infos.length}>
-                      <div
-                        class={css({
-                          fontSize: "2xl",
-                          fontWeight: "bold",
-                          textAlign: "center",
-                        })}
-                      >
-                        {title}
-                      </div>
-                      <div
-                        class={css({
-                          display: "flex",
-                          justifyContent: "center",
-                          flexWrap: "wrap",
-                          gap: 2,
-                          my: 2,
-                        })}
-                      >
-                        <For each={infos}>
-                          {(info) => (
-                            <Button
-                              variant="outline"
-                              class={css({
-                                px: 0,
-                                fontSize: "md",
-                                height: "unset",
-                                userSelect: "text",
-                              })}
-                            >
-                              <div class={css({ p: 2, width: "100%" })}>
-                                {info[mode()]}
-                                <div class={css({ fontSize: "sm" })}>
-                                  {info.romaji[0]}
-                                </div>
-                              </div>
-                            </Button>
-                          )}
-                        </For>
-                      </div>
-                    </Show>
-                  );
-                }}
-              </For>
-            </Show>
-            <div class={css({ display: "flex", gap: 2 })}>
-              <Button width="100%" onClick={props.onEnd}>
-                Back
-              </Button>
-              <Button
-                width="100%"
-                variant="outline"
-                onClick={() => {
-                  batch(() => {
-                    setMisses(Array(kana.length).fill(0));
-                    setIndex(0);
-                    setSeconds(0);
-
-                    timerInterval = setInterval(() => {
-                      setSeconds((s) => s + 1);
-                    }, 1000);
-                  });
-                  textfield.focus();
-                }}
-              >
-                Try Again
-              </Button>
-            </div>
-          </>
-        }
       >
         <div
           class={css({
             display: "flex",
-            justifyContent: "center",
-            visibility: misses[index()] ? null : "hidden",
+            alignItems: "center",
+            gap: 4,
           })}
         >
-          <For each={[1, 2, 3]}>
-            {(numMisses) => (
-              <X
-                size={32}
-                stroke-width={4}
-                class={css({
-                  color: misses[index()] >= numMisses ? "red.9" : "fg.disabled",
-                  animation:
-                    misses[index()] >= numMisses ? "fallIn 300ms" : null,
-                })}
-              />
-            )}
-          </For>
+          <Button onClick={props.onEnd} size="sm" variant="outline">
+            Quit
+          </Button>
+          <Progress value={index()} min={0} max={kana.length} />
+          <div
+            class={css({
+              whiteSpace: "pre",
+              fontFamily: "monospace",
+              fontSize: "lg",
+            })}
+          >
+            {`${Math.floor(seconds() / 60)
+              .toString()
+              .padStart(2, "0")}:${Math.floor(seconds() % 60)
+              .toString()
+              .padStart(2, "0")}`}
+          </div>
         </div>
-        <Show when={(index() & 1) == 0}>
-          <KanaCarousel index={index()} mode={mode()} kana={kana} />
-        </Show>
-        <Show when={(index() & 1) == 1}>
-          <KanaCarousel index={index()} mode={mode()} kana={kana} />
-        </Show>
-        <Input
-          type="text"
-          size="2xl"
-          class={css({
-            fontWeight: "bold",
-            textAlign: "center",
-            width: "100%",
-            display: "block",
-            mx: "auto",
-            sm: {
-              width: 48,
-            },
-            _placeholder: {
-              color: "fg.disabled",
-            },
-          })}
-          maxLength={3}
-          autofocus
-          autocapitalize="none"
-          ref={textfield}
-          onKeyPress={(e) => {
-            if (!(e.key === "Enter" || e.key === " ")) return;
-            e.preventDefault();
+        <Show
+          when={index() < kana.length}
+          fallback={
+            <>
+              <Results kana={kana} misses={misses} mode={mode()} />
+              <div
+                class={css({
+                  display: "flex",
+                  gap: 2,
+                  mt: "auto",
+                })}
+              >
+                <Button width="100%" onClick={props.onEnd}>
+                  Back
+                </Button>
+                <Button width="100%" variant="outline" onClick={reset}>
+                  Try Again
+                </Button>
+              </div>
+            </>
+          }
+        >
+          <div
+            class={css({
+              display: "flex",
+              justifyContent: "center",
+              visibility: misses[index()] ? null : "hidden",
+            })}
+          >
+            <For each={Array.from({ length: LIVES }, (_, i) => i + 1)}>
+              {(numMisses) => (
+                <X
+                  size={32}
+                  stroke-width={4}
+                  class={css({
+                    color:
+                      misses[index()] >= numMisses ? "red.9" : "fg.disabled",
+                    animation:
+                      misses[index()] >= numMisses ? "fallIn 300ms" : null,
+                  })}
+                />
+              )}
+            </For>
+          </div>
+          <div
+            class={css({
+              position: "relative",
+            })}
+          >
+            <Show when={(index() & 1) == 0}>
+              <KanaCarousel index={index()} mode={mode()} kana={kana} />
+            </Show>
+            <Show when={(index() & 1) == 1}>
+              <KanaCarousel index={index()} mode={mode()} kana={kana} />
+            </Show>
+          </div>
+          <Input
+            type="text"
+            size="2xl"
+            class={css({
+              fontWeight: "bold",
+              textAlign: "center",
+              width: "100%",
+              display: "block",
+              mx: "auto",
+              sm: {
+                width: 48,
+              },
+              _placeholder: {
+                color: "fg.disabled",
+              },
+            })}
+            maxLength={3}
+            autofocus
+            autocapitalize="none"
+            ref={textfield}
+            onKeyPress={(e) => {
+              if (!(e.key === "Enter" || e.key === " ")) return;
+              e.preventDefault();
 
-            if (kana[index()].romaji.includes(e.currentTarget.value)) {
-              textfield.placeholder = "";
-              setIndex((i) => i + 1);
-            } else {
-              setMisses(index(), (attempt) => {
-                if (attempt == 3) return attempt;
-                return attempt + 1;
-              });
+              if (kana[index()].romaji.includes(e.currentTarget.value)) {
+                textfield.placeholder = "";
+                setIndex((i) => i + 1);
+              } else {
+                setMisses(index(), (attempt) => {
+                  if (attempt == LIVES) return attempt;
+                  return attempt + 1;
+                });
 
-              const currIndex = index();
-              if (misses[currIndex] == 3) {
-                setTimeout(() => {
-                  textfield.placeholder = "";
-                  setIndex(currIndex + 1);
-                }, 300);
+                const currIndex = index();
+                if (misses[currIndex] == LIVES) {
+                  setTimeout(() => {
+                    textfield.placeholder = "";
+                    setIndex(currIndex + 1);
+                  }, 300);
+                }
+
+                textfield.style.animation = null;
+                textfield.offsetHeight;
+                textfield.style.animation = "errorWobble 300ms";
+                textfield.placeholder = e.currentTarget.value;
               }
 
-              textfield.style.animation = null;
-              textfield.offsetHeight;
-              textfield.style.animation = "errorWobble 300ms";
-              textfield.placeholder = e.currentTarget.value;
-            }
-
-            e.currentTarget.value = "";
-          }}
-        />
-      </Show>
+              e.currentTarget.value = "";
+            }}
+          />
+        </Show>
+      </div>
     </main>
   );
 }
@@ -299,5 +266,116 @@ function KanaCarousel(props) {
         {props.kana[props.index][props.mode]}
       </div>
     </>
+  );
+}
+
+function Results(props) {
+  const perfect = props.kana.filter((_, j) => props.misses[j] === 0);
+  const okay = props.kana.filter(
+    (_, j) => props.misses[j] > 0 && props.misses[j] < LIVES
+  );
+  const missed = props.kana.filter((_, j) => props.misses[j] === LIVES);
+
+  const score = (perfect.length + okay.length / 2) / props.kana.length;
+
+  return (
+    <>
+      <div
+        class={css({
+          fontSize: "2xl",
+          fontWeight: "bold",
+          textAlign: "center",
+        })}
+      >
+        Results
+      </div>
+      <div
+        class={css({
+          display: "flex",
+          justifyContent: "center",
+          alignItems: "center",
+          gap: 4,
+          mb: 4,
+        })}
+      >
+        <div
+          class={css({
+            fontSize: "7xl",
+            fontWeight: "bold",
+            lineHeight: 1,
+            borderRadius: "full",
+            borderWidth: 4,
+            borderColor: "black",
+          })}
+        >
+          {(score * 100).toFixed(0)}%
+        </div>
+        <div
+          class={css({
+            fontSize: "2xl",
+            fontFamily: "monospace",
+            whiteSpace: "pre",
+          })}
+        >
+          <div>{perfect.length.toString().padStart(2, " ")} perfect</div>
+          <div>{okay.length.toString().padStart(2, " ")} okay</div>
+          <div>{missed.length.toString().padStart(2, " ")} missed</div>
+        </div>
+      </div>
+
+      <div
+        class={css({
+          fontSize: "lg",
+          fontWeight: "medium",
+          textAlign: "center",
+        })}
+      >
+        <Show when={perfect.length === props.kana.length}>
+          <div>Nothing to review</div>
+        </Show>
+        <Show when={missed.length}>
+          <div>Missed</div>
+          <MissedKana infos={missed} mode={props.mode} />
+        </Show>
+        <Show when={okay.length}>
+          <div>Okay</div>
+          <MissedKana infos={okay} mode={props.mode} />
+        </Show>
+      </div>
+    </>
+  );
+}
+
+function MissedKana(props) {
+  return (
+    <div
+      class={css({
+        gridColumn: 2,
+        display: "flex",
+        justifyContent: "center",
+        flexWrap: "wrap",
+        gap: 2,
+        my: 2,
+      })}
+    >
+      <For each={props.infos}>
+        {(info) => (
+          <Button
+            variant="outline"
+            class={css({
+              px: 0,
+              fontSize: "md",
+              height: "unset",
+              userSelect: "text",
+            })}
+          >
+            <div class={css({ p: 2, width: "100%" })}>
+              {info[props.mode]}
+              <div class={css({ fontSize: "sm" })}>{info.romaji[0]}</div>
+            </div>
+          </Button>
+        )}
+      </For>
+    </div>
   );
 }

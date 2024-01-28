@@ -8,8 +8,11 @@ import { Button } from "~/components/ui/Button";
 import { IconButton } from "~/components/ui/IconButton";
 
 export function Chart(props) {
-  const { mode, setMode } = useSelected();
+  const { mode, setMode, selected } = useSelected();
   const [isSelecting, setIsSelecting] = createSignal(false);
+
+  const anySelected = () =>
+    Object.values(selected).some((groupSel) => groupSel.some((row) => row));
 
   return (
     <main class={css({ display: "flex" })}>
@@ -93,7 +96,7 @@ export function Chart(props) {
               mb={1}
               colorPalette="green"
               size="xl"
-              onClick={props.onStart}
+              onClick={anySelected() && props.onStart}
             >
               Start
             </Button>

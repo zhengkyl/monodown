@@ -23,21 +23,21 @@ export default defineConfig({
       keyframes: {
         slideLeft: {
           "0%": {
-            marginLeft: 0,
+            translate: 0,
             opacity: 1,
           },
           "100%": {
-            marginLeft: "-100%",
+            translate: "-100%",
             opacity: 0,
           },
         },
         slideFromRight: {
           "0%": {
-            marginLeft: "100%",
+            translate: "100%",
             opacity: 0,
           },
           "100%": {
-            marginLeft: 0,
+            translate: 0,
             opacity: 1,
           },
         },
