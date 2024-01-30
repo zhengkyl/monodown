@@ -1,14 +1,17 @@
 import { For, Show, createSignal } from "solid-js";
-import { Square } from "lucide-solid";
+import { Pencil, Slash, Square, Volume, Volume2, VolumeX } from "lucide-solid";
 import { css } from "../../styled-system/css";
 
 import { kanaGroups } from "~/lib/kana";
 import { useSelected } from "~/lib/selected";
+import { useSettings } from "~/lib/settings";
 import { Button } from "~/components/ui/Button";
 import { IconButton } from "~/components/ui/IconButton";
 
 export function Chart(props) {
-  const { mode, setMode, selected } = useSelected();
+  const { selected } = useSelected();
+  const { mode, setMode, sound, setSound, write, setWrite } = useSettings();
+
   const [isSelecting, setIsSelecting] = createSignal(false);
 
   const anySelected = () =>
@@ -61,6 +64,28 @@ export function Chart(props) {
           >
             Katakana
           </Button>
+          <IconButton
+            variant={sound() ? "subtle" : "ghost"}
+            onClick={() => setSound((s) => !s)}
+            class={css({ flex: 1 })}
+          >
+            {sound() ? <Volume2 /> : <VolumeX />}
+          </IconButton>
+          <IconButton
+            variant={write() ? "subtle" : "ghost"}
+            onClick={() => setWrite((w) => !w)}
+            class={css({ flex: 1 })}
+          >
+            <Pencil />
+            {!write() && (
+              <Slash
+                class={css({
+                  rotate: "90deg",
+                  position: "absolute",
+                })}
+              />
+            )}
+          </IconButton>
         </div>
         <div
           class={css({
@@ -146,11 +171,7 @@ export function Chart(props) {
               flexGrow: 1,
             })}
           >
-            <KanaGroup
-              title={title}
-              mode={mode()}
-              isSelecting={isSelecting()}
-            />
+            <KanaGroup title={title} isSelecting={isSelecting()} />
           </div>
         ))}
       </div>
@@ -160,6 +181,7 @@ export function Chart(props) {
 
 function KanaGroup(props) {
   const { selected, setSelected } = useSelected();
+  const { mode } = useSettings();
 
   const allSelected = () => selected[props.title].every((s) => s);
 
@@ -244,7 +266,7 @@ function KanaGroup(props) {
                     >
                       <Show when={exists}>
                         <div class={css({ p: 2, width: "100%" })}>
-                          {kanaInfo[props.mode]}
+                          {kanaInfo[mode()]}
                           <div class={css({ fontSize: "sm" })}>
                             {kanaInfo.romaji[0]}
                           </div>

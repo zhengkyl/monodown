@@ -18,6 +18,7 @@ import { useSelected } from "~/lib/selected";
 import { Button } from "~/components/ui/Button";
 import { Input } from "~/components/ui/Input";
 import { Progress } from "~/components/ui/Progress";
+import { useSettings } from "~/lib/settings";
 
 // https://en.wikipedia.org/wiki/Fisher%E2%80%93Yates_shuffle#The_modern_algorithm
 export function shuffleArray(array) {
@@ -30,7 +31,8 @@ export function shuffleArray(array) {
 const LIVES = 2;
 
 export function Game(props) {
-  const { mode, selected } = useSelected();
+  const { selected } = useSelected();
+  const { mode } = useSettings();
 
   const kana = Object.entries(kanaGroups)
     .flatMap(([title, group]) =>
@@ -125,7 +127,7 @@ export function Game(props) {
           when={index() < kana.length}
           fallback={
             <>
-              <Results kana={kana} misses={misses} mode={mode()} />
+              <Results kana={kana} misses={misses} />
               <div
                 class={css({
                   display: "flex",
@@ -171,10 +173,10 @@ export function Game(props) {
             })}
           >
             <Show when={(index() & 1) == 0}>
-              <KanaCarousel index={index()} mode={mode()} kana={kana} />
+              <KanaCarousel index={index()} kana={kana} />
             </Show>
             <Show when={(index() & 1) == 1}>
-              <KanaCarousel index={index()} mode={mode()} kana={kana} />
+              <KanaCarousel index={index()} kana={kana} />
             </Show>
           </div>
           <Input
@@ -234,6 +236,7 @@ export function Game(props) {
 }
 
 function KanaCarousel(props) {
+  const { mode } = useSettings();
   return (
     <>
       <Show when={props.index}>
@@ -249,7 +252,7 @@ function KanaCarousel(props) {
             mb: 8,
           })}
         >
-          {props.kana[props.index - 1][props.mode]}
+          {props.kana[props.index - 1][mode()]}
         </div>
       </Show>
       <div
@@ -263,7 +266,7 @@ function KanaCarousel(props) {
           mb: 8,
         })}
       >
-        {props.kana[props.index][props.mode]}
+        {props.kana[props.index][mode()]}
       </div>
     </>
   );
@@ -271,12 +274,12 @@ function KanaCarousel(props) {
 
 function Results(props) {
   const perfect = props.kana.filter((_, j) => props.misses[j] === 0);
-  const okay = props.kana.filter(
+  const mistakes = props.kana.filter(
     (_, j) => props.misses[j] > 0 && props.misses[j] < LIVES
   );
-  const missed = props.kana.filter((_, j) => props.misses[j] === LIVES);
+  const skipped = props.kana.filter((_, j) => props.misses[j] === LIVES);
 
-  const score = (perfect.length + okay.length / 2) / props.kana.length;
+  const score = (perfect.length + mistakes.length / 2) / props.kana.length;
 
   return (
     <>
@@ -303,9 +306,6 @@ function Results(props) {
             fontSize: "7xl",
             fontWeight: "bold",
             lineHeight: 1,
-            borderRadius: "full",
-            borderWidth: 4,
-            borderColor: "black",
           })}
         >
           {(score * 100).toFixed(0)}%
@@ -318,8 +318,11 @@ function Results(props) {
           })}
         >
           <div>{perfect.length.toString().padStart(2, " ")} perfect</div>
-          <div>{okay.length.toString().padStart(2, " ")} okay</div>
-          <div>{missed.length.toString().padStart(2, " ")} missed</div>
+          <div>
+            {mistakes.length.toString().padStart(2, " ")} inaccurac
+            {mistakes.length === 1 ? "y" : "ies"}
+          </div>
+          <div>{skipped.length.toString().padStart(2, " ")} skipped</div>
         </div>
       </div>
 
@@ -333,13 +336,13 @@ function Results(props) {
         <Show when={perfect.length === props.kana.length}>
           <div>Nothing to review</div>
         </Show>
-        <Show when={missed.length}>
-          <div>Missed</div>
-          <MissedKana infos={missed} mode={props.mode} />
+        <Show when={skipped.length}>
+          <div>Skipped</div>
+          <MissedKana infos={skipped} />
         </Show>
-        <Show when={okay.length}>
-          <div>Okay</div>
-          <MissedKana infos={okay} mode={props.mode} />
+        <Show when={mistakes.length}>
+          <div>Inaccuracies</div>
+          <MissedKana infos={mistakes} />
         </Show>
       </div>
     </>
@@ -347,6 +350,7 @@ function Results(props) {
 }
 
 function MissedKana(props) {
+  const { mode } = useSettings();
   return (
     <div
       class={css({
@@ -370,7 +374,7 @@ function MissedKana(props) {
             })}
           >
             <div class={css({ p: 2, width: "100%" })}>
-              {info[props.mode]}
+              {info[mode()]}
               <div class={css({ fontSize: "sm" })}>{info.romaji[0]}</div>
             </div>
           </Button>
