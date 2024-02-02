@@ -9,7 +9,8 @@ export const Calendar = (props: DatePicker.RootProps) => {
     <DatePicker.Root
       positioning={{ sameWidth: true }}
       startOfWeek={0}
-      selectionMode="range"
+      locale="en"
+      // selectionMode="range"
       {...props}
     >
       <DatePicker.Label>Date Picker</DatePicker.Label>
