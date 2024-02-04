@@ -1,5 +1,5 @@
 import { For, Show, createSignal } from "solid-js";
-import { ThickButton } from "../ui/FlatButtonutton";
+import { ThickButton } from "../ui/FlatButton";
 import { SharedProps } from "../Quiz";
 import { Choice, Prompt } from "./format";
 

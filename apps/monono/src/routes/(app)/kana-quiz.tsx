@@ -13,11 +13,11 @@ import { Accordion } from "~/components/ui/Accordion";
 import { FlatButton } from "~/components/ui/FlatButton";
 import { ThickButton } from "~/components/ui/ThickButton";
 import { ToggleButton } from "~/components/ui/ToggleButton";
-import { dakuonKana, gojuonKana, yoonKana } from "~/data/kana";
+import { dakuonKana, gojuonKana, comboKana } from "~/data/kana";
 
 import rewardGif from "~/assets/4floss.gif";
 
-const kanaCharts = [gojuonKana, dakuonKana, yoonKana];
+const kanaCharts = [gojuonKana, dakuonKana, comboKana];
 const chartTitles = ["Gojūon", "Dakuon", "Combo"];
 const toChartIndex = kanaCharts.map(
   (chart) => new Map(chart.map((row, i) => [row[0].romaji[0], i]))

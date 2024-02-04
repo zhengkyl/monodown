@@ -113,7 +113,7 @@ export const dakuonKana = [
   ],
 ];
 
-export const yoonKana = [
+export const comboKana = [
   [
     { hira: "きゃ", kata: "キャ", romaji: ["kya"] },
     { hira: "きゅ", kata: "キュ", romaji: ["kyu"] },
