@@ -1,25 +1,6 @@
 import { Title } from "@solidjs/meta";
 import { clientOnly } from "@solidjs/start";
-import {
-  Blend,
-  Columns2,
-  Dice4,
-  Dice5,
-  Dice6,
-  Dices,
-  Rabbit,
-  Redo,
-  Scissors,
-  ScissorsLineDashed,
-  Ticket,
-} from "lucide-solid";
-import { For, Match, Show, Switch, createSignal } from "solid-js";
-import { isServer } from "solid-js/web";
 import { css } from "styled-system/css";
-import { Calendar } from "~/components/Calendar";
-import MenuButton from "~/components/MenuButton";
-import { Button } from "~/components/ui/Button";
-import * as Menu from "~/components/ui/Menu";
 
 const Quiz = clientOnly(() => import("../components/Quiz"));
 
