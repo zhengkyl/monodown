@@ -12,7 +12,7 @@ function shuffleArray(array) {
   }
 }
 
-export const questions: MultipleChoiceQuestion[] = [
+const test = [
   {
     directions: "Choose the correct meaning.",
     promptType: "text",
@@ -46,6 +46,8 @@ export const questions: MultipleChoiceQuestion[] = [
     decoys: ["(I) am well", "(I) am not well", "(I) was well"],
   },
 ];
+
+export const questions: MultipleChoiceQuestion[] = test.concat(test);
 
 type MultipleChoiceQuestion = {
   directions?: string;
@@ -85,7 +87,7 @@ export function MultipleChoice(props: {
           {(choice, i) => (
             <Button
               variant={props.answer === choice ? "solid" : "outline"}
-              colorPalette="plum"
+              colorPalette="indigo"
               size="2xl"
               borderRadius="lg"
               onClick={[props.setAnswer, choice]}

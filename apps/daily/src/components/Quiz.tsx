@@ -1,13 +1,24 @@
 import { Show, batch, createSignal } from "solid-js";
-import { MultipleChoice, questions } from "~/components/MultipleChoice";
 import { css } from "styled-system/css";
-import { Button } from "./ui/Button";
 import { Motion, Presence } from "solid-motionone";
+
+import { MultipleChoice, questions } from "~/components/MultipleChoice";
+import { LinearProgress } from "~/components/ui/LinearProgress";
+import { Button } from "~/components/ui/Button";
 
 enum Result {
   IN_PROGRESS,
   FAILURE,
   SUCCESS,
+}
+
+function getSkewedProgress(index, length, minInc = 0.5) {
+  // triangle with dims length * 2(1-minInc)
+  // rectangle with dims length * minInc
+  // f(index) = 2 - minInc - (2-2minInc)/length * x
+  //
+  // this is integral
+  return (2 - minInc) * index - ((1 - minInc) / length) * index * index;
 }
 
 // export default b/c clientOnly() expects default
@@ -39,17 +50,35 @@ export default function Quiz() {
           maxWidth: "breakpoint-sm",
           mx: "auto",
           height: "100svh",
-          position: "relative",
+          display: "flex",
+          flexDir: "column",
         })}
       >
+        <div
+          class={css({
+            p: 4,
+          })}
+        >
+          <LinearProgress
+            min={0}
+            max={questions.length}
+            value={getSkewedProgress(index(), questions.length)}
+          />
+        </div>
+
         <Presence exitBeforeEnter initial={false}>
-          <Show
-            when={show() && index() < questions.length}
-            fallback={
+          <Show when={index() < questions.length}>
+            <Show
+              when={show()}
+              fallback={
+                <Question
+                  question={questions[index()]}
+                  onContinue={onContinue}
+                />
+              }
+            >
               <Question question={questions[index()]} onContinue={onContinue} />
-            }
-          >
-            <Question question={questions[index()]} onContinue={onContinue} />
+            </Show>
           </Show>
         </Presence>
       </div>
@@ -84,7 +113,7 @@ function Question(props) {
         opacity: 0,
       }}
       animate={{
-        translate: "0",
+        translate: 0,
         opacity: 1,
       }}
       transition={{
@@ -105,7 +134,7 @@ function Question(props) {
         flexDir: "column",
         gap: 8,
         px: 4,
-        py: 16,
+        py: 8,
       })}
     >
       <div class={css({ fontSize: "xl", fontWeight: "bold" })}>
@@ -116,16 +145,31 @@ function Question(props) {
         answer={answer()}
         setAnswer={result() === Result.IN_PROGRESS ? setAnswer : null}
       />
-      <Button
-        colorPalette={result() === Result.FAILURE ? "red" : "green"}
-        size="xl"
-        width="full"
-        onClick={result() === Result.IN_PROGRESS ? onSubmit : onContinue}
-        class={css({ mt: "auto", zIndex: 10 })}
-        disabled={answer() == null}
+      <Show
+        when={result() === Result.IN_PROGRESS}
+        fallback={
+          <Button
+            colorPalette={result() === Result.FAILURE ? "red" : "grass"}
+            size="xl"
+            width="full"
+            onClick={onContinue}
+            class={css({ mt: "auto", zIndex: 10 })}
+          >
+            Continue
+          </Button>
+        }
       >
-        {result() === Result.IN_PROGRESS ? "Submit" : "Continue"}
-      </Button>
+        <Button
+          colorPalette="indigo"
+          size="xl"
+          width="full"
+          onClick={onSubmit}
+          class={css({ mt: "auto", zIndex: 10 })}
+          disabled={answer() == null}
+        >
+          Submit
+        </Button>
+      </Show>
       <div
         class={css({
           transition: "translate 300ms",
@@ -136,7 +180,7 @@ function Question(props) {
           background: "accent.5",
           px: 4,
           pt: 8,
-          pb: 32,
+          pb: 28,
         })}
       >
         <div class={css({ fontSize: "xl", fontWeight: "bold" })}>
