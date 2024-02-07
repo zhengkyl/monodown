@@ -160,7 +160,7 @@ function Question(props) {
         }
       >
         <Button
-          colorPalette="indigo"
+          colorPalette="blue"
           size="xl"
           width="full"
           onClick={onSubmit}
