@@ -68,6 +68,7 @@ export function Chart(props) {
             variant={sound() ? "subtle" : "ghost"}
             onClick={() => setSound((s) => !s)}
             class={css({ flex: 1 })}
+            title={`${sound() ? "Mute" : "Unmute"} character audio`}
           >
             {sound() ? <Volume2 /> : <VolumeX />}
           </IconButton>
@@ -75,6 +76,7 @@ export function Chart(props) {
             variant={write() ? "subtle" : "ghost"}
             onClick={() => setWrite((w) => !w)}
             class={css({ flex: 1 })}
+            title={`${write() ? "Hide" : "Show"} stroke order `}
           >
             <Pencil />
             {!write() && (
@@ -181,7 +183,7 @@ export function Chart(props) {
 
 function KanaGroup(props) {
   const { selected, setSelected } = useSelected();
-  const { mode } = useSettings();
+  const { mode, sound } = useSettings();
 
   const allSelected = () => selected[props.title].every((s) => s);
 
@@ -250,29 +252,39 @@ function KanaGroup(props) {
               <For each={row}>
                 {(kanaInfo) => {
                   const exists = kanaInfo != null;
+                  let audio;
                   return (
-                    <Button
-                      variant={exists && rowSelected() ? "solid" : "outline"}
-                      class={css({
-                        px: 0,
-                        fontSize: "md",
-                        height: "unset",
-                        userSelect: "text",
-                        _disabled: {
-                          cursor: "default",
-                        },
-                      })}
-                      disabled={!exists}
-                    >
-                      <Show when={exists}>
-                        <div class={css({ p: 2, width: "100%" })}>
-                          {kanaInfo[mode()]}
-                          <div class={css({ fontSize: "sm" })}>
-                            {kanaInfo.romaji[0]}
+                    <>
+                      {exists && (
+                        <audio
+                          ref={audio}
+                          src={`/audio/${kanaInfo.romaji[0]}.ogg`}
+                        />
+                      )}
+                      <Button
+                        variant={exists && rowSelected() ? "solid" : "outline"}
+                        class={css({
+                          px: 0,
+                          fontSize: "md",
+                          height: "unset",
+                          userSelect: "text",
+                          _disabled: {
+                            cursor: "default",
+                          },
+                        })}
+                        disabled={!exists}
+                        onClick={() => sound() && audio.play()}
+                      >
+                        <Show when={exists}>
+                          <div class={css({ p: 2, width: "100%" })}>
+                            {kanaInfo[mode()]}
+                            <div class={css({ fontSize: "sm" })}>
+                              {kanaInfo.romaji[0]}
+                            </div>
                           </div>
-                        </div>
-                      </Show>
-                    </Button>
+                        </Show>
+                      </Button>
+                    </>
                   );
                 }}
               </For>
