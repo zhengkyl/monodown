@@ -1,12 +1,15 @@
-import { For, Show, createSignal } from "solid-js";
-import { Pencil, Slash, Square, Volume, Volume2, VolumeX } from "lucide-solid";
-import { css } from "../../styled-system/css";
+import { For, Show, createEffect, createSignal, untrack } from "solid-js";
+import { Portal } from "solid-js/web";
+import { Pencil, Slash, Square, Volume2, VolumeX, X } from "lucide-solid";
 
+import { Button } from "~/components/ui/Button";
+import { IconButton } from "~/components/ui/IconButton";
 import { kanaGroups } from "~/lib/kana";
 import { useSelected } from "~/lib/selected";
 import { useSettings } from "~/lib/settings";
-import { Button } from "~/components/ui/Button";
-import { IconButton } from "~/components/ui/IconButton";
+import { css } from "../../styled-system/css";
+import { strokeAnimator } from "~/lib/strokeAnimator";
+import { Slider } from "./ui/Slider";
 
 export function Chart(props) {
   const { selected } = useSelected();
@@ -14,8 +17,53 @@ export function Chart(props) {
 
   const [isSelecting, setIsSelecting] = createSignal(false);
 
+  const [strokeDiagram, setStrokeDiagram] = createSignal<{
+    kana: string;
+    rect: DOMRect;
+  }>(null);
+
   const anySelected = () =>
     Object.values(selected).some((groupSel) => groupSel.some((row) => row));
+
+  createEffect(() => {
+    if (strokeDiagram() == null) return;
+    if (strokeDiagram().kana.length > 1) {
+      setStrokeDiagram(null);
+      return;
+    }
+
+    loadSvg(untrack(mode), strokeDiagram().kana);
+  });
+
+  let svgParent: HTMLDivElement;
+  let controller;
+  let animator;
+
+  async function loadSvg(mode, kana) {
+    if (controller != null) controller.abort;
+    controller = new AbortController();
+
+    const resp = await fetch(`/${mode}/${kana}.svg`);
+    if (!resp.ok) return;
+    controller = null;
+
+    const text = await resp.text();
+    const domParser = new DOMParser();
+    const doc = domParser.parseFromString(text, "text/html");
+    const svg = doc.querySelector("svg");
+
+    if (animator) animator.stop();
+    svgParent.replaceChildren(svg);
+
+    animator = strokeAnimator(svg, {
+      progressCallback: setProgress,
+      markingsCallback: setMarkings,
+    });
+    animator.play();
+  }
+
+  const [progress, setProgress] = createSignal(1);
+  const [markings, setMarkings] = createSignal([]);
 
   return (
     <main class={css({ display: "flex" })}>
@@ -173,17 +221,68 @@ export function Chart(props) {
               flexGrow: 1,
             })}
           >
-            <KanaGroup title={title} isSelecting={isSelecting()} />
+            <KanaGroup
+              title={title}
+              isSelecting={isSelecting()}
+              setStrokeDiagram={setStrokeDiagram}
+            />
           </div>
         ))}
       </div>
+
+      <Portal>
+        <Show when={strokeDiagram() != null}>
+          <div
+            class={css({
+              position: "absolute",
+              background: "bg.default",
+              borderRadius: "lg",
+              borderWidth: 1,
+              boxShadow: "lg",
+              p: 4,
+            })}
+            style={{
+              top: `${
+                strokeDiagram().rect.bottom > window.innerHeight / 2
+                  ? strokeDiagram().rect.top + window.scrollY - 214
+                  : strokeDiagram().rect.bottom + window.scrollY
+              }px`,
+              left: `calc(min(100% - 194px, max(0px, ${
+                strokeDiagram().rect.left -
+                (194 - strokeDiagram().rect.width) / 2
+              }px))) `,
+            }}
+          >
+            <IconButton
+              variant="ghost"
+              size="sm"
+              class={css({ position: "absolute", right: 1, top: 1 })}
+              onClick={[setStrokeDiagram, null]}
+            >
+              <X />
+            </IconButton>
+            <div ref={svgParent} class={css({ width: "10rem" })}></div>
+            <div class={css({ display: "flex" })}>
+              <Slider
+                min={0}
+                max={1}
+                step={0.01}
+                value={[progress()]}
+                marks={markings()}
+                onValueChange={(e) => animator.setProgress(e.value[0])}
+                onValueChangeEnd={() => animator.play()}
+              />
+            </div>
+          </div>
+        </Show>
+      </Portal>
     </main>
   );
 }
 
 function KanaGroup(props) {
   const { selected, setSelected } = useSelected();
-  const { mode, sound } = useSettings();
+  const { mode, sound, write } = useSettings();
 
   const allSelected = () => selected[props.title].every((s) => s);
 
@@ -273,7 +372,15 @@ function KanaGroup(props) {
                           },
                         })}
                         disabled={!exists}
-                        onClick={() => sound() && audio.play()}
+                        onClick={(e) => {
+                          if (sound()) audio.play();
+                          if (write()) {
+                            props.setStrokeDiagram({
+                              kana: kanaInfo[mode()],
+                              rect: e.currentTarget.getBoundingClientRect(),
+                            });
+                          }
+                        }}
                       >
                         <Show when={exists}>
                           <div class={css({ p: 2, width: "100%" })}>

@@ -20,7 +20,7 @@ const SettingsContext = createContext<{
 export function SettingsProvider(props) {
   const [mode, setMode] = createSignal<Mode>("hira");
   const [sound, setSound] = createSignal(true);
-  const [write, setWrite] = createSignal(false);
+  const [write, setWrite] = createSignal(true);
 
   return (
     <SettingsContext.Provider
