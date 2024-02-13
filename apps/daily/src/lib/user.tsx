@@ -1,33 +1,49 @@
 import { createContext, onMount, useContext } from "solid-js";
 import { createStore, type Store } from "solid-js/store";
 
-enum Status {
+export enum Status {
   "SKIPPED" = 0,
   "VISITED" = 1,
   "COMPLETED" = 2,
 }
 
-type Days = {
-  [key: string]: {
-    status: Status;
-    timestamp: string;
+export type Days = {
+  [year: number]: {
+    [month: number]: {
+      [day: number]: {
+        status: Status;
+        timestamp: string;
+      };
+    };
   };
 };
 
-function getDateKey(date: Date) {
-  return `${date.getFullYear}-${date.getMonth() + 1}-${date.getDate()}`;
+// TODO days always accessed consecutively
+// probably microscopic perf win available
+// eg cache monthDays
+export function getDay(days: Days, date: Date) {
+  const yearDays = days[date.getFullYear()];
+  if (yearDays == null) return null;
+
+  const monthDays = yearDays[date.getMonth() + 1];
+  if (monthDays == null) return null;
+
+  const day = monthDays[date.getDate()];
+  if (day == null) return null;
+
+  return day;
 }
 
 export function getStreak(days: Days) {
   const curr = new Date();
 
-  let day = days[getDateKey(curr)];
+  let day = getDay(days, curr);
   let streak = 0;
   while (day && day.status >= Status.VISITED) {
     streak++;
 
     curr.setDate(curr.getDate() - 1);
-    day = days[getDateKey(curr)];
+    day = getDay(days, curr);
   }
   return streak;
 }
@@ -50,11 +66,20 @@ export function UserProvider(props) {
 
   const updateToday = (status: Status) => {
     const today = new Date();
-    const key = getDateKey(today);
 
-    if (days[key] && days[key].status >= status) return;
+    const day = getDay(days, today);
+    if (day && day.status >= status) return;
 
-    setDays(key, { status, timestamp: today.toISOString() });
+    if (days[today.getFullYear()] == null) {
+      setDays(today.getFullYear(), {});
+    }
+    // no need for month check b/c objects are shallow merged
+    setDays(today.getFullYear(), today.getMonth() + 1, {
+      [today.getDate()]: {
+        status,
+        timestamp: today.toISOString(),
+      },
+    });
     localStorage.setItem("days", JSON.stringify(days));
   };
 

@@ -16,6 +16,15 @@ export default defineConfig({
       },
     },
   },
+  staticCss: {
+    css: [
+      {
+        properties: {
+          gridColumn: ["1", "2", "3", "4", "5", "6"],
+        },
+      },
+    ],
+  },
   jsxFramework: "solid",
   outdir: "styled-system",
 });
