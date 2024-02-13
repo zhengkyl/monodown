@@ -335,40 +335,65 @@ function KanaCol(props) {
   );
 }
 
+// https://www.solidjs.com/tutorial/bindings_directives?solved
+function pointerDownOutside(el, accessor) {
+  const onPointerDown = (e) => !el.contains(e.target) && accessor()?.();
+  document.body.addEventListener("pointerdown", onPointerDown);
+
+  onCleanup(() =>
+    document.body.removeEventListener("pointerdown", onPointerDown)
+  );
+}
+
 function StrokeDiagramPopover() {
   const { mode, diagram, setDiagram } = useSettings();
 
   createEffect(() => {
     if (diagram.kana == null) return;
-    if (diagram.kana.length > 1) {
-      setDiagram("kana", null);
-      return;
-    }
 
-    loadSvg(untrack(mode), diagram.kana);
+    loadStrokeDiagram(untrack(mode), diagram.kana);
 
     onCleanup(() => {
       if (controller != null) controller.abort;
-      removeEventListener("pointerdown", onPointerDown);
     });
   });
 
-  let popover: HTMLDivElement;
   let svgParent: HTMLDivElement;
   let controller;
   let animator;
 
-  async function loadSvg(mode, kana) {
+  async function getSvg(mode, char) {
     controller = new AbortController();
-
-    const resp = await fetch(`/${mode}/${kana}.svg`);
+    const resp = await fetch(`/${mode}/${char}.svg`);
     if (!resp.ok) return;
     controller = null;
 
     const text = await resp.text();
     const domParser = new DOMParser();
     const doc = domParser.parseFromString(text, "text/html");
-    const svg = doc.querySelector("svg");
+    return doc.querySelector("svg");
+  }
+
+  async function loadStrokeDiagram(mode, kana) {
+    const svg = await getSvg(mode, kana[0]);
+
+    if (kana.length == 2) {
+      svg.setAttribute("viewBox", "0 0 1824 1024");
+
+      const next = await getSvg(mode, kana[1]);
+
+      const defs = svg.querySelector("defs");
+      const nextClipPaths = next.querySelectorAll("clipPath");
+      defs.append(...nextClipPaths);
+
+      const nextShadows = next.querySelector('g[data-strokesvg="shadows"]');
+      const nextStrokes = next.querySelector('g[data-strokesvg="strokes"]');
+      nextShadows.style.translate = "800px";
+      nextStrokes.style.translate = "800px";
+
+      svg.appendChild(nextShadows);
+      svg.appendChild(nextStrokes);
+    }
 
     if (animator) animator.stop();
     svgParent.replaceChildren(svg);
@@ -380,19 +405,13 @@ function StrokeDiagramPopover() {
     animator.play();
 
     svgParent.focus();
-
-    document.addEventListener("pointerdown", onPointerDown);
   }
-
-  const onPointerDown = (e) => {
-    if (e.target === popover || popover.contains(e.target)) return;
-    setDiagram("kana", null);
-  };
 
   const [progress, setProgress] = createSignal(1);
   const [markings, setMarkings] = createSignal([]);
 
   // todo unhardcoded size 194 * 214
+  // esc key
   //
   // stopPropogation() doesn't work b/c handlers are delegated
   // stopImmediatePropagation() still doesn't work b/c <Slider/> immediately triggers document events?
@@ -401,7 +420,7 @@ function StrokeDiagramPopover() {
     <Portal>
       <Show when={diagram.kana != null}>
         <div
-          ref={popover}
+          use:pointerDownOutside={() => setDiagram("kana", null)}
           class={css({
             position: "absolute",
             background: "bg.default",
@@ -431,7 +450,7 @@ function StrokeDiagramPopover() {
           </IconButton>
           <div
             ref={svgParent}
-            class={css({ width: "10rem", height: "10rem" })}
+            class={css({ width: "10rem", height: "10rem", display: "flex" })}
           ></div>
           <div class={css({ display: "flex" })}>
             <Slider
