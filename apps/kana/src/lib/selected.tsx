@@ -1,4 +1,10 @@
-import { createContext, useContext } from "solid-js";
+import {
+  createContext,
+  useContext,
+  createSignal,
+  type Setter,
+  type Accessor,
+} from "solid-js";
 import { createStore } from "solid-js/store";
 import { comboKana, dakuonKana, gojuonKana } from "~/lib/kana";
 
@@ -11,11 +17,14 @@ type Selection = {
 };
 
 const SelectedContext = createContext<{
+  selecting: Accessor<boolean>;
+  setSelecting: Setter<boolean>;
   selected: Store<Selection>;
   setSelected: SetStoreFunction<Selection>;
 }>();
 
 export function SelectedProvider(props) {
+  const [selecting, setSelecting] = createSignal(false);
   const [selected, setSelected] = createStore({
     Gojūon: gojuonKana.map(() => false),
     Dakuon: dakuonKana.map(() => false),
@@ -24,6 +33,8 @@ export function SelectedProvider(props) {
   return (
     <SelectedContext.Provider
       value={{
+        selecting,
+        setSelecting,
         selected,
         setSelected,
       }}
