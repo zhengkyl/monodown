@@ -92,15 +92,8 @@ function ControlOverlay(props) {
   return (
     <div
       class={css({
-        position: "fixed",
-        inset: 0,
-        p: 4,
-        display: "flex",
-        flexDir: "column",
-        justifyContent: "space-between",
-        pointerEvents: "none",
-        zIndex: 10,
         lg: {
+          top: 0,
           position: "sticky",
           height: "100svh",
           maxWidth: "96",
@@ -110,60 +103,89 @@ function ControlOverlay(props) {
     >
       <div
         class={css({
-          borderWidth: 1,
-          borderColor: "gray.a8",
-          borderRadius: "md",
-          display: "flex",
-          gap: 1,
-          p: 1,
-          pointerEvents: "all",
-          boxShadow: "2xl",
-          background: "bg.default",
+          px: 2,
+          py: 4,
+          position: "fixed",
+          top: 0,
+          width: "100%",
+          lg: {
+            position: "static",
+          },
         })}
       >
-        <Button
-          variant={mode() == "hira" ? "solid" : "ghost"}
-          onClick={[setMode, "hira"]}
-          class={css({ flex: 1 })}
+        <div
+          class={css({
+            borderWidth: 1,
+            borderColor: "gray.a8",
+            borderRadius: "md",
+            display: "flex",
+            gap: 1,
+            p: 1,
+            background: "bg.default",
+            boxShadow: "2xl",
+          })}
         >
-          Hiragana
-        </Button>
-        <Button
-          variant={mode() == "kata" ? "solid" : "ghost"}
-          onClick={[setMode, "kata"]}
-          class={css({ flex: 1 })}
-        >
-          Katakana
-        </Button>
-        <IconButton
-          variant={sound() ? "subtle" : "ghost"}
-          onClick={() => setSound((s) => !s)}
-          class={css({ flex: 1 })}
-          title={`${sound() ? "Mute" : "Unmute"} character audio`}
-        >
-          {sound() ? <Volume2 /> : <VolumeX />}
-        </IconButton>
-        <IconButton
-          variant={write() ? "subtle" : "ghost"}
-          onClick={() => setWrite((w) => !w)}
-          class={css({ flex: 1 })}
-          title={`${write() ? "Hide" : "Show"} stroke order `}
-        >
-          <Pencil />
-          {!write() && (
-            <Slash
-              class={css({
-                rotate: "90deg",
-                position: "absolute",
-              })}
-            />
-          )}
-        </IconButton>
+          <Button
+            variant={mode() == "hira" ? "solid" : "ghost"}
+            onClick={[setMode, "hira"]}
+            class={css({ flex: 1 })}
+          >
+            Hiragana
+          </Button>
+          <Button
+            variant={mode() == "kata" ? "solid" : "ghost"}
+            onClick={[setMode, "kata"]}
+            class={css({ flex: 1 })}
+          >
+            Katakana
+          </Button>
+          <IconButton
+            variant={sound() ? "subtle" : "ghost"}
+            onClick={() => setSound((s) => !s)}
+            class={css({ flex: 1 })}
+            title={`${sound() ? "Mute" : "Unmute"} character audio`}
+          >
+            {sound() ? <Volume2 /> : <VolumeX />}
+          </IconButton>
+          <IconButton
+            variant={write() ? "subtle" : "ghost"}
+            onClick={() => setWrite((w) => !w)}
+            class={css({ flex: 1 })}
+            title={`${write() ? "Hide" : "Show"} stroke order `}
+          >
+            <Pencil />
+            {!write() && (
+              <Slash
+                class={css({
+                  rotate: "90deg",
+                  position: "absolute",
+                })}
+              />
+            )}
+          </IconButton>
+        </div>
       </div>
+      <Credits
+        class={css({
+          display: "none",
+          p: 4,
+          fontSize: "sm",
+          lg: {
+            display: "block",
+          },
+        })}
+      />
       <div
         class={css({
-          pointerEvents: "all",
-          boxShadow: "2xl",
+          position: "fixed",
+          bottom: 0,
+          width: "100%",
+          px: 2,
+          py: 4,
+          lg: {
+            position: "absolute",
+          },
+          zIndex: 10,
         })}
       >
         <Show
@@ -174,17 +196,10 @@ function ControlOverlay(props) {
                 width="100%"
                 mb={1}
                 onClick={[setSelecting, true]}
-                size="xl"
+                size="2xl"
+                boxShadow="2xl"
               >
                 Practice
-              </Button>
-              <Button
-                width="100%"
-                variant="outline"
-                background="bg.default"
-                size="sm"
-              >
-                Learn
               </Button>
             </>
           }
@@ -193,7 +208,7 @@ function ControlOverlay(props) {
             width="100%"
             mb={1}
             colorPalette="green"
-            size="xl"
+            size="2xl"
             onClick={anySelected() && props.onStart}
           >
             Start
@@ -215,7 +230,7 @@ function ControlOverlay(props) {
 }
 
 function KanaCol(props) {
-  const { mode, sound, write, setDiagram } = useSettings();
+  const { mode, sound, write, diagram, setDiagram } = useSettings();
   const { selected, setSelected, selecting } = useSelected();
   const allSelected = () => selected[props.title].every((s) => s);
 
@@ -295,7 +310,8 @@ function KanaCol(props) {
                       <Button
                         variant={exists && rowSelected() ? "solid" : "outline"}
                         class={css({
-                          px: 0,
+                          p: 2,
+                          display: "block",
                           fontSize: "md",
                           height: "unset",
                           userSelect: "text",
@@ -305,9 +321,16 @@ function KanaCol(props) {
                         })}
                         disabled={!exists}
                         onClick={(e) => {
-                          if (sound()) audio.play();
+                          if (sound()) {
+                            if (audio.paused) {
+                              audio.play();
+                            } else {
+                              audio.currentTime = 0;
+                            }
+                          }
                           if (write()) {
                             setDiagram({
+                              show: true,
                               kana: kanaInfo[mode()],
                               rect: e.currentTarget.getBoundingClientRect(),
                             });
@@ -315,11 +338,9 @@ function KanaCol(props) {
                         }}
                       >
                         <Show when={exists}>
-                          <div class={css({ p: 2, width: "100%" })}>
-                            {kanaInfo[mode()]}
-                            <div class={css({ fontSize: "sm" })}>
-                              {kanaInfo.romaji[0]}
-                            </div>
+                          {kanaInfo[mode()]}
+                          <div class={css({ fontSize: "sm" })}>
+                            {kanaInfo.romaji[0]}
                           </div>
                         </Show>
                       </Button>
@@ -335,21 +356,49 @@ function KanaCol(props) {
   );
 }
 
-// https://www.solidjs.com/tutorial/bindings_directives?solved
-function pointerDownOutside(el, accessor) {
-  const onPointerDown = (e) => !el.contains(e.target) && accessor()?.();
-  document.body.addEventListener("pointerdown", onPointerDown);
+// This is hardcoded to match the button defined above
+// I think it's better than having 100 non-delegated event listeners on the buttons themselves
+function findButton(node) {
+  if (node.nodeName === "BUTTON") return node;
 
-  onCleanup(() =>
-    document.body.removeEventListener("pointerdown", onPointerDown)
-  );
+  if (node.parentElement && node.parentElement.nodeName === "BUTTON")
+    return node.parentElement;
+
+  return null;
+}
+function interactOutside(el, accessor) {
+  const { kana, stop, replay } = accessor();
+
+  const onPointerDownOutside = (e) => {
+    if (el.contains(e.target)) return;
+
+    const button = findButton(e.target);
+    if (button && button.childNodes[0].textContent === kana) {
+      replay();
+      return;
+    }
+
+    stop();
+  };
+
+  function onEscape(e: KeyboardEvent) {
+    if (e.key === "Escape") stop();
+  }
+
+  document.body.addEventListener("pointerdown", onPointerDownOutside);
+  document.body.addEventListener("keydown", onEscape);
+
+  onCleanup(() => {
+    document.body.removeEventListener("pointerdown", onPointerDownOutside);
+    document.body.removeEventListener("keydown", onEscape);
+  });
 }
 
 function StrokeDiagramPopover() {
   const { mode, diagram, setDiagram } = useSettings();
 
   createEffect(() => {
-    if (diagram.kana == null) return;
+    if (!diagram.show) return;
 
     loadStrokeDiagram(untrack(mode), diagram.kana);
 
@@ -375,6 +424,13 @@ function StrokeDiagramPopover() {
   }
 
   async function loadStrokeDiagram(mode, kana) {
+    if (animator) {
+      animator.stop();
+      setProgress(0);
+      setMarkings([]);
+      svgParent.replaceChildren();
+    }
+
     const svg = await getSvg(mode, kana[0]);
 
     if (kana.length == 2) {
@@ -386,8 +442,12 @@ function StrokeDiagramPopover() {
       const nextClipPaths = next.querySelectorAll("clipPath");
       defs.append(...nextClipPaths);
 
-      const nextShadows = next.querySelector('g[data-strokesvg="shadows"]');
-      const nextStrokes = next.querySelector('g[data-strokesvg="strokes"]');
+      const nextShadows = next.querySelector(
+        'g[data-strokesvg="shadows"]'
+      ) as HTMLElement;
+      const nextStrokes = next.querySelector(
+        'g[data-strokesvg="strokes"]'
+      ) as HTMLElement;
       nextShadows.style.translate = "800px";
       nextStrokes.style.translate = "800px";
 
@@ -395,7 +455,6 @@ function StrokeDiagramPopover() {
       svg.appendChild(nextStrokes);
     }
 
-    if (animator) animator.stop();
     svgParent.replaceChildren(svg);
 
     animator = strokeAnimator(svg, {
@@ -410,17 +469,19 @@ function StrokeDiagramPopover() {
   const [progress, setProgress] = createSignal(1);
   const [markings, setMarkings] = createSignal([]);
 
-  // todo unhardcoded size 194 * 214
-  // esc key
-  //
-  // stopPropogation() doesn't work b/c handlers are delegated
-  // stopImmediatePropagation() still doesn't work b/c <Slider/> immediately triggers document events?
-
   return (
     <Portal>
-      <Show when={diagram.kana != null}>
+      <Show when={diagram.show}>
         <div
-          use:pointerDownOutside={() => setDiagram("kana", null)}
+          // @ts-expect-error solid directive
+          use:interactOutside={{
+            stop: () => setDiagram("show", false),
+            replay: () => {
+              animator.setProgress(0);
+              animator.play();
+            },
+            kana: diagram.kana,
+          }}
           class={css({
             position: "absolute",
             background: "bg.default",
@@ -430,21 +491,18 @@ function StrokeDiagramPopover() {
             p: 4,
           })}
           style={{
-            top: `${
+            top:
               diagram.rect.bottom > window.innerHeight / 2
-                ? diagram.rect.top + window.scrollY - 214 - 4
-                : diagram.rect.bottom + window.scrollY + 4
-            }px`,
-            left: `calc(min(100% - 194px - 8px, max(8px, ${
-              diagram.rect.left - (194 - diagram.rect.width) / 2
-            }px))) `,
+                ? `calc(${diagram.rect.top}px + ${window.scrollY}px - 10rem - 34px - 20px - 4px)`
+                : `calc(${diagram.rect.bottom}px + ${window.scrollY}px + 4px)`,
+            left: `calc(min(100% - 10rem - 34px - 8px, max(8px, ${diagram.rect.left}px - (10rem + 34px - ${diagram.rect.width}px) / 2))) `,
           }}
         >
           <IconButton
             variant="ghost"
             size="sm"
             class={css({ position: "absolute", right: 1, top: 1, zIndex: 10 })}
-            onClick={() => setDiagram("kana", null)}
+            onClick={() => setDiagram("show", false)}
           >
             <X />
           </IconButton>
@@ -466,5 +524,42 @@ function StrokeDiagramPopover() {
         </div>
       </Show>
     </Portal>
+  );
+}
+
+function Credits(props) {
+  return (
+    <div {...props}>
+      <p>
+        愛で作成:{" "}
+        <a
+          href="https://github.com/zhengkyl"
+          target="_blank"
+          class={css({ textDecoration: "underline", color: "blue" })}
+        >
+          @zhengkyl
+        </a>
+      </p>
+      <p>
+        Source code{" "}
+        <a
+          href="https://github.com/zhengkyl/monodown/tree/main/apps/kana"
+          target="_blank"
+          class={css({ textDecoration: "underline", color: "blue" })}
+        >
+          here
+        </a>
+      </p>
+      <p>
+        Stroke diagrams from{" "}
+        <a
+          href="https://github.com/zhengkyl/strokesvg"
+          target="_blank"
+          class={css({ textDecoration: "underline", color: "blue" })}
+        >
+          StrokeSVG
+        </a>
+      </p>
+    </div>
   );
 }

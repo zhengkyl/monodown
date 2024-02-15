@@ -10,7 +10,8 @@ import { createStore, type SetStoreFunction, type Store } from "solid-js/store";
 type Mode = "hira" | "kata";
 
 type Diagram = {
-  kana: string | null;
+  show: boolean;
+  kana: string;
   rect: DOMRect;
 };
 
@@ -28,8 +29,8 @@ const SettingsContext = createContext<{
 export function SettingsProvider(props) {
   const [mode, setMode] = createSignal<Mode>("hira");
   const [sound, setSound] = createSignal(true);
-  const [write, setWrite] = createSignal(true);
-  const [diagram, setDiagram] = createStore({ kana: null } as Diagram);
+  const [write, setWrite] = createSignal(false);
+  const [diagram, setDiagram] = createStore({ show: false } as Diagram);
 
   return (
     <SettingsContext.Provider

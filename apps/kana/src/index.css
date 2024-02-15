@@ -5,3 +5,7 @@ body,
 #app {
   height: 100%;
 }
+/* necessary for Game.tsx, otherwise wrong scrolling element */
+html {
+  overflow-x: hidden;
+}

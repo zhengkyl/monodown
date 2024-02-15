@@ -1,8 +1,6 @@
 import {
   For,
-  Match,
   Show,
-  Switch,
   batch,
   createEffect,
   createSignal,
@@ -82,20 +80,15 @@ export function Game(props) {
   };
 
   return (
-    <main
-      class={css({
-        overflowX: "hidden",
-        height: "100%",
-        p: 4,
-      })}
-    >
+    <main class={css({})}>
       <div
         class={css({
           maxWidth: "breakpoint-md",
           mx: "auto",
-          height: "100%",
           display: "flex",
           flexDir: "column",
+          px: 2,
+          py: 4,
         })}
       >
         <div
@@ -114,6 +107,7 @@ export function Game(props) {
               whiteSpace: "pre",
               fontFamily: "monospace",
               fontSize: "lg",
+              px: 1,
             })}
           >
             {`${Math.floor(seconds() / 60)
@@ -125,25 +119,7 @@ export function Game(props) {
         </div>
         <Show
           when={index() < kana.length}
-          fallback={
-            <>
-              <Results kana={kana} misses={misses} />
-              <div
-                class={css({
-                  display: "flex",
-                  gap: 2,
-                  mt: "auto",
-                })}
-              >
-                <Button width="100%" onClick={props.onEnd}>
-                  Back
-                </Button>
-                <Button width="100%" variant="outline" onClick={reset}>
-                  Try Again
-                </Button>
-              </div>
-            </>
-          }
+          fallback={<Results kana={kana} misses={misses} />}
         >
           <div
             class={css({
@@ -185,7 +161,7 @@ export function Game(props) {
             class={css({
               fontWeight: "bold",
               textAlign: "center",
-              width: "100%",
+              width: "90%",
               display: "block",
               mx: "auto",
               sm: {
@@ -231,6 +207,37 @@ export function Game(props) {
           />
         </Show>
       </div>
+      <Show when={index() >= kana.length}>
+        <div
+          class={css({
+            position: "fixed",
+            width: "100%",
+            mx: "auto",
+            bottom: 0,
+            left: 0,
+            right: 0,
+            display: "flex",
+            gap: 2,
+            px: 2,
+            py: 4,
+            maxWidth: "breakpoint-md",
+            zIndex: 10,
+          })}
+        >
+          <Button width="100%" onClick={props.onEnd} size="xl">
+            Back
+          </Button>
+          <Button
+            width="100%"
+            variant="outline"
+            background="bg.default"
+            onClick={reset}
+            size="xl"
+          >
+            Try Again
+          </Button>
+        </div>
+      </Show>
     </main>
   );
 }
@@ -303,7 +310,7 @@ function Results(props) {
       >
         <div
           class={css({
-            fontSize: "7xl",
+            fontSize: "6xl",
             fontWeight: "bold",
             lineHeight: 1,
           })}
@@ -331,6 +338,7 @@ function Results(props) {
           fontSize: "lg",
           fontWeight: "medium",
           textAlign: "center",
+          mb: 24,
         })}
       >
         <Show when={perfect.length === props.kana.length}>
@@ -363,22 +371,35 @@ function MissedKana(props) {
       })}
     >
       <For each={props.infos}>
-        {(info) => (
-          <Button
-            variant="outline"
-            class={css({
-              px: 0,
-              fontSize: "md",
-              height: "unset",
-              userSelect: "text",
-            })}
-          >
-            <div class={css({ p: 2, width: "100%" })}>
-              {info[mode()]}
-              <div class={css({ fontSize: "sm" })}>{info.romaji[0]}</div>
-            </div>
-          </Button>
-        )}
+        {(info) => {
+          let audio;
+          return (
+            <>
+              <audio ref={audio} src={`/audio/${info.romaji[0]}.ogg`} />
+              <Button
+                variant="outline"
+                class={css({
+                  px: 0,
+                  fontSize: "md",
+                  height: "unset",
+                  userSelect: "text",
+                })}
+                onClick={() => {
+                  if (audio.paused) {
+                    audio.play();
+                  } else {
+                    audio.currentTime = 0;
+                  }
+                }}
+              >
+                <div class={css({ p: 2, width: "100%" })}>
+                  {info[mode()]}
+                  <div class={css({ fontSize: "sm" })}>{info.romaji[0]}</div>
+                </div>
+              </Button>
+            </>
+          );
+        }}
       </For>
     </div>
   );
