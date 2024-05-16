@@ -209,7 +209,12 @@ function ControlOverlay(props) {
             mb={1}
             colorPalette="green"
             size="2xl"
-            onClick={anySelected() && props.onStart}
+            onClick={() => {
+              if (anySelected()) {
+                props.onStart();
+                setSelecting(false);
+              }
+            }}
           >
             Start
           </Button>
@@ -509,6 +514,10 @@ function StrokeDiagramPopover() {
           <div
             ref={svgParent}
             class={css({ width: "10rem", height: "10rem", display: "flex" })}
+            onMouseDown={() => {
+              animator.setProgress(0);
+              animator.play();
+            }}
           ></div>
           <div class={css({ display: "flex" })}>
             <Slider
